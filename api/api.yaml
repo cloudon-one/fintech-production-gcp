@@ -1,0 +1,1520 @@
+openapi: 3.0.3
+info:
+  title: fintech Auth Service API
+  description: |
+    Comprehensive authentication and authorization service for the fintech platform.
+    
+    ## Features
+    - User registration and login with 2FA
+    - External provider authentication (Discord, Google, Twitter)
+    - Crypto wallet authentication (Ethereum)
+    - API key management for inter-service communication
+    - Permission-based access control with flag system
+    - Token management with Redis caching
+    - Action limits and rate limiting
+    
+    ## Security
+    - BCrypt hashed API keys
+    - JWT tokens with expiration
+    - Rate limiting per client and endpoint
+    - Comprehensive audit logging
+    - Input validation and security headers
+  version: 2.0.0
+  contact:
+    name: fintech Technical Team
+    email: tech@fintech.com
+  license:
+    name: Proprietary
+    url: https://fintech.com/license
+
+servers:
+  - url: https://auth.fintech.com/api/v1
+    description: Production server
+  - url: https://auth-staging.fintech.com/api/v1
+    description: Staging server
+  - url: https://localhost:3000/api/v1
+    description: Development server
+
+security:
+  - BearerAuth: []
+  - ApiKeyAuth: []
+  - CookieAuth: []
+
+paths:
+  /registration:
+    post:
+      tags:
+        - User Registration
+      summary: Initiate user registration
+      description: Start the registration process by providing email and agreements
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrationRequest'
+            example:
+              email: user@example.com
+              language: EN
+              agreements:
+                - terms_of_service
+                - privacy_policy
+      responses:
+        '200':
+          description: Registration initiated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /registration/codes/{code}:
+    get:
+      tags:
+        - User Registration
+      summary: Get registration step status
+      description: Check current registration step for the provided code
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/RegistrationCode'
+      responses:
+        '200':
+          description: Registration step status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegistrationStepResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /registration/codes/{code}/phone:
+    post:
+      tags:
+        - User Registration
+      summary: Add phone number for verification
+      description: Submit phone number and receive SMS verification code
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/RegistrationCode'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PhoneNumberRequest'
+      responses:
+        '200':
+          description: SMS verification code sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /registration/codes/{code}/phone/confirm:
+    post:
+      tags:
+        - User Registration
+      summary: Confirm phone number
+      description: Verify phone number with SMS confirmation code
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/RegistrationCode'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PhoneConfirmationRequest'
+      responses:
+        '200':
+          description: Phone number confirmed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /registration/codes/{code}/password:
+    post:
+      tags:
+        - User Registration
+      summary: Set account password
+      description: Complete registration by setting password and activating account
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/RegistrationCode'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordRequest'
+      responses:
+        '200':
+          description: Account activated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  # Login Endpoints
+  /auth/password:
+    post:
+      tags:
+        - Authentication
+      summary: Login with password
+      description: Authenticate with email/username and password (Step 1 of 3)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful, temporary token issued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /security/2fa:
+    post:
+      tags:
+        - Two-Factor Authentication
+      summary: Generate 2FA token
+      description: Create 2FA token for specific permissions (Step 2 of login)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TwoFactorRequest'
+      responses:
+        '200':
+          description: 2FA token generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TwoFactorResponse'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /auth/authorization:
+    post:
+      tags:
+        - Authentication
+      summary: Generate authorization token
+      description: Complete login process and get full authorization token (Step 3 of 3)
+      parameters:
+        - $ref: '#/components/parameters/TwoFactorToken'
+        - $ref: '#/components/parameters/TwoFactorCode'
+      responses:
+        '200':
+          description: Authorization token generated
+          headers:
+            Set-Cookie:
+              description: Authorization cookie
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorizationResponse'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /security/password/reset:
+    post:
+      tags:
+        - Password Recovery
+      summary: Initiate password reset
+      description: Send password reset email
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequest'
+      responses:
+        '200':
+          description: Password reset email sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /security/password/reset/codes/{code}:
+    get:
+      tags:
+        - Password Recovery
+      summary: Validate reset code
+      description: Check if password reset code is valid
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/ResetCode'
+      responses:
+        '200':
+          description: Reset code is valid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResetCodeValidationResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    post:
+      tags:
+        - Password Recovery
+      summary: Reset password
+      description: Complete password reset with new password
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/ResetCode'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordRequest'
+      responses:
+        '200':
+          description: Password reset successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /admin/clients:
+    post:
+      tags:
+        - Client Management
+      summary: Register API client
+      description: Register a new API client for inter-service communication
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientRegistrationRequest'
+      responses:
+        '200':
+          description: Client registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /admin/clients/{clientId}:
+    get:
+      tags:
+        - Client Management
+      summary: Get client details
+      description: Retrieve client information and permissions
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+      responses:
+        '200':
+          description: Client details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientDetailsResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    patch:
+      tags:
+        - Client Management
+      summary: Update client permissions
+      description: Activate or deactivate client permissions
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientPermissionUpdateRequest'
+      responses:
+        '200':
+          description: Permissions updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientDetailsResponse'
+
+  /admin/clients/{clientId}/rotate:
+    post:
+      tags:
+        - Client Management
+      summary: Rotate API key
+      description: Generate new API key with transition period
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KeyRotationRequest'
+      responses:
+        '200':
+          description: Key rotation initiated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KeyRotationResponse'
+
+  /clients/self:
+    get:
+      tags:
+        - Client Self-Management
+      summary: Get own client information
+      description: Retrieve current client's information and permissions
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: Client information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientSelfInfoResponse'
+
+  /clients/self/usage:
+    get:
+      tags:
+        - Client Self-Management
+      summary: Get usage statistics
+      description: Retrieve API usage statistics for the client
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: startDate
+          in: query
+          description: Start date for statistics (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          description: End date for statistics (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+        - name: granularity
+          in: query
+          description: Data granularity
+          schema:
+            type: string
+            enum: [hour, day, week, month]
+            default: day
+      responses:
+        '200':
+          description: Usage statistics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsageStatisticsResponse'
+
+  /clients/self/regenerate:
+    post:
+      tags:
+        - Client Self-Management
+      summary: Regenerate API key
+      description: Generate new API key (self-service)
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: New API key generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KeyRegenerationResponse'
+
+  /auth/client-credentials:
+    post:
+      tags:
+        - Token Management
+      summary: Get client credentials token
+      description: Obtain authorization token using client credentials
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientCredentialsRequest'
+      responses:
+        '200':
+          description: Client credentials token issued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientCredentialsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/external/{provider}:
+    post:
+      tags:
+        - External Authentication
+      summary: Authenticate with external provider
+      description: Login/register using external OAuth provider
+      security: []
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          description: OAuth provider name
+          schema:
+            type: string
+            enum: [discord, google, twitter]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExternalAuthRequest'
+      responses:
+        '200':
+          description: External authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorizationResponse'
+
+  /auth/wallet:
+    post:
+      tags:
+        - Crypto Wallet Authentication
+      summary: Authenticate with crypto wallet
+      description: Login/register using crypto wallet signature
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WalletAuthRequest'
+      responses:
+        '200':
+          description: Wallet authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorizationResponse'
+
+  /users/profile:
+    get:
+      tags:
+        - User Management
+      summary: Get user profile
+      description: Retrieve current user's profile information
+      responses:
+        '200':
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileResponse'
+
+    patch:
+      tags:
+        - User Management
+      summary: Update user profile
+      description: Update user profile information
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfileUpdateRequest'
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileResponse'
+
+  /users/permissions:
+    get:
+      tags:
+        - Permission Management
+      summary: Get user permissions
+      description: Retrieve current user's effective permissions
+      responses:
+        '200':
+          description: User permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPermissionsResponse'
+
+  /users/flags:
+    get:
+      tags:
+        - Permission Management
+      summary: Get user flags
+      description: Retrieve current user's permission flags
+      responses:
+        '200':
+          description: User flags
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserFlagsResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from login process
+
+    ApiKeyAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: API key for client credentials authentication
+
+    CookieAuth:
+      type: apiKey
+      in: cookie
+      name: Authorization
+      description: Session cookie for web applications
+
+  parameters:
+    RegistrationCode:
+      name: code
+      in: path
+      required: true
+      description: Registration activation code
+      schema:
+        type: string
+        pattern: '^[A-Za-z0-9]{32}$'
+
+    ResetCode:
+      name: code
+      in: path
+      required: true
+      description: Password reset code
+      schema:
+        type: string
+        pattern: '^[A-Za-z0-9]{32}$'
+
+    ClientId:
+      name: clientId
+      in: path
+      required: true
+      description: Client UUID
+      schema:
+        type: string
+        format: uuid
+
+    TwoFactorToken:
+      name: Two-Factor-Token
+      in: header
+      required: true
+      description: 2FA token from previous step
+      schema:
+        type: string
+
+    TwoFactorCode:
+      name: Two-Factor-Code
+      in: header
+      required: true
+      description: 2FA verification code
+      schema:
+        type: string
+        pattern: '^[0-9]{6}$'
+
+  schemas:
+    RegistrationRequest:
+      type: object
+      required:
+        - email
+        - language
+        - agreements
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        language:
+          type: string
+          enum: [EN, PL, ES, FR, DE]
+          example: EN
+        agreements:
+          type: array
+          items:
+            type: string
+          example: [terms_of_service, privacy_policy]
+
+    PhoneNumberRequest:
+      type: object
+      required:
+        - phoneNumber
+      properties:
+        phoneNumber:
+          type: object
+          required:
+            - prefix
+            - number
+          properties:
+            prefix:
+              type: string
+              pattern: '^\+[1-9][0-9]{0,3}$'
+              example: '+1'
+            number:
+              type: string
+              pattern: '^[0-9]{6,15}$'
+              example: '1234567890'
+
+    PhoneConfirmationRequest:
+      type: object
+      required:
+        - confirmationCode
+      properties:
+        confirmationCode:
+          type: string
+          pattern: '^[0-9]{6}$'
+          example: '123456'
+
+    PasswordRequest:
+      type: object
+      required:
+        - password
+      properties:
+        password:
+          type: string
+          minLength: 8
+          maxLength: 128
+          pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]'
+          example: 'SecurePass123!'
+
+    LoginRequest:
+      type: object
+      required:
+        - userName
+        - password
+      properties:
+        userName:
+          type: string
+          example: user@example.com
+        password:
+          type: string
+          example: 'SecurePass123!'
+
+    TwoFactorRequest:
+      type: object
+      required:
+        - permissions
+      properties:
+        permissions:
+          type: array
+          items:
+            type: string
+          example: ['AUTH_USER_POST_TOKEN_GENERATE']
+
+    PasswordResetRequest:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@example.com
+
+    ClientRegistrationRequest:
+      type: object
+      required:
+        - clientId
+        - clientSecret
+        - name
+        - permissions
+      properties:
+        clientId:
+          type: string
+          format: uuid
+          example: '0d067581-d6dd-4b43-a96b-46c53267ad00'
+        clientSecret:
+          type: string
+          minLength: 32
+          pattern: '^[A-Za-z0-9+/]+$'
+          example: 'SomeStrongSecret'
+        name:
+          type: string
+          maxLength: 100
+          example: 'Payment Service'
+        permissions:
+          type: array
+          items:
+            type: string
+            pattern: '^[A-Z_]+$'
+          example: ['PAYMENT_PROCESS', 'USER_READ']
+
+    ClientPermissionUpdateRequest:
+      type: object
+      required:
+        - permissions
+      properties:
+        permissions:
+          type: array
+          items:
+            type: string
+          example: ['PAYMENT_PROCESS']
+
+    KeyRotationRequest:
+      type: object
+      properties:
+        transitionPeriod:
+          type: integer
+          minimum: 3600
+          maximum: 604800
+          default: 86400
+          description: Transition period in seconds (1 hour to 1 week)
+          example: 86400
+        notifyServices:
+          type: boolean
+          default: true
+          description: Whether to notify dependent services
+          example: true
+
+    ClientCredentialsRequest:
+      type: object
+      required:
+        - clientId
+        - clientSecret
+      properties:
+        clientId:
+          type: string
+          format: uuid
+          example: '0d067581-d6dd-4b43-a96b-46c53267ad00'
+        clientSecret:
+          type: string
+          example: 'SomeStrongSecret'
+
+    ExternalAuthRequest:
+      type: object
+      required:
+        - authCode
+      properties:
+        authCode:
+          type: string
+          description: OAuth authorization code from external provider
+          example: 'oauth_code_from_provider'
+        state:
+          type: string
+          description: OAuth state parameter for CSRF protection
+          example: 'random_state_string'
+
+    WalletAuthRequest:
+      type: object
+      required:
+        - walletAddress
+        - signature
+        - message
+      properties:
+        walletAddress:
+          type: string
+          pattern: '^0x[a-fA-F0-9]{40}$'
+          example: '0x742d35Cc6635C0532925a3b8D8c3c8b78c69BC8'
+        signature:
+          type: string
+          description: Signed message proving wallet ownership
+          example: '0x...'
+        message:
+          type: string
+          description: Original message that was signed
+          example: 'Sign this message to authenticate with fintech'
+        walletType:
+          type: string
+          enum: [ethereum, bitcoin, polygon]
+          default: ethereum
+          example: ethereum
+
+    UserProfileUpdateRequest:
+      type: object
+      properties:
+        userName:
+          type: string
+          maxLength: 50
+          pattern: '^[a-zA-Z0-9_.-]+$'
+          example: 'john_doe'
+        email:
+          type: string
+          format: email
+          example: 'john@example.com'
+        language:
+          type: string
+          enum: [EN, PL, ES, FR, DE]
+          example: 'EN'
+        phoneNumber:
+          $ref: '#/components/schemas/PhoneNumberRequest/properties/phoneNumber'
+
+    SuccessResponse:
+      type: object
+      properties:
+        timestamp:
+          type: integer
+          format: int64
+          example: 1625649564300
+        data:
+          type: object
+          properties:
+            message:
+              type: string
+              example: 'Operation completed successfully'
+
+    RegistrationStepResponse:
+      type: object
+      properties:
+        timestamp:
+          type: integer
+          format: int64
+        data:
+          type: object
+          properties:
+            currentStep:
+              type: string
+              enum: [phone_verification, password_setting]
+              example: phone_verification
+            isActive:
+              type: boolean
+              example: true
+
+    LoginResponse:
+      type: object
+      properties:
+        timestamp:
+          type: integer
+          format: int64
+        data:
+          type: object
+          properties:
+            token:
+              type: string
+              description: Temporary token for 2FA step
+              example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+            permissions:
+              type: array
+              items:
+                type: string
+              example: ['AUTH_USER_POST_TWO_FA_TYPE', 'AUTH_USER_POST_TOKEN_GENERATE']
+            expiresAt:
+              type: integer
+              format: int64
+              example: 1625649684286
+
+    TwoFactorResponse:
+      type: object
+      properties:
+        timestamp:
+          type: integer
+          format: int64
+        data:
+          type: object
+          properties:
+            token:
+              type: string
+              description: 2FA token for verification
+              example: 'f6SxvZHElUO35ikLfcF6I4UIuolArKMx8QS8gxdmw4V9...'
+            permissions:
+              type: array
+              items:
+                type: string
+              example: ['AUTH_USER_POST_TOKEN_GENERATE']
+            expiresAt:
+              type: integer
+              format: int64
+              example: 1625653685326
+            type:
+              type: string
+              enum: [PHONE, EMAIL, GOOGLE_AUTHENTICATOR]
+              example: PHONE
+
+    AuthorizationResponse:
+      type: object
+      properties:
+        timestamp:
+          type: integer
+          format: int64
+        data:
+          type: object
+          properties:
+            token:
+              type: string
+              description: Full authorization token
+              example: 'y7GmF1Wt9YqQ0XFbn9BYMtLWrivOIyMGcVb8MJBR69LP...'
+            permissions:
+              type: array
+              items:
+                type: string
+              example: ['AUTH_USER_PATCH_EMAIL', 'AUTH_USER_POST_TWO_FA_TYPE']
+            expiresAt:
+              type: integer
+              format: int64
+              example: 1625653707925
+
+    ResetCodeValidationResponse:
+      type: object
+      properties:
+        timestamp:
+          type: integer
+          format: int64
+        data:
+          type: object
+          properties:
+            valid:
+              type: boolean
+              example: true
+            expiresAt:
+              type: integer
+              format: int64
+              example: 1625653707925
+
+    ClientDetailsResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: '0d067581-d6dd-4b43-a96b-46c53267ad00'
+        name:
+          type: string
+          example: 'Payment Service'
+        createdAt:
+          type: integer
+          format: int64
+          example: 1630331731566
+        activePermissions:
+          type: array
+          items:
+            type: string
+          example: ['PAYMENT_PROCESS']
+        requestedPermissions:
+          type: array
+          items:
+            type: string
+          example: ['USER_READ', 'PAYMENT_REFUND']
+        updatedAt:
+          type: integer
+          format: int64
+          nullable: true
+          example: 1630331731566
+        updatedBy:
+          type: string
+          format: uuid
+          nullable: true
+          example: '8924f231-8e3d-4788-af49-f4543dbac687'
+
+    KeyRotationResponse:
+      type: object
+      properties:
+        currentKey:
+          type: string
+          description: Hash of current key (partial)
+          example: 'old_key_hash_partial'
+        newKey:
+          type: string
+          description: Hash of new key (partial)
+          example: 'new_key_hash_partial'
+        transitionEnds:
+          type: string
+          format: date-time
+          example: '2025-06-11T10:00:00Z'
+
+    ClientSelfInfoResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        permissions:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+        lastUsed:
+          type: string
+          format: date-time
+          nullable: true
+
+    UsageStatisticsResponse:
+      type: object
+      properties:
+        summary:
+          type: object
+          properties:
+            totalRequests:
+              type: integer
+              example: 15420
+            successfulRequests:
+              type: integer
+              example: 14892
+            failedRequests:
+              type: integer
+              example: 528
+            averageResponseTime:
+              type: number
+              format: float
+              example: 245.6
+        timeSeriesData:
+          type: array
+          items:
+            type: object
+            properties:
+              timestamp:
+                type: string
+                format: date-time
+              requests:
+                type: integer
+              errors:
+                type: integer
+              avgResponseTime:
+                type: number
+                format: float
+        topEndpoints:
+          type: array
+          items:
+            type: object
+            properties:
+              endpoint:
+                type: string
+              requestCount:
+                type: integer
+              errorRate:
+                type: number
+                format: float
+
+    KeyRegenerationResponse:
+      type: object
+      properties:
+        newKeyId:
+          type: string
+          description: Identifier for the new key
+          example: 'key_abc123'
+        expiresAt:
+          type: string
+          format: date-time
+          description: When the new key expires
+          example: '2026-06-01T00:00:00Z'
+
+    ClientCredentialsResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: Client credentials access token
+          example: 'SomeToken'
+        permissions:
+          type: array
+          items:
+            type: string
+          example: ['PAYMENT_PROCESS', 'USER_READ']
+        expiresAt:
+          type: integer
+          format: int64
+          example: 1630331732211
+
+    UserProfileResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userName:
+          type: string
+          nullable: true
+        email:
+          type: string
+          format: email
+        language:
+          type: string
+          enum: [EN, PL, ES, FR, DE]
+        phoneNumber:
+          type: object
+          nullable: true
+          properties:
+            prefix:
+              type: string
+            number:
+              type: string
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        lastLoginAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    UserPermissionsResponse:
+      type: object
+      properties:
+        permissions:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              scope:
+                type: string
+                enum: [static, inherit]
+              source:
+                type: string
+                enum: [direct_grant, flag_inheritance, custom]
+              validUntil:
+                type: string
+                format: date-time
+                nullable: true
+        inheritancePolicy:
+          type: string
+          enum: [block_on_parent_revoke, inherit_all, static_only]
+
+    UserFlagsResponse:
+      type: object
+      properties:
+        flags:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              name:
+                type: string
+              type:
+                type: string
+                enum: [agreement, segmentation, permission]
+              data:
+                type: object
+                description: Flag-specific data (permissions for permission flags)
+              assignedAt:
+                type: string
+                format: date-time
+              assignedBy:
+                type: string
+                format: uuid
+                nullable: true
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+              enum:
+                - INVALID_REQUEST
+                - UNAUTHORIZED
+                - FORBIDDEN
+                - NOT_FOUND
+                - CONFLICT
+                - VALIDATION_ERROR
+                - RATE_LIMITED
+                - API_KEY_EXPIRED
+                - API_KEY_INVALID
+                - INSUFFICIENT_PERMISSIONS
+                - TWO_FA_REQUIRED
+                - TWO_FA_INVALID
+                - CLIENT_ALREADY_EXISTS
+                - USER_NOT_FOUND
+                - INVALID_CREDENTIALS
+                - ACCOUNT_LOCKED
+                - EMAIL_NOT_VERIFIED
+                - PHONE_NOT_VERIFIED
+              example: API_KEY_EXPIRED
+            message:
+              type: string
+              description: Human-readable error message
+              example: API key expired on 2025-06-01
+            details:
+              type: object
+              description: Additional error details
+              properties:
+                keyId:
+                  type: string
+                  description: Partial key identifier
+                  example: partial_key_id
+                expiredAt:
+                  type: string
+                  format: date-time
+                  example: '2025-06-01T00:00:00Z'
+                renewalUrl:
+                  type: string
+                  format: uri
+                  example: '/admin/clients/renew'
+                fieldErrors:
+                  type: object
+                  description: Field-specific validation errors
+                  additionalProperties:
+                    type: array
+                    items:
+                      type: string
+        retryAfter:
+          type: integer
+          description: Seconds to wait before retrying (for rate limiting)
+          nullable: true
+          example: 60
+
+    AuditLogEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        timestamp:
+          type: string
+          format: date-time
+        event:
+          type: string
+          enum:
+            - CLIENT_AUTHENTICATION
+            - PERMISSION_GRANTED
+            - PERMISSION_REVOKED
+            - API_KEY_CREATED
+            - API_KEY_ROTATED
+            - USER_LOGIN
+            - USER_LOGOUT
+            - PASSWORD_RESET
+            - TWO_FA_ENABLED
+            - TWO_FA_DISABLED
+        clientId:
+          type: string
+          format: uuid
+          nullable: true
+        userId:
+          type: string
+          format: uuid
+          nullable: true
+        ipAddress:
+          type: string
+          format: ipv4
+        userAgent:
+          type: string
+        success:
+          type: boolean
+        errorCode:
+          type: string
+          nullable: true
+        permissions:
+          type: array
+          items:
+            type: string
+          nullable: true
+        performedBy:
+          type: string
+          format: uuid
+          nullable: true
+        reason:
+          type: string
+          nullable: true
+
+  responses:
+    BadRequest:
+      description: Bad Request - Invalid input data
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: VALIDATION_ERROR
+              message: Invalid request data
+              details:
+                fieldErrors:
+                  email:
+                    - "Invalid email format"
+                  password:
+                    - "Password must be at least 8 characters"
+
+    Unauthorized:
+      description: Unauthorized - Invalid credentials or expired token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: INVALID_CREDENTIALS
+              message: Invalid username or password
+
+    Forbidden:
+      description: Forbidden - Insufficient permissions or 2FA required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            insufficient_permissions:
+              value:
+                error:
+                  code: INSUFFICIENT_PERMISSIONS
+                  message: Required permission not granted
+                  details:
+                    requiredPermission: AUTH_ADMIN_GET_CLIENT
+            two_fa_required:
+              value:
+                error:
+                  code: TWO_FA_REQUIRED
+                  message: Two-factor authentication required for this action
+                  details:
+                    supportedMethods:
+                      - PHONE
+                      - EMAIL
+                      - GOOGLE_AUTHENTICATOR
+
+    NotFound:
+      description: Not Found - Resource does not exist
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: NOT_FOUND
+              message: Resource not found
+
+    Conflict:
+      description: Conflict - Resource already exists
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: CLIENT_ALREADY_EXISTS
+              message: Client with this name already exists
+
+    TooManyRequests:
+      description: Too Many Requests - Rate limit exceeded
+      headers:
+        Retry-After:
+          description: Seconds to wait before retrying
+          schema:
+            type: integer
+            example: 60
+        X-RateLimit-Limit:
+          description: Request limit per time window
+          schema:
+            type: integer
+            example: 100
+        X-RateLimit-Remaining:
+          description: Requests remaining in current window
+          schema:
+            type: integer
+            example: 0
+        X-RateLimit-Reset:
+          description: Time when rate limit resets (Unix timestamp)
+          schema:
+            type: integer
+            example: 1625649624
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: RATE_LIMITED
+              message: Rate limit exceeded for API key
+              details:
+                limit: 100
+                window: 3600
+                retryAfter: 60
+
+  examples:
+    StandardUserPermissions:
+      summary: Standard user permissions
+      value:
+        - AUTH_USER_PATCH_EMAIL
+        - AUTH_USER_POST_TWO_FA_TYPE
+        - AUTH_USER_PATCH_USER_NAME
+        - AUTH_USER_PATCH_LANGUAGE
+        - AUTH_USER_GET_PROFILE
+
+    AdminPermissions:
+      summary: Administrator permissions
+      value:
+        - AUTH_ADMIN_GET_CLIENT
+        - AUTH_ADMIN_POST_CLIENT
+        - AUTH_ADMIN_PATCH_CLIENT_PERMISSIONS
+        - AUTH_ADMIN_DELETE_CLIENT
+
+    ServiceClientPermissions:
+      summary: Service client permissions
+      value:
+        - PAYMENT_PROCESS
+        - PAYMENT_REFUND
+        - USER_READ
+        - NOTIFICATION_SEND
+
+tags:
+  - name: User Registration
+    description: User account registration endpoints
+  - name: Authentication
+    description: User login and authentication
+  - name: Two-Factor Authentication
+    description: 2FA token generation and verification
+  - name: Password Recovery
+    description: Password reset functionality
+  - name: External Authentication
+    description: OAuth provider authentication
+  - name: Crypto Wallet Authentication
+    description: Blockchain wallet authentication
+  - name: Client Management
+    description: Admin endpoints for API client management
+  - name: Client Self-Management
+    description: Self-service API client endpoints
+  - name: Token Management
+    description: Token generation and validation
+  - name: User Management
+    description: User profile management
+  - name: Permission Management
+    description: User permission and flag management

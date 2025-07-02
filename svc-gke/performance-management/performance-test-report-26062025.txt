@@ -1,0 +1,641 @@
+🚀 Starting Performance Testing for GKE Cluster...
+[INFO] Starting comprehensive performance testing...
+[INFO] Checking prerequisites...
+[SUCCESS] Prerequisites check passed
+[INFO] Setting up cluster access...
+Fetching cluster endpoint and auth data.
+kubeconfig entry generated for beone-prod-gke-cluster.
+[SUCCESS] Cluster access established
+[INFO] Checking current cluster state...
+=== Node Information ===
+NAME                                                  STATUS   ROLES    AGE    VERSION               INTERNAL-IP   EXTERNAL-IP   OS-IMAGE                             KERNEL-VERSION   CONTAINER-RUNTIME
+gke-beone-prod-gke-clust-service-pool-002719b6-h0s6   Ready    <none>   4d4h   v1.32.2-gke.1297002   10.60.4.63    <none>        Container-Optimized OS from Google   6.6.72+          containerd://1.7.24
+gke-beone-prod-gke-clust-service-pool-002719b6-id9e   Ready    <none>   4d4h   v1.32.2-gke.1297002   10.60.4.60    <none>        Container-Optimized OS from Google   6.6.72+          containerd://1.7.24
+gke-beone-prod-gke-clust-service-pool-a2ee2f09-cjua   Ready    <none>   4d4h   v1.32.2-gke.1297002   10.60.7.196   <none>        Container-Optimized OS from Google   6.6.72+          containerd://1.7.24
+gke-beone-prod-gke-clust-service-pool-a2ee2f09-h1l8   Ready    <none>   4d4h   v1.32.2-gke.1297002   10.60.7.193   <none>        Container-Optimized OS from Google   6.6.72+          containerd://1.7.24
+gke-beone-prod-gke-clust-service-pool-f4e0d7de-hfnw   Ready    <none>   4d4h   v1.32.2-gke.1297002   10.60.7.199   <none>        Container-Optimized OS from Google   6.6.72+          containerd://1.7.24
+gke-beone-prod-gke-clust-service-pool-f4e0d7de-ied6   Ready    <none>   4d4h   v1.32.2-gke.1297002   10.60.7.198   <none>        Container-Optimized OS from Google   6.6.72+          containerd://1.7.24
+gke-beone-prod-gke-cluster-app-pool-2aed3925-0xuz     Ready    <none>   4d4h   v1.32.2-gke.1297002   10.60.7.197   <none>        Container-Optimized OS from Google   6.6.72+          containerd://1.7.24
+gke-beone-prod-gke-cluster-app-pool-2aed3925-50o7     Ready    <none>   4d4h   v1.32.2-gke.1297002   10.60.7.194   <none>        Container-Optimized OS from Google   6.6.72+          containerd://1.7.24
+gke-beone-prod-gke-cluster-app-pool-2aed3925-bxrh     Ready    <none>   4d4h   v1.32.2-gke.1297002   10.60.7.195   <none>        Container-Optimized OS from Google   6.6.72+          containerd://1.7.24
+gke-beone-prod-gke-cluster-app-pool-52782e23-6wg2     Ready    <none>   4d4h   v1.32.2-gke.1297002   10.60.7.202   <none>        Container-Optimized OS from Google   6.6.72+          containerd://1.7.24
+gke-beone-prod-gke-cluster-app-pool-52782e23-xnlb     Ready    <none>   4d4h   v1.32.2-gke.1297002   10.60.7.200   <none>        Container-Optimized OS from Google   6.6.72+          containerd://1.7.24
+gke-beone-prod-gke-cluster-app-pool-52782e23-yyk3     Ready    <none>   4d4h   v1.32.2-gke.1297002   10.60.7.201   <none>        Container-Optimized OS from Google   6.6.72+          containerd://1.7.24
+gke-beone-prod-gke-cluster-app-pool-71b638ad-4xiy     Ready    <none>   4d4h   v1.32.2-gke.1297002   10.60.4.61    <none>        Container-Optimized OS from Google   6.6.72+          containerd://1.7.24
+gke-beone-prod-gke-cluster-app-pool-71b638ad-5i7y     Ready    <none>   4d4h   v1.32.2-gke.1297002   10.60.7.192   <none>        Container-Optimized OS from Google   6.6.72+          containerd://1.7.24
+gke-beone-prod-gke-cluster-app-pool-71b638ad-qqrn     Ready    <none>   4d4h   v1.32.2-gke.1297002   10.60.4.62    <none>        Container-Optimized OS from Google   6.6.72+          containerd://1.7.24
+
+=== Node Pool Status ===
+NAME                                                  STATUS   ROLES    AGE    VERSION               GKE-NODEPOOL
+gke-beone-prod-gke-clust-service-pool-002719b6-h0s6   Ready    <none>   4d4h   v1.32.2-gke.1297002   service-pool
+gke-beone-prod-gke-clust-service-pool-002719b6-id9e   Ready    <none>   4d4h   v1.32.2-gke.1297002   service-pool
+gke-beone-prod-gke-clust-service-pool-a2ee2f09-cjua   Ready    <none>   4d4h   v1.32.2-gke.1297002   service-pool
+gke-beone-prod-gke-clust-service-pool-a2ee2f09-h1l8   Ready    <none>   4d4h   v1.32.2-gke.1297002   service-pool
+gke-beone-prod-gke-clust-service-pool-f4e0d7de-hfnw   Ready    <none>   4d4h   v1.32.2-gke.1297002   service-pool
+gke-beone-prod-gke-clust-service-pool-f4e0d7de-ied6   Ready    <none>   4d4h   v1.32.2-gke.1297002   service-pool
+gke-beone-prod-gke-cluster-app-pool-2aed3925-0xuz     Ready    <none>   4d4h   v1.32.2-gke.1297002   app-pool
+gke-beone-prod-gke-cluster-app-pool-2aed3925-50o7     Ready    <none>   4d4h   v1.32.2-gke.1297002   app-pool
+gke-beone-prod-gke-cluster-app-pool-2aed3925-bxrh     Ready    <none>   4d4h   v1.32.2-gke.1297002   app-pool
+gke-beone-prod-gke-cluster-app-pool-52782e23-6wg2     Ready    <none>   4d4h   v1.32.2-gke.1297002   app-pool
+gke-beone-prod-gke-cluster-app-pool-52782e23-xnlb     Ready    <none>   4d4h   v1.32.2-gke.1297002   app-pool
+gke-beone-prod-gke-cluster-app-pool-52782e23-yyk3     Ready    <none>   4d4h   v1.32.2-gke.1297002   app-pool
+gke-beone-prod-gke-cluster-app-pool-71b638ad-4xiy     Ready    <none>   4d4h   v1.32.2-gke.1297002   app-pool
+gke-beone-prod-gke-cluster-app-pool-71b638ad-5i7y     Ready    <none>   4d4h   v1.32.2-gke.1297002   app-pool
+gke-beone-prod-gke-cluster-app-pool-71b638ad-qqrn     Ready    <none>   4d4h   v1.32.2-gke.1297002   app-pool
+
+=== Current Pod Distribution ===
+NAMESPACE                         NAME                                                       READY   STATUS      RESTARTS       AGE     IP             NODE                                                  NOMINATED NODE   READINESS GATES
+api                               api-test                                                   1/1     Running     20 (41m ago)   20h     10.60.139.16   gke-beone-prod-gke-cluster-app-pool-52782e23-6wg2     <none>           <none>
+backend                           backend-test                                               1/1     Running     20 (41m ago)   20h     10.60.134.14   gke-beone-prod-gke-clust-service-pool-002719b6-id9e   <none>           <none>
+cnrm-system                       cnrm-deletiondefender-0                                    1/1     Running     0              4d4h    10.60.144.9    gke-beone-prod-gke-cluster-app-pool-71b638ad-4xiy     <none>           <none>
+cnrm-system                       cnrm-resource-stats-recorder-5574d6476c-pkgpf              2/2     Running     0              4d4h    10.60.4.62     gke-beone-prod-gke-cluster-app-pool-71b638ad-qqrn     <none>           <none>
+cnrm-system                       cnrm-unmanaged-detector-0                                  1/1     Running     0              4d4h    10.60.138.5    gke-beone-prod-gke-cluster-app-pool-2aed3925-bxrh     <none>           <none>
+cnrm-system                       cnrm-webhook-manager-94bfcf4c8-9p58l                       1/1     Running     0              4d4h    10.60.131.7    gke-beone-prod-gke-cluster-app-pool-52782e23-xnlb     <none>           <none>
+cnrm-system                       cnrm-webhook-manager-94bfcf4c8-bzxkk                       1/1     Running     0              4d4h    10.60.130.7    gke-beone-prod-gke-clust-service-pool-a2ee2f09-h1l8   <none>           <none>
+configconnector-operator-system   configconnector-operator-0                                 1/1     Running     0              4d4h    10.60.141.7    gke-beone-prod-gke-clust-service-pool-a2ee2f09-cjua   <none>           <none>
+frontend                          frontend-test                                              1/1     Running     20 (41m ago)   20h     10.60.142.16   gke-beone-prod-gke-clust-service-pool-f4e0d7de-ied6   <none>           <none>
+gke-managed-cim                   kube-state-metrics-0                                       2/2     Running     0              4d4h    10.60.132.9    gke-beone-prod-gke-cluster-app-pool-2aed3925-50o7     <none>           <none>
+gke-managed-dpv2-observability    hubble-relay-7f6d544d9f-wr9v6                              3/3     Running     0              4d4h    10.60.129.7    gke-beone-prod-gke-clust-service-pool-002719b6-h0s6   <none>           <none>
+gmp-system                        collector-5xdjz                                            2/2     Running     0              4d4h    10.60.129.4    gke-beone-prod-gke-clust-service-pool-002719b6-h0s6   <none>           <none>
+gmp-system                        collector-6x57l                                            2/2     Running     0              4d4h    10.60.133.4    gke-beone-prod-gke-cluster-app-pool-71b638ad-5i7y     <none>           <none>
+gmp-system                        collector-7vf7m                                            2/2     Running     0              4d4h    10.60.139.6    gke-beone-prod-gke-cluster-app-pool-52782e23-6wg2     <none>           <none>
+gmp-system                        collector-d59mc                                            2/2     Running     0              4d4h    10.60.141.6    gke-beone-prod-gke-clust-service-pool-a2ee2f09-cjua   <none>           <none>
+gmp-system                        collector-g4znq                                            2/2     Running     0              4d4h    10.60.130.5    gke-beone-prod-gke-clust-service-pool-a2ee2f09-h1l8   <none>           <none>
+gmp-system                        collector-gshn6                                            2/2     Running     0              4d4h    10.60.137.7    gke-beone-prod-gke-cluster-app-pool-2aed3925-0xuz     <none>           <none>
+gmp-system                        collector-h4qf5                                            2/2     Running     0              4d4h    10.60.134.7    gke-beone-prod-gke-clust-service-pool-002719b6-id9e   <none>           <none>
+gmp-system                        collector-jkstr                                            2/2     Running     0              4d4h    10.60.131.6    gke-beone-prod-gke-cluster-app-pool-52782e23-xnlb     <none>           <none>
+gmp-system                        collector-jnw9h                                            2/2     Running     0              4d4h    10.60.136.6    gke-beone-prod-gke-cluster-app-pool-52782e23-yyk3     <none>           <none>
+gmp-system                        collector-mfp82                                            2/2     Running     0              4d4h    10.60.138.7    gke-beone-prod-gke-cluster-app-pool-2aed3925-bxrh     <none>           <none>
+gmp-system                        collector-rg4km                                            2/2     Running     0              4d4h    10.60.128.6    gke-beone-prod-gke-cluster-app-pool-71b638ad-qqrn     <none>           <none>
+gmp-system                        collector-srg4k                                            2/2     Running     0              4d4h    10.60.143.6    gke-beone-prod-gke-clust-service-pool-f4e0d7de-hfnw   <none>           <none>
+gmp-system                        collector-wfgt6                                            2/2     Running     0              4d4h    10.60.132.5    gke-beone-prod-gke-cluster-app-pool-2aed3925-50o7     <none>           <none>
+gmp-system                        collector-wkvx5                                            2/2     Running     0              4d4h    10.60.144.5    gke-beone-prod-gke-cluster-app-pool-71b638ad-4xiy     <none>           <none>
+gmp-system                        collector-zfvk4                                            2/2     Running     0              4d4h    10.60.142.5    gke-beone-prod-gke-clust-service-pool-f4e0d7de-ied6   <none>           <none>
+gmp-system                        gmp-operator-549c7f9c79-lttp2                              1/1     Running     0              4d4h    10.60.139.9    gke-beone-prod-gke-cluster-app-pool-52782e23-6wg2     <none>           <none>
+kube-system                       anetd-5xqxf                                                2/2     Running     0              4d4h    10.60.4.60     gke-beone-prod-gke-clust-service-pool-002719b6-id9e   <none>           <none>
+kube-system                       anetd-b4krr                                                2/2     Running     0              4d4h    10.60.7.195    gke-beone-prod-gke-cluster-app-pool-2aed3925-bxrh     <none>           <none>
+kube-system                       anetd-cc7cj                                                2/2     Running     0              4d4h    10.60.7.201    gke-beone-prod-gke-cluster-app-pool-52782e23-yyk3     <none>           <none>
+kube-system                       anetd-djf4d                                                2/2     Running     0              4d4h    10.60.4.62     gke-beone-prod-gke-cluster-app-pool-71b638ad-qqrn     <none>           <none>
+kube-system                       anetd-h8l4s                                                2/2     Running     0              4d4h    10.60.7.202    gke-beone-prod-gke-cluster-app-pool-52782e23-6wg2     <none>           <none>
+kube-system                       anetd-ks2h6                                                2/2     Running     0              4d4h    10.60.4.63     gke-beone-prod-gke-clust-service-pool-002719b6-h0s6   <none>           <none>
+kube-system                       anetd-mblg5                                                2/2     Running     0              4d4h    10.60.7.199    gke-beone-prod-gke-clust-service-pool-f4e0d7de-hfnw   <none>           <none>
+kube-system                       anetd-mdpz5                                                2/2     Running     0              4d4h    10.60.4.61     gke-beone-prod-gke-cluster-app-pool-71b638ad-4xiy     <none>           <none>
+kube-system                       anetd-pcbbt                                                2/2     Running     0              4d4h    10.60.7.193    gke-beone-prod-gke-clust-service-pool-a2ee2f09-h1l8   <none>           <none>
+kube-system                       anetd-r7z2k                                                2/2     Running     0              4d4h    10.60.7.196    gke-beone-prod-gke-clust-service-pool-a2ee2f09-cjua   <none>           <none>
+kube-system                       anetd-rcg2w                                                2/2     Running     0              4d4h    10.60.7.197    gke-beone-prod-gke-cluster-app-pool-2aed3925-0xuz     <none>           <none>
+kube-system                       anetd-stpng                                                2/2     Running     0              4d4h    10.60.7.192    gke-beone-prod-gke-cluster-app-pool-71b638ad-5i7y     <none>           <none>
+kube-system                       anetd-thdkr                                                2/2     Running     0              4d4h    10.60.7.198    gke-beone-prod-gke-clust-service-pool-f4e0d7de-ied6   <none>           <none>
+kube-system                       anetd-w7wr6                                                2/2     Running     0              4d4h    10.60.7.200    gke-beone-prod-gke-cluster-app-pool-52782e23-xnlb     <none>           <none>
+kube-system                       anetd-xmzsg                                                2/2     Running     0              4d4h    10.60.7.194    gke-beone-prod-gke-cluster-app-pool-2aed3925-50o7     <none>           <none>
+kube-system                       antrea-controller-horizontal-autoscaler-66c5878988-xrtvw   1/1     Running     0              4d4h    10.60.143.7    gke-beone-prod-gke-clust-service-pool-f4e0d7de-hfnw   <none>           <none>
+kube-system                       container-watcher-4qtbp                                    1/1     Running     0              30m     10.60.7.200    gke-beone-prod-gke-cluster-app-pool-52782e23-xnlb     <none>           <none>
+kube-system                       container-watcher-8lfpk                                    1/1     Running     0              30m     10.60.7.201    gke-beone-prod-gke-cluster-app-pool-52782e23-yyk3     <none>           <none>
+kube-system                       container-watcher-cdllt                                    1/1     Running     0              30m     10.60.7.192    gke-beone-prod-gke-cluster-app-pool-71b638ad-5i7y     <none>           <none>
+kube-system                       container-watcher-gq62v                                    1/1     Running     0              30m     10.60.7.198    gke-beone-prod-gke-clust-service-pool-f4e0d7de-ied6   <none>           <none>
+kube-system                       container-watcher-hw9w5                                    1/1     Running     0              30m     10.60.7.194    gke-beone-prod-gke-cluster-app-pool-2aed3925-50o7     <none>           <none>
+kube-system                       container-watcher-jhjfk                                    1/1     Running     0              30m     10.60.4.61     gke-beone-prod-gke-cluster-app-pool-71b638ad-4xiy     <none>           <none>
+kube-system                       container-watcher-jnm5b                                    1/1     Running     0              30m     10.60.4.60     gke-beone-prod-gke-clust-service-pool-002719b6-id9e   <none>           <none>
+kube-system                       container-watcher-l8bjv                                    1/1     Running     0              30m     10.60.4.62     gke-beone-prod-gke-cluster-app-pool-71b638ad-qqrn     <none>           <none>
+kube-system                       container-watcher-lw8wq                                    1/1     Running     0              30m     10.60.7.202    gke-beone-prod-gke-cluster-app-pool-52782e23-6wg2     <none>           <none>
+kube-system                       container-watcher-ndtd9                                    1/1     Running     0              30m     10.60.7.195    gke-beone-prod-gke-cluster-app-pool-2aed3925-bxrh     <none>           <none>
+kube-system                       container-watcher-qbslk                                    1/1     Running     0              30m     10.60.7.199    gke-beone-prod-gke-clust-service-pool-f4e0d7de-hfnw   <none>           <none>
+kube-system                       container-watcher-r946n                                    1/1     Running     0              30m     10.60.7.197    gke-beone-prod-gke-cluster-app-pool-2aed3925-0xuz     <none>           <none>
+kube-system                       container-watcher-rs7rv                                    1/1     Running     0              30m     10.60.4.63     gke-beone-prod-gke-clust-service-pool-002719b6-h0s6   <none>           <none>
+kube-system                       container-watcher-t7qcr                                    1/1     Running     0              30m     10.60.7.196    gke-beone-prod-gke-clust-service-pool-a2ee2f09-cjua   <none>           <none>
+kube-system                       container-watcher-vqgrr                                    1/1     Running     0              30m     10.60.7.193    gke-beone-prod-gke-clust-service-pool-a2ee2f09-h1l8   <none>           <none>
+kube-system                       csi-secrets-store-gke-29kff                                3/3     Running     0              4d4h    10.60.132.3    gke-beone-prod-gke-cluster-app-pool-2aed3925-50o7     <none>           <none>
+kube-system                       csi-secrets-store-gke-9rh25                                3/3     Running     0              4d4h    10.60.130.2    gke-beone-prod-gke-clust-service-pool-a2ee2f09-h1l8   <none>           <none>
+kube-system                       csi-secrets-store-gke-b7nhn                                3/3     Running     0              4d4h    10.60.137.2    gke-beone-prod-gke-cluster-app-pool-2aed3925-0xuz     <none>           <none>
+kube-system                       csi-secrets-store-gke-bj7dx                                3/3     Running     0              4d4h    10.60.142.2    gke-beone-prod-gke-clust-service-pool-f4e0d7de-ied6   <none>           <none>
+kube-system                       csi-secrets-store-gke-f9r8t                                3/3     Running     0              4d4h    10.60.128.2    gke-beone-prod-gke-cluster-app-pool-71b638ad-qqrn     <none>           <none>
+kube-system                       csi-secrets-store-gke-fm5hq                                3/3     Running     0              4d4h    10.60.134.3    gke-beone-prod-gke-clust-service-pool-002719b6-id9e   <none>           <none>
+kube-system                       csi-secrets-store-gke-gm9cw                                3/3     Running     0              4d4h    10.60.138.2    gke-beone-prod-gke-cluster-app-pool-2aed3925-bxrh     <none>           <none>
+kube-system                       csi-secrets-store-gke-hlsnv                                3/3     Running     0              4d4h    10.60.133.2    gke-beone-prod-gke-cluster-app-pool-71b638ad-5i7y     <none>           <none>
+kube-system                       csi-secrets-store-gke-jnhvc                                3/3     Running     0              4d4h    10.60.144.3    gke-beone-prod-gke-cluster-app-pool-71b638ad-4xiy     <none>           <none>
+kube-system                       csi-secrets-store-gke-khvlk                                3/3     Running     0              4d4h    10.60.141.3    gke-beone-prod-gke-clust-service-pool-a2ee2f09-cjua   <none>           <none>
+kube-system                       csi-secrets-store-gke-l7t2m                                3/3     Running     0              4d4h    10.60.139.4    gke-beone-prod-gke-cluster-app-pool-52782e23-6wg2     <none>           <none>
+kube-system                       csi-secrets-store-gke-m5s6c                                3/3     Running     0              4d4h    10.60.136.4    gke-beone-prod-gke-cluster-app-pool-52782e23-yyk3     <none>           <none>
+kube-system                       csi-secrets-store-gke-q8p54                                3/3     Running     0              4d4h    10.60.143.3    gke-beone-prod-gke-clust-service-pool-f4e0d7de-hfnw   <none>           <none>
+kube-system                       csi-secrets-store-gke-rzmr2                                3/3     Running     0              4d4h    10.60.131.2    gke-beone-prod-gke-cluster-app-pool-52782e23-xnlb     <none>           <none>
+kube-system                       csi-secrets-store-gke-tbw99                                3/3     Running     0              4d4h    10.60.129.2    gke-beone-prod-gke-clust-service-pool-002719b6-h0s6   <none>           <none>
+kube-system                       csi-secrets-store-provider-gke-2tgsb                       1/1     Running     0              4d4h    10.60.136.2    gke-beone-prod-gke-cluster-app-pool-52782e23-yyk3     <none>           <none>
+kube-system                       csi-secrets-store-provider-gke-84c2f                       1/1     Running     0              4d4h    10.60.144.2    gke-beone-prod-gke-cluster-app-pool-71b638ad-4xiy     <none>           <none>
+kube-system                       csi-secrets-store-provider-gke-dkxzw                       1/1     Running     0              4d4h    10.60.138.3    gke-beone-prod-gke-cluster-app-pool-2aed3925-bxrh     <none>           <none>
+kube-system                       csi-secrets-store-provider-gke-fcl58                       1/1     Running     0              4d4h    10.60.129.3    gke-beone-prod-gke-clust-service-pool-002719b6-h0s6   <none>           <none>
+kube-system                       csi-secrets-store-provider-gke-jfq6m                       1/1     Running     0              4d4h    10.60.141.2    gke-beone-prod-gke-clust-service-pool-a2ee2f09-cjua   <none>           <none>
+kube-system                       csi-secrets-store-provider-gke-ldrjh                       1/1     Running     0              4d4h    10.60.143.5    gke-beone-prod-gke-clust-service-pool-f4e0d7de-hfnw   <none>           <none>
+kube-system                       csi-secrets-store-provider-gke-lxpbk                       1/1     Running     0              4d4h    10.60.128.3    gke-beone-prod-gke-cluster-app-pool-71b638ad-qqrn     <none>           <none>
+kube-system                       csi-secrets-store-provider-gke-mhrx8                       1/1     Running     0              4d4h    10.60.133.5    gke-beone-prod-gke-cluster-app-pool-71b638ad-5i7y     <none>           <none>
+kube-system                       csi-secrets-store-provider-gke-nhdjl                       1/1     Running     0              4d4h    10.60.137.4    gke-beone-prod-gke-cluster-app-pool-2aed3925-0xuz     <none>           <none>
+kube-system                       csi-secrets-store-provider-gke-pf8bh                       1/1     Running     0              4d4h    10.60.132.4    gke-beone-prod-gke-cluster-app-pool-2aed3925-50o7     <none>           <none>
+kube-system                       csi-secrets-store-provider-gke-pxlzx                       1/1     Running     0              4d4h    10.60.142.4    gke-beone-prod-gke-clust-service-pool-f4e0d7de-ied6   <none>           <none>
+kube-system                       csi-secrets-store-provider-gke-qkp9w                       1/1     Running     0              4d4h    10.60.134.2    gke-beone-prod-gke-clust-service-pool-002719b6-id9e   <none>           <none>
+kube-system                       csi-secrets-store-provider-gke-tb7dt                       1/1     Running     0              4d4h    10.60.139.3    gke-beone-prod-gke-cluster-app-pool-52782e23-6wg2     <none>           <none>
+kube-system                       csi-secrets-store-provider-gke-vc9zn                       1/1     Running     0              4d4h    10.60.131.4    gke-beone-prod-gke-cluster-app-pool-52782e23-xnlb     <none>           <none>
+kube-system                       csi-secrets-store-provider-gke-zskh7                       1/1     Running     0              4d4h    10.60.130.4    gke-beone-prod-gke-clust-service-pool-a2ee2f09-h1l8   <none>           <none>
+kube-system                       event-exporter-gke-6cf54f8bc4-zccrp                        2/2     Running     0              4d4h    10.60.136.7    gke-beone-prod-gke-cluster-app-pool-52782e23-yyk3     <none>           <none>
+kube-system                       filestore-lock-release-controller-6b6d65d96f-n9wzk         2/2     Running     0              4d4h    10.60.142.9    gke-beone-prod-gke-clust-service-pool-f4e0d7de-ied6   <none>           <none>
+kube-system                       filestore-node-2fqlb                                       4/4     Running     0              4d4h    10.60.7.202    gke-beone-prod-gke-cluster-app-pool-52782e23-6wg2     <none>           <none>
+kube-system                       filestore-node-4vgkk                                       4/4     Running     0              4d4h    10.60.7.199    gke-beone-prod-gke-clust-service-pool-f4e0d7de-hfnw   <none>           <none>
+kube-system                       filestore-node-7szgk                                       4/4     Running     0              4d4h    10.60.4.61     gke-beone-prod-gke-cluster-app-pool-71b638ad-4xiy     <none>           <none>
+kube-system                       filestore-node-9677n                                       4/4     Running     0              4d4h    10.60.7.201    gke-beone-prod-gke-cluster-app-pool-52782e23-yyk3     <none>           <none>
+kube-system                       filestore-node-fzl4w                                       4/4     Running     0              4d4h    10.60.4.63     gke-beone-prod-gke-clust-service-pool-002719b6-h0s6   <none>           <none>
+kube-system                       filestore-node-grlq4                                       4/4     Running     0              4d4h    10.60.4.60     gke-beone-prod-gke-clust-service-pool-002719b6-id9e   <none>           <none>
+kube-system                       filestore-node-hpqps                                       4/4     Running     0              4d4h    10.60.7.193    gke-beone-prod-gke-clust-service-pool-a2ee2f09-h1l8   <none>           <none>
+kube-system                       filestore-node-kcxjd                                       4/4     Running     0              4d4h    10.60.7.194    gke-beone-prod-gke-cluster-app-pool-2aed3925-50o7     <none>           <none>
+kube-system                       filestore-node-kj4jn                                       4/4     Running     0              4d4h    10.60.4.62     gke-beone-prod-gke-cluster-app-pool-71b638ad-qqrn     <none>           <none>
+kube-system                       filestore-node-l2zbh                                       4/4     Running     0              4d4h    10.60.7.196    gke-beone-prod-gke-clust-service-pool-a2ee2f09-cjua   <none>           <none>
+kube-system                       filestore-node-pn7q8                                       4/4     Running     0              4d4h    10.60.7.200    gke-beone-prod-gke-cluster-app-pool-52782e23-xnlb     <none>           <none>
+kube-system                       filestore-node-rwkc2                                       4/4     Running     0              4d4h    10.60.7.197    gke-beone-prod-gke-cluster-app-pool-2aed3925-0xuz     <none>           <none>
+kube-system                       filestore-node-vmsrp                                       4/4     Running     0              4d4h    10.60.7.195    gke-beone-prod-gke-cluster-app-pool-2aed3925-bxrh     <none>           <none>
+kube-system                       filestore-node-w6blm                                       4/4     Running     0              4d4h    10.60.7.192    gke-beone-prod-gke-cluster-app-pool-71b638ad-5i7y     <none>           <none>
+kube-system                       filestore-node-z2d7n                                       4/4     Running     0              4d4h    10.60.7.198    gke-beone-prod-gke-clust-service-pool-f4e0d7de-ied6   <none>           <none>
+kube-system                       fluentbit-gke-4dkmr                                        3/3     Running     0              4d4h    10.60.7.200    gke-beone-prod-gke-cluster-app-pool-52782e23-xnlb     <none>           <none>
+kube-system                       fluentbit-gke-55wts                                        3/3     Running     0              4d4h    10.60.7.201    gke-beone-prod-gke-cluster-app-pool-52782e23-yyk3     <none>           <none>
+kube-system                       fluentbit-gke-6swk5                                        3/3     Running     0              4d4h    10.60.7.192    gke-beone-prod-gke-cluster-app-pool-71b638ad-5i7y     <none>           <none>
+kube-system                       fluentbit-gke-827gh                                        3/3     Running     0              4d4h    10.60.4.62     gke-beone-prod-gke-cluster-app-pool-71b638ad-qqrn     <none>           <none>
+kube-system                       fluentbit-gke-c6fh5                                        3/3     Running     0              4d4h    10.60.7.197    gke-beone-prod-gke-cluster-app-pool-2aed3925-0xuz     <none>           <none>
+kube-system                       fluentbit-gke-cjn7h                                        3/3     Running     0              4d4h    10.60.7.199    gke-beone-prod-gke-clust-service-pool-f4e0d7de-hfnw   <none>           <none>
+kube-system                       fluentbit-gke-fjkph                                        3/3     Running     0              4d4h    10.60.4.61     gke-beone-prod-gke-cluster-app-pool-71b638ad-4xiy     <none>           <none>
+kube-system                       fluentbit-gke-h2bws                                        3/3     Running     0              4d4h    10.60.4.60     gke-beone-prod-gke-clust-service-pool-002719b6-id9e   <none>           <none>
+kube-system                       fluentbit-gke-m22z7                                        3/3     Running     0              4d4h    10.60.7.193    gke-beone-prod-gke-clust-service-pool-a2ee2f09-h1l8   <none>           <none>
+kube-system                       fluentbit-gke-m9lzw                                        3/3     Running     0              4d4h    10.60.7.198    gke-beone-prod-gke-clust-service-pool-f4e0d7de-ied6   <none>           <none>
+kube-system                       fluentbit-gke-p2zbk                                        3/3     Running     0              4d4h    10.60.7.195    gke-beone-prod-gke-cluster-app-pool-2aed3925-bxrh     <none>           <none>
+kube-system                       fluentbit-gke-psrvm                                        3/3     Running     0              4d4h    10.60.7.196    gke-beone-prod-gke-clust-service-pool-a2ee2f09-cjua   <none>           <none>
+kube-system                       fluentbit-gke-t4fhd                                        3/3     Running     0              4d4h    10.60.4.63     gke-beone-prod-gke-clust-service-pool-002719b6-h0s6   <none>           <none>
+kube-system                       fluentbit-gke-tk5pl                                        3/3     Running     0              4d4h    10.60.7.202    gke-beone-prod-gke-cluster-app-pool-52782e23-6wg2     <none>           <none>
+kube-system                       fluentbit-gke-x4zjq                                        3/3     Running     0              4d4h    10.60.7.194    gke-beone-prod-gke-cluster-app-pool-2aed3925-50o7     <none>           <none>
+kube-system                       gcsfusecsi-node-4tmft                                      3/3     Running     0              4d4h    10.60.142.7    gke-beone-prod-gke-clust-service-pool-f4e0d7de-ied6   <none>           <none>
+kube-system                       gcsfusecsi-node-4z7p8                                      3/3     Running     0              4d4h    10.60.134.5    gke-beone-prod-gke-clust-service-pool-002719b6-id9e   <none>           <none>
+kube-system                       gcsfusecsi-node-7grgw                                      3/3     Running     0              4d4h    10.60.129.6    gke-beone-prod-gke-clust-service-pool-002719b6-h0s6   <none>           <none>
+kube-system                       gcsfusecsi-node-7nn8t                                      3/3     Running     0              4d4h    10.60.128.5    gke-beone-prod-gke-cluster-app-pool-71b638ad-qqrn     <none>           <none>
+kube-system                       gcsfusecsi-node-9fl2r                                      3/3     Running     0              4d4h    10.60.130.6    gke-beone-prod-gke-clust-service-pool-a2ee2f09-h1l8   <none>           <none>
+kube-system                       gcsfusecsi-node-9xlbk                                      3/3     Running     0              4d4h    10.60.139.5    gke-beone-prod-gke-cluster-app-pool-52782e23-6wg2     <none>           <none>
+kube-system                       gcsfusecsi-node-fnldn                                      3/3     Running     0              4d4h    10.60.143.2    gke-beone-prod-gke-clust-service-pool-f4e0d7de-hfnw   <none>           <none>
+kube-system                       gcsfusecsi-node-h6h27                                      3/3     Running     0              4d4h    10.60.136.5    gke-beone-prod-gke-cluster-app-pool-52782e23-yyk3     <none>           <none>
+kube-system                       gcsfusecsi-node-h9h7m                                      3/3     Running     0              4d4h    10.60.144.6    gke-beone-prod-gke-cluster-app-pool-71b638ad-4xiy     <none>           <none>
+kube-system                       gcsfusecsi-node-hvhsl                                      3/3     Running     0              4d4h    10.60.141.5    gke-beone-prod-gke-clust-service-pool-a2ee2f09-cjua   <none>           <none>
+kube-system                       gcsfusecsi-node-mbwd7                                      3/3     Running     0              4d4h    10.60.137.6    gke-beone-prod-gke-cluster-app-pool-2aed3925-0xuz     <none>           <none>
+kube-system                       gcsfusecsi-node-mfhhz                                      3/3     Running     0              4d4h    10.60.132.7    gke-beone-prod-gke-cluster-app-pool-2aed3925-50o7     <none>           <none>
+kube-system                       gcsfusecsi-node-qblvs                                      3/3     Running     0              4d4h    10.60.131.8    gke-beone-prod-gke-cluster-app-pool-52782e23-xnlb     <none>           <none>
+kube-system                       gcsfusecsi-node-qlrw7                                      3/3     Running     0              4d4h    10.60.138.6    gke-beone-prod-gke-cluster-app-pool-2aed3925-bxrh     <none>           <none>
+kube-system                       gcsfusecsi-node-sfqdf                                      3/3     Running     0              4d4h    10.60.133.6    gke-beone-prod-gke-cluster-app-pool-71b638ad-5i7y     <none>           <none>
+kube-system                       gke-metadata-server-24b45                                  1/1     Running     0              4d4h    10.60.7.202    gke-beone-prod-gke-cluster-app-pool-52782e23-6wg2     <none>           <none>
+kube-system                       gke-metadata-server-4nxb6                                  1/1     Running     0              4d4h    10.60.4.63     gke-beone-prod-gke-clust-service-pool-002719b6-h0s6   <none>           <none>
+kube-system                       gke-metadata-server-8zrfr                                  1/1     Running     0              4d4h    10.60.7.199    gke-beone-prod-gke-clust-service-pool-f4e0d7de-hfnw   <none>           <none>
+kube-system                       gke-metadata-server-d5kgn                                  1/1     Running     0              4d4h    10.60.7.194    gke-beone-prod-gke-cluster-app-pool-2aed3925-50o7     <none>           <none>
+kube-system                       gke-metadata-server-dlg8w                                  1/1     Running     0              4d4h    10.60.4.60     gke-beone-prod-gke-clust-service-pool-002719b6-id9e   <none>           <none>
+kube-system                       gke-metadata-server-fw7dm                                  1/1     Running     0              4d4h    10.60.7.201    gke-beone-prod-gke-cluster-app-pool-52782e23-yyk3     <none>           <none>
+kube-system                       gke-metadata-server-g7lbk                                  1/1     Running     0              4d4h    10.60.7.196    gke-beone-prod-gke-clust-service-pool-a2ee2f09-cjua   <none>           <none>
+kube-system                       gke-metadata-server-nx74w                                  1/1     Running     0              4d4h    10.60.7.197    gke-beone-prod-gke-cluster-app-pool-2aed3925-0xuz     <none>           <none>
+kube-system                       gke-metadata-server-q2m22                                  1/1     Running     0              4d4h    10.60.7.195    gke-beone-prod-gke-cluster-app-pool-2aed3925-bxrh     <none>           <none>
+kube-system                       gke-metadata-server-s7rhs                                  1/1     Running     0              4d4h    10.60.4.61     gke-beone-prod-gke-cluster-app-pool-71b638ad-4xiy     <none>           <none>
+kube-system                       gke-metadata-server-vj6lp                                  1/1     Running     0              4d4h    10.60.7.198    gke-beone-prod-gke-clust-service-pool-f4e0d7de-ied6   <none>           <none>
+kube-system                       gke-metadata-server-vl9rd                                  1/1     Running     0              4d4h    10.60.4.62     gke-beone-prod-gke-cluster-app-pool-71b638ad-qqrn     <none>           <none>
+kube-system                       gke-metadata-server-wsvv5                                  1/1     Running     0              4d4h    10.60.7.192    gke-beone-prod-gke-cluster-app-pool-71b638ad-5i7y     <none>           <none>
+kube-system                       gke-metadata-server-xsdmb                                  1/1     Running     0              4d4h    10.60.7.200    gke-beone-prod-gke-cluster-app-pool-52782e23-xnlb     <none>           <none>
+kube-system                       gke-metadata-server-zqtzx                                  1/1     Running     0              4d4h    10.60.7.193    gke-beone-prod-gke-clust-service-pool-a2ee2f09-h1l8   <none>           <none>
+kube-system                       gke-metrics-agent-2452n                                    2/2     Running     0              4d4h    10.60.7.197    gke-beone-prod-gke-cluster-app-pool-2aed3925-0xuz     <none>           <none>
+kube-system                       gke-metrics-agent-2jvkh                                    2/2     Running     0              4d4h    10.60.4.60     gke-beone-prod-gke-clust-service-pool-002719b6-id9e   <none>           <none>
+kube-system                       gke-metrics-agent-8rbg7                                    2/2     Running     0              4d4h    10.60.7.196    gke-beone-prod-gke-clust-service-pool-a2ee2f09-cjua   <none>           <none>
+kube-system                       gke-metrics-agent-9hk6m                                    2/2     Running     0              4d4h    10.60.7.199    gke-beone-prod-gke-clust-service-pool-f4e0d7de-hfnw   <none>           <none>
+kube-system                       gke-metrics-agent-9htpz                                    2/2     Running     0              4d4h    10.60.7.192    gke-beone-prod-gke-cluster-app-pool-71b638ad-5i7y     <none>           <none>
+kube-system                       gke-metrics-agent-gs95x                                    2/2     Running     0              4d4h    10.60.7.193    gke-beone-prod-gke-clust-service-pool-a2ee2f09-h1l8   <none>           <none>
+kube-system                       gke-metrics-agent-ndrz8                                    2/2     Running     0              4d4h    10.60.4.62     gke-beone-prod-gke-cluster-app-pool-71b638ad-qqrn     <none>           <none>
+kube-system                       gke-metrics-agent-ntr4z                                    2/2     Running     0              4d4h    10.60.4.63     gke-beone-prod-gke-clust-service-pool-002719b6-h0s6   <none>           <none>
+kube-system                       gke-metrics-agent-p8h2c                                    2/2     Running     0              4d4h    10.60.7.198    gke-beone-prod-gke-clust-service-pool-f4e0d7de-ied6   <none>           <none>
+kube-system                       gke-metrics-agent-pbtt5                                    2/2     Running     0              4d4h    10.60.7.195    gke-beone-prod-gke-cluster-app-pool-2aed3925-bxrh     <none>           <none>
+kube-system                       gke-metrics-agent-pm589                                    2/2     Running     0              4d4h    10.60.7.194    gke-beone-prod-gke-cluster-app-pool-2aed3925-50o7     <none>           <none>
+kube-system                       gke-metrics-agent-q5hs5                                    2/2     Running     0              4d4h    10.60.4.61     gke-beone-prod-gke-cluster-app-pool-71b638ad-4xiy     <none>           <none>
+kube-system                       gke-metrics-agent-w4wjs                                    2/2     Running     0              4d4h    10.60.7.201    gke-beone-prod-gke-cluster-app-pool-52782e23-yyk3     <none>           <none>
+kube-system                       gke-metrics-agent-xmr8n                                    2/2     Running     0              4d4h    10.60.7.200    gke-beone-prod-gke-cluster-app-pool-52782e23-xnlb     <none>           <none>
+kube-system                       gke-metrics-agent-zdn47                                    2/2     Running     0              4d4h    10.60.7.202    gke-beone-prod-gke-cluster-app-pool-52782e23-6wg2     <none>           <none>
+kube-system                       image-package-extractor-4z8bv                              1/1     Running     0              4d4h    10.60.131.3    gke-beone-prod-gke-cluster-app-pool-52782e23-xnlb     <none>           <none>
+kube-system                       image-package-extractor-5j8xm                              1/1     Running     0              4d4h    10.60.138.4    gke-beone-prod-gke-cluster-app-pool-2aed3925-bxrh     <none>           <none>
+kube-system                       image-package-extractor-7fz94                              1/1     Running     0              4d4h    10.60.139.2    gke-beone-prod-gke-cluster-app-pool-52782e23-6wg2     <none>           <none>
+kube-system                       image-package-extractor-cleanup-29181600-whv9k             0/1     Completed   0              14h     10.60.128.7    gke-beone-prod-gke-cluster-app-pool-71b638ad-qqrn     <none>           <none>
+kube-system                       image-package-extractor-dzv59                              1/1     Running     0              4d4h    10.60.136.3    gke-beone-prod-gke-cluster-app-pool-52782e23-yyk3     <none>           <none>
+kube-system                       image-package-extractor-fg8q8                              1/1     Running     0              4d4h    10.60.137.3    gke-beone-prod-gke-cluster-app-pool-2aed3925-0xuz     <none>           <none>
+kube-system                       image-package-extractor-hjq7d                              1/1     Running     0              4d4h    10.60.144.4    gke-beone-prod-gke-cluster-app-pool-71b638ad-4xiy     <none>           <none>
+kube-system                       image-package-extractor-hzxkn                              1/1     Running     0              4d4h    10.60.130.3    gke-beone-prod-gke-clust-service-pool-a2ee2f09-h1l8   <none>           <none>
+kube-system                       image-package-extractor-ljh97                              1/1     Running     0              4d4h    10.60.132.2    gke-beone-prod-gke-cluster-app-pool-2aed3925-50o7     <none>           <none>
+kube-system                       image-package-extractor-nb97r                              1/1     Running     0              4d4h    10.60.134.4    gke-beone-prod-gke-clust-service-pool-002719b6-id9e   <none>           <none>
+kube-system                       image-package-extractor-p6bv9                              1/1     Running     0              4d4h    10.60.142.3    gke-beone-prod-gke-clust-service-pool-f4e0d7de-ied6   <none>           <none>
+kube-system                       image-package-extractor-q5jl9                              1/1     Running     0              4d4h    10.60.133.3    gke-beone-prod-gke-cluster-app-pool-71b638ad-5i7y     <none>           <none>
+kube-system                       image-package-extractor-qk6x7                              1/1     Running     0              4d4h    10.60.143.4    gke-beone-prod-gke-clust-service-pool-f4e0d7de-hfnw   <none>           <none>
+kube-system                       image-package-extractor-qkmw6                              1/1     Running     0              4d4h    10.60.128.4    gke-beone-prod-gke-cluster-app-pool-71b638ad-qqrn     <none>           <none>
+kube-system                       image-package-extractor-rjlz8                              1/1     Running     0              4d4h    10.60.141.4    gke-beone-prod-gke-clust-service-pool-a2ee2f09-cjua   <none>           <none>
+kube-system                       image-package-extractor-tw2wg                              1/1     Running     0              4d4h    10.60.129.5    gke-beone-prod-gke-clust-service-pool-002719b6-h0s6   <none>           <none>
+kube-system                       konnectivity-agent-7cf975b69f-86b2z                        2/2     Running     0              4d4h    10.60.143.8    gke-beone-prod-gke-clust-service-pool-f4e0d7de-hfnw   <none>           <none>
+kube-system                       konnectivity-agent-7cf975b69f-97tdr                        2/2     Running     0              4d4h    10.60.137.5    gke-beone-prod-gke-cluster-app-pool-2aed3925-0xuz     <none>           <none>
+kube-system                       konnectivity-agent-7cf975b69f-cz8gm                        2/2     Running     0              4d4h    10.60.134.9    gke-beone-prod-gke-clust-service-pool-002719b6-id9e   <none>           <none>
+kube-system                       konnectivity-agent-7cf975b69f-hqr54                        2/2     Running     0              4d4h    10.60.144.8    gke-beone-prod-gke-cluster-app-pool-71b638ad-4xiy     <none>           <none>
+kube-system                       konnectivity-agent-7cf975b69f-mr4xz                        2/2     Running     0              4d4h    10.60.133.7    gke-beone-prod-gke-cluster-app-pool-71b638ad-5i7y     <none>           <none>
+kube-system                       konnectivity-agent-7cf975b69f-rdr8s                        2/2     Running     0              4d4h    10.60.139.8    gke-beone-prod-gke-cluster-app-pool-52782e23-6wg2     <none>           <none>
+kube-system                       konnectivity-agent-7cf975b69f-tklnt                        2/2     Running     0              4d4h    10.60.142.8    gke-beone-prod-gke-clust-service-pool-f4e0d7de-ied6   <none>           <none>
+kube-system                       konnectivity-agent-7cf975b69f-wwpwh                        2/2     Running     0              4d4h    10.60.132.8    gke-beone-prod-gke-cluster-app-pool-2aed3925-50o7     <none>           <none>
+kube-system                       konnectivity-agent-autoscaler-75bfffc69c-ghm8s             1/1     Running     0              4d4h    10.60.134.6    gke-beone-prod-gke-clust-service-pool-002719b6-id9e   <none>           <none>
+kube-system                       kube-dns-575b4c4cf5-4wtv2                                  4/4     Running     0              4d4h    10.60.133.8    gke-beone-prod-gke-cluster-app-pool-71b638ad-5i7y     <none>           <none>
+kube-system                       kube-dns-575b4c4cf5-jrvvd                                  4/4     Running     0              4d4h    10.60.137.8    gke-beone-prod-gke-cluster-app-pool-2aed3925-0xuz     <none>           <none>
+kube-system                       kube-dns-autoscaler-5b96446b4b-nq42g                       1/1     Running     0              4d4h    10.60.144.7    gke-beone-prod-gke-cluster-app-pool-71b638ad-4xiy     <none>           <none>
+kube-system                       l7-default-backend-67fb65b89c-r5j6d                        1/1     Running     0              4d4h    10.60.132.6    gke-beone-prod-gke-cluster-app-pool-2aed3925-50o7     <none>           <none>
+kube-system                       metrics-server-v1.32.0-79b44cb6cb-hl4qx                    1/1     Running     0              3d4h    10.60.139.11   gke-beone-prod-gke-cluster-app-pool-52782e23-6wg2     <none>           <none>
+kube-system                       netd-4cbn7                                                 3/3     Running     0              4d4h    10.60.7.196    gke-beone-prod-gke-clust-service-pool-a2ee2f09-cjua   <none>           <none>
+kube-system                       netd-652xb                                                 3/3     Running     0              4d4h    10.60.7.198    gke-beone-prod-gke-clust-service-pool-f4e0d7de-ied6   <none>           <none>
+kube-system                       netd-6b66j                                                 3/3     Running     0              4d4h    10.60.4.60     gke-beone-prod-gke-clust-service-pool-002719b6-id9e   <none>           <none>
+kube-system                       netd-9jpn8                                                 3/3     Running     0              4d4h    10.60.7.192    gke-beone-prod-gke-cluster-app-pool-71b638ad-5i7y     <none>           <none>
+kube-system                       netd-d4sl4                                                 3/3     Running     0              4d4h    10.60.4.61     gke-beone-prod-gke-cluster-app-pool-71b638ad-4xiy     <none>           <none>
+kube-system                       netd-gvbnl                                                 3/3     Running     0              4d4h    10.60.4.63     gke-beone-prod-gke-clust-service-pool-002719b6-h0s6   <none>           <none>
+kube-system                       netd-h4x94                                                 3/3     Running     0              4d4h    10.60.7.199    gke-beone-prod-gke-clust-service-pool-f4e0d7de-hfnw   <none>           <none>
+kube-system                       netd-l2t29                                                 3/3     Running     0              4d4h    10.60.7.197    gke-beone-prod-gke-cluster-app-pool-2aed3925-0xuz     <none>           <none>
+kube-system                       netd-mx6b9                                                 3/3     Running     0              4d4h    10.60.4.62     gke-beone-prod-gke-cluster-app-pool-71b638ad-qqrn     <none>           <none>
+kube-system                       netd-qlfjf                                                 3/3     Running     0              4d4h    10.60.7.201    gke-beone-prod-gke-cluster-app-pool-52782e23-yyk3     <none>           <none>
+kube-system                       netd-s7hgj                                                 3/3     Running     0              4d4h    10.60.7.200    gke-beone-prod-gke-cluster-app-pool-52782e23-xnlb     <none>           <none>
+kube-system                       netd-t8wmg                                                 3/3     Running     0              4d4h    10.60.7.194    gke-beone-prod-gke-cluster-app-pool-2aed3925-50o7     <none>           <none>
+kube-system                       netd-xg996                                                 3/3     Running     0              4d4h    10.60.7.193    gke-beone-prod-gke-clust-service-pool-a2ee2f09-h1l8   <none>           <none>
+kube-system                       netd-xrx82                                                 3/3     Running     0              4d4h    10.60.7.202    gke-beone-prod-gke-cluster-app-pool-52782e23-6wg2     <none>           <none>
+kube-system                       netd-zst69                                                 3/3     Running     0              4d4h    10.60.7.195    gke-beone-prod-gke-cluster-app-pool-2aed3925-bxrh     <none>           <none>
+kube-system                       node-local-dns-4qs2k                                       2/2     Running     0              4d4h    10.60.4.61     gke-beone-prod-gke-cluster-app-pool-71b638ad-4xiy     <none>           <none>
+kube-system                       node-local-dns-68n8h                                       2/2     Running     0              4d4h    10.60.7.197    gke-beone-prod-gke-cluster-app-pool-2aed3925-0xuz     <none>           <none>
+kube-system                       node-local-dns-6pzwl                                       2/2     Running     0              4d4h    10.60.4.60     gke-beone-prod-gke-clust-service-pool-002719b6-id9e   <none>           <none>
+kube-system                       node-local-dns-85wsx                                       2/2     Running     0              4d4h    10.60.7.193    gke-beone-prod-gke-clust-service-pool-a2ee2f09-h1l8   <none>           <none>
+kube-system                       node-local-dns-8kxzz                                       2/2     Running     0              4d4h    10.60.7.202    gke-beone-prod-gke-cluster-app-pool-52782e23-6wg2     <none>           <none>
+kube-system                       node-local-dns-8qjdp                                       2/2     Running     0              4d4h    10.60.7.196    gke-beone-prod-gke-clust-service-pool-a2ee2f09-cjua   <none>           <none>
+kube-system                       node-local-dns-d27gk                                       2/2     Running     0              4d4h    10.60.7.192    gke-beone-prod-gke-cluster-app-pool-71b638ad-5i7y     <none>           <none>
+kube-system                       node-local-dns-dznzr                                       2/2     Running     0              4d4h    10.60.7.200    gke-beone-prod-gke-cluster-app-pool-52782e23-xnlb     <none>           <none>
+kube-system                       node-local-dns-fdf7p                                       2/2     Running     0              4d4h    10.60.7.201    gke-beone-prod-gke-cluster-app-pool-52782e23-yyk3     <none>           <none>
+kube-system                       node-local-dns-h4s5j                                       2/2     Running     0              4d4h    10.60.7.199    gke-beone-prod-gke-clust-service-pool-f4e0d7de-hfnw   <none>           <none>
+kube-system                       node-local-dns-k6jsm                                       2/2     Running     0              4d4h    10.60.7.194    gke-beone-prod-gke-cluster-app-pool-2aed3925-50o7     <none>           <none>
+kube-system                       node-local-dns-pv5lm                                       2/2     Running     0              4d4h    10.60.4.62     gke-beone-prod-gke-cluster-app-pool-71b638ad-qqrn     <none>           <none>
+kube-system                       node-local-dns-qlltd                                       2/2     Running     0              4d4h    10.60.4.63     gke-beone-prod-gke-clust-service-pool-002719b6-h0s6   <none>           <none>
+kube-system                       node-local-dns-spf5j                                       2/2     Running     0              4d4h    10.60.7.198    gke-beone-prod-gke-clust-service-pool-f4e0d7de-ied6   <none>           <none>
+kube-system                       node-local-dns-ts7vz                                       2/2     Running     0              4d4h    10.60.7.195    gke-beone-prod-gke-cluster-app-pool-2aed3925-bxrh     <none>           <none>
+kube-system                       pdcsi-node-4rnvp                                           2/2     Running     0              4d4h    10.60.4.60     gke-beone-prod-gke-clust-service-pool-002719b6-id9e   <none>           <none>
+kube-system                       pdcsi-node-4x4k6                                           2/2     Running     0              4d4h    10.60.7.200    gke-beone-prod-gke-cluster-app-pool-52782e23-xnlb     <none>           <none>
+kube-system                       pdcsi-node-88s8n                                           2/2     Running     0              4d4h    10.60.7.193    gke-beone-prod-gke-clust-service-pool-a2ee2f09-h1l8   <none>           <none>
+kube-system                       pdcsi-node-b6878                                           2/2     Running     0              4d4h    10.60.7.198    gke-beone-prod-gke-clust-service-pool-f4e0d7de-ied6   <none>           <none>
+kube-system                       pdcsi-node-lgpxg                                           2/2     Running     0              4d4h    10.60.7.202    gke-beone-prod-gke-cluster-app-pool-52782e23-6wg2     <none>           <none>
+kube-system                       pdcsi-node-lq4gg                                           2/2     Running     0              4d4h    10.60.7.197    gke-beone-prod-gke-cluster-app-pool-2aed3925-0xuz     <none>           <none>
+kube-system                       pdcsi-node-qchbk                                           2/2     Running     0              4d4h    10.60.7.195    gke-beone-prod-gke-cluster-app-pool-2aed3925-bxrh     <none>           <none>
+kube-system                       pdcsi-node-qhfsd                                           2/2     Running     0              4d4h    10.60.7.199    gke-beone-prod-gke-clust-service-pool-f4e0d7de-hfnw   <none>           <none>
+kube-system                       pdcsi-node-rqr85                                           2/2     Running     0              4d4h    10.60.7.192    gke-beone-prod-gke-cluster-app-pool-71b638ad-5i7y     <none>           <none>
+kube-system                       pdcsi-node-tcb2p                                           2/2     Running     0              4d4h    10.60.4.62     gke-beone-prod-gke-cluster-app-pool-71b638ad-qqrn     <none>           <none>
+kube-system                       pdcsi-node-thpcd                                           2/2     Running     0              4d4h    10.60.4.63     gke-beone-prod-gke-clust-service-pool-002719b6-h0s6   <none>           <none>
+kube-system                       pdcsi-node-vr62j                                           2/2     Running     0              4d4h    10.60.7.201    gke-beone-prod-gke-cluster-app-pool-52782e23-yyk3     <none>           <none>
+kube-system                       pdcsi-node-vv7rc                                           2/2     Running     0              4d4h    10.60.4.61     gke-beone-prod-gke-cluster-app-pool-71b638ad-4xiy     <none>           <none>
+kube-system                       pdcsi-node-xp5pk                                           2/2     Running     0              4d4h    10.60.7.194    gke-beone-prod-gke-cluster-app-pool-2aed3925-50o7     <none>           <none>
+kube-system                       pdcsi-node-xtnxz                                           2/2     Running     0              4d4h    10.60.7.196    gke-beone-prod-gke-clust-service-pool-a2ee2f09-cjua   <none>           <none>
+load-testing                      ab-load-test-runner-84dd55c5dc-mqj4t                       1/1     Running     0              10m     10.60.128.8    gke-beone-prod-gke-cluster-app-pool-71b638ad-qqrn     <none>           <none>
+load-testing                      ab-test                                                    0/1     Completed   0              2m23s   10.60.134.17   gke-beone-prod-gke-clust-service-pool-002719b6-id9e   <none>           <none>
+load-testing                      curl-test                                                  0/1     Completed   0              2m20s   10.60.136.9    gke-beone-prod-gke-cluster-app-pool-52782e23-yyk3     <none>           <none>
+monitoring                        prometheus-test                                            1/1     Running     20 (41m ago)   20h     10.60.143.13   gke-beone-prod-gke-clust-service-pool-f4e0d7de-hfnw   <none>           <none>
+
+=== HPA Status ===
+NAMESPACE         NAME                 REFERENCE                         TARGETS                                     MINPODS   MAXPODS   REPLICAS   AGE
+cnrm-system       cnrm-webhook         Deployment/cnrm-webhook-manager   memory: 40%/70%, cpu: 0%/70%                2         20        2          4d19h
+gke-managed-cim   kube-state-metrics   StatefulSet/kube-state-metrics    memory: 66834432/400Mi                      1         10        1          4d19h
+production        api-hpa              Deployment/beone-api              cpu: <unknown>/75%                          5         15        0          16m
+production        app-hpa              Deployment/beone-app              cpu: <unknown>/70%, memory: <unknown>/80%   3         10        0          16m
+
+=== Resource Quotas ===
+NAMESPACE            NAME                AGE     REQUEST                                                   LIMIT
+default              default-quota       16m     pods: 0/20, requests.cpu: 0/8, requests.memory: 0/16Gi    limits.cpu: 0/16, limits.memory: 0/32Gi
+gke-managed-cim      gcp-critical-pods   4d19h   pods: 1/1G
+gke-managed-system   gcp-critical-pods   4d19h   pods: 0/1G
+kube-system          gcp-critical-pods   4d19h   pods: 181/1G
+monitoring           monitoring-quota    16m     pods: 1/10, requests.cpu: 0/4, requests.memory: 0/8Gi     limits.cpu: 0/8, limits.memory: 0/16Gi
+production           production-quota    16m     pods: 0/40, requests.cpu: 0/16, requests.memory: 0/32Gi   limits.cpu: 0/32, limits.memory: 0/64Gi
+[INFO] Testing burst capacity...
+deployment.apps/burst-test created
+[INFO] Scaling up to test burst capacity...
+deployment.apps/burst-test scaled
+=== Burst Test Results ===
+No resources found in production namespace.
+NAME      REFERENCE              TARGETS                                     MINPODS   MAXPODS   REPLICAS   AGE
+api-hpa   Deployment/beone-api   cpu: <unknown>/75%                          5         15        0          17m
+app-hpa   Deployment/beone-app   cpu: <unknown>/70%, memory: <unknown>/80%   3         10        0          17m
+deployment.apps "burst-test" deleted
+[INFO] Testing autoscaling behavior...
+deployment.apps/cpu-test created
+horizontalpodautoscaler.autoscaling/cpu-test-hpa created
+[INFO] Monitoring autoscaling for 2 minutes...
+=== Check 1 ===
+NAME           REFERENCE             TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
+cpu-test-hpa   Deployment/cpu-test   cpu: <unknown>/70%   3         10        0          0s
+NAME                        READY   STATUS              RESTARTS   AGE
+cpu-test-55cc645c85-chvn5   0/1     ContainerCreating   0          0s
+cpu-test-55cc645c85-dwmwv   0/1     ContainerCreating   0          0s
+cpu-test-55cc645c85-rv6zj   0/1     ContainerCreating   0          0s
+=== Check 2 ===
+NAME           REFERENCE             TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
+cpu-test-hpa   Deployment/cpu-test   cpu: <unknown>/70%   3         10        0          11s
+NAME                        READY   STATUS    RESTARTS   AGE
+cpu-test-55cc645c85-chvn5   1/1     Running   0          11s
+cpu-test-55cc645c85-dwmwv   1/1     Running   0          11s
+cpu-test-55cc645c85-rv6zj   1/1     Running   0          11s
+=== Check 3 ===
+NAME           REFERENCE             TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
+cpu-test-hpa   Deployment/cpu-test   cpu: <unknown>/70%   3         10        0          21s
+NAME                        READY   STATUS    RESTARTS   AGE
+cpu-test-55cc645c85-chvn5   1/1     Running   0          21s
+cpu-test-55cc645c85-dwmwv   1/1     Running   0          21s
+cpu-test-55cc645c85-rv6zj   1/1     Running   0          21s
+=== Check 4 ===
+NAME           REFERENCE             TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
+cpu-test-hpa   Deployment/cpu-test   cpu: <unknown>/70%   3         10        0          31s
+NAME                        READY   STATUS    RESTARTS   AGE
+cpu-test-55cc645c85-chvn5   1/1     Running   0          32s
+cpu-test-55cc645c85-dwmwv   1/1     Running   0          32s
+cpu-test-55cc645c85-rv6zj   1/1     Running   0          32s
+=== Check 5 ===
+NAME           REFERENCE             TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
+cpu-test-hpa   Deployment/cpu-test   cpu: <unknown>/70%   3         10        0          42s
+NAME                        READY   STATUS    RESTARTS   AGE
+cpu-test-55cc645c85-chvn5   1/1     Running   0          42s
+cpu-test-55cc645c85-dwmwv   1/1     Running   0          42s
+cpu-test-55cc645c85-rv6zj   1/1     Running   0          42s
+=== Check 6 ===
+NAME           REFERENCE             TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
+cpu-test-hpa   Deployment/cpu-test   cpu: <unknown>/70%   3         10        0          52s
+NAME                        READY   STATUS    RESTARTS   AGE
+cpu-test-55cc645c85-chvn5   1/1     Running   0          52s
+cpu-test-55cc645c85-dwmwv   1/1     Running   0          52s
+cpu-test-55cc645c85-rv6zj   1/1     Running   0          52s
+=== Check 7 ===
+NAME           REFERENCE             TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
+cpu-test-hpa   Deployment/cpu-test   cpu: <unknown>/70%   3         10        0          63s
+NAME                        READY   STATUS    RESTARTS   AGE
+cpu-test-55cc645c85-chvn5   1/1     Running   0          63s
+cpu-test-55cc645c85-dwmwv   1/1     Running   0          63s
+cpu-test-55cc645c85-rv6zj   1/1     Running   0          63s
+=== Check 8 ===
+NAME           REFERENCE             TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
+cpu-test-hpa   Deployment/cpu-test   cpu: <unknown>/70%   3         10        0          73s
+NAME                        READY   STATUS    RESTARTS   AGE
+cpu-test-55cc645c85-chvn5   1/1     Running   0          73s
+cpu-test-55cc645c85-dwmwv   1/1     Running   0          73s
+cpu-test-55cc645c85-rv6zj   1/1     Running   0          73s
+=== Check 9 ===
+NAME           REFERENCE             TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
+cpu-test-hpa   Deployment/cpu-test   cpu: <unknown>/70%   3         10        0          84s
+NAME                        READY   STATUS    RESTARTS   AGE
+cpu-test-55cc645c85-chvn5   1/1     Running   0          84s
+cpu-test-55cc645c85-dwmwv   1/1     Running   0          84s
+cpu-test-55cc645c85-rv6zj   1/1     Running   0          84s
+=== Check 10 ===
+NAME           REFERENCE             TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
+cpu-test-hpa   Deployment/cpu-test   cpu: <unknown>/70%   3         10        0          94s
+NAME                        READY   STATUS    RESTARTS   AGE
+cpu-test-55cc645c85-chvn5   1/1     Running   0          94s
+cpu-test-55cc645c85-dwmwv   1/1     Running   0          94s
+cpu-test-55cc645c85-rv6zj   1/1     Running   0          94s
+=== Check 11 ===
+NAME           REFERENCE             TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
+cpu-test-hpa   Deployment/cpu-test   cpu: <unknown>/70%   3         10        0          104s
+NAME                        READY   STATUS    RESTARTS   AGE
+cpu-test-55cc645c85-chvn5   1/1     Running   0          105s
+cpu-test-55cc645c85-dwmwv   1/1     Running   0          105s
+cpu-test-55cc645c85-rv6zj   1/1     Running   0          105s
+=== Check 12 ===
+NAME           REFERENCE             TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
+cpu-test-hpa   Deployment/cpu-test   cpu: <unknown>/70%   3         10        0          115s
+NAME                        READY   STATUS    RESTARTS   AGE
+cpu-test-55cc645c85-chvn5   1/1     Running   0          115s
+cpu-test-55cc645c85-dwmwv   1/1     Running   0          115s
+cpu-test-55cc645c85-rv6zj   1/1     Running   0          115s
+deployment.apps "cpu-test" deleted
+horizontalpodautoscaler.autoscaling "cpu-test-hpa" deleted
+[INFO] Testing resource quotas and limits...
+=== Current Resource Quotas ===
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: ResourceQuota
+  metadata:
+    creationTimestamp: "2025-06-26T14:36:14Z"
+    name: default-quota
+    namespace: default
+    resourceVersion: "1750948574405551009"
+    uid: dd53bab0-311d-4eb6-b466-774d6ec5ac62
+  spec:
+    hard:
+      limits.cpu: "16"
+      limits.memory: 32Gi
+      pods: "20"
+      requests.cpu: "8"
+      requests.memory: 16Gi
+  status:
+    hard:
+      limits.cpu: "16"
+      limits.memory: 32Gi
+      pods: "20"
+      requests.cpu: "8"
+      requests.memory: 16Gi
+    used:
+      limits.cpu: "0"
+      limits.memory: "0"
+      pods: "0"
+      requests.cpu: "0"
+      requests.memory: "0"
+- apiVersion: v1
+  kind: ResourceQuota
+  metadata:
+    annotations:
+      components.gke.io/component-name: cluster-infra-metrics
+      components.gke.io/component-version: 1.32.2-gke.1
+      components.gke.io/layer: addon
+    creationTimestamp: "2025-06-21T19:16:59Z"
+    labels:
+      addonmanager.kubernetes.io/mode: Reconcile
+    name: gcp-critical-pods
+    namespace: gke-managed-cim
+    resourceVersion: "1750587775591695017"
+    uid: 2999c1b0-cb2b-49a1-a5b5-4835e8a77699
+  spec:
+    hard:
+      pods: 1G
+    scopeSelector:
+      matchExpressions:
+      - operator: In
+        scopeName: PriorityClass
+        values:
+        - system-node-critical
+        - system-cluster-critical
+  status:
+    hard:
+      pods: 1G
+    used:
+      pods: "1"
+- apiVersion: v1
+  kind: ResourceQuota
+  metadata:
+    annotations:
+      components.gke.io/component-name: gke-managed-system
+      components.gke.io/component-version: 0.1.1
+      components.gke.io/layer: addon
+    creationTimestamp: "2025-06-21T19:17:31Z"
+    labels:
+      addonmanager.kubernetes.io/mode: Reconcile
+    name: gcp-critical-pods
+    namespace: gke-managed-system
+    resourceVersion: "1750533451745647016"
+    uid: 1281dc57-d44b-4574-baef-2fccf919013c
+  spec:
+    hard:
+      pods: 1G
+    scopeSelector:
+      matchExpressions:
+      - operator: In
+        scopeName: PriorityClass
+        values:
+        - system-node-critical
+        - system-cluster-critical
+  status:
+    hard:
+      pods: 1G
+    used:
+      pods: "0"
+- apiVersion: v1
+  kind: ResourceQuota
+  metadata:
+    creationTimestamp: "2025-06-21T19:16:46Z"
+    labels:
+      addonmanager.kubernetes.io/mode: Reconcile
+    name: gcp-critical-pods
+    namespace: kube-system
+    resourceVersion: "1750673022988191015"
+    uid: 9cbcf8d9-b401-459a-b6bd-ac100cf86c40
+  spec:
+    hard:
+      pods: 1G
+    scopeSelector:
+      matchExpressions:
+      - operator: In
+        scopeName: PriorityClass
+        values:
+        - system-node-critical
+        - system-cluster-critical
+  status:
+    hard:
+      pods: 1G
+    used:
+      pods: "181"
+- apiVersion: v1
+  kind: ResourceQuota
+  metadata:
+    creationTimestamp: "2025-06-26T14:36:14Z"
+    name: monitoring-quota
+    namespace: monitoring
+    resourceVersion: "1750948574382223014"
+    uid: 62f0e2b4-06db-4caa-af1e-3cdaa5e74bfa
+  spec:
+    hard:
+      limits.cpu: "8"
+      limits.memory: 16Gi
+      pods: "10"
+      requests.cpu: "4"
+      requests.memory: 8Gi
+  status:
+    hard:
+      limits.cpu: "8"
+      limits.memory: 16Gi
+      pods: "10"
+      requests.cpu: "4"
+      requests.memory: 8Gi
+    used:
+      limits.cpu: "0"
+      limits.memory: "0"
+      pods: "1"
+      requests.cpu: "0"
+      requests.memory: "0"
+- apiVersion: v1
+  kind: ResourceQuota
+  metadata:
+    creationTimestamp: "2025-06-26T14:36:14Z"
+    name: production-quota
+    namespace: production
+    resourceVersion: "1750949614328175014"
+    uid: 5230ea20-d495-415d-8d17-581df8dfc8fd
+  spec:
+    hard:
+      limits.cpu: "32"
+      limits.memory: 64Gi
+      pods: "40"
+      requests.cpu: "16"
+      requests.memory: 32Gi
+  status:
+    hard:
+      limits.cpu: "32"
+      limits.memory: 64Gi
+      pods: "40"
+      requests.cpu: "16"
+      requests.memory: 32Gi
+    used:
+      limits.cpu: "3"
+      limits.memory: 3Gi
+      pods: "3"
+      requests.cpu: 1500m
+      requests.memory: 1536Mi
+kind: List
+metadata:
+  resourceVersion: ""
+
+=== Limit Ranges ===
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: LimitRange
+  metadata:
+    creationTimestamp: "2025-06-26T14:36:14Z"
+    name: default-limits
+    namespace: default
+    resourceVersion: "1750948574382143001"
+    uid: eb783088-a280-4f2e-9658-b51485c9719d
+  spec:
+    limits:
+    - default:
+        cpu: 500m
+        memory: 1Gi
+      defaultRequest:
+        cpu: 250m
+        memory: 512Mi
+      max:
+        cpu: "2"
+        memory: 4Gi
+      min:
+        cpu: 100m
+        memory: 128Mi
+      type: Container
+- apiVersion: v1
+  kind: LimitRange
+  metadata:
+    creationTimestamp: "2025-06-26T14:36:14Z"
+    name: production-limits
+    namespace: production
+    resourceVersion: "1750948574356911018"
+    uid: 7536a726-77e7-4787-a64a-6cf72f602206
+  spec:
+    limits:
+    - default:
+        cpu: "1"
+        memory: 2Gi
+      defaultRequest:
+        cpu: 500m
+        memory: 1Gi
+      max:
+        cpu: "4"
+        memory: 8Gi
+      min:
+        cpu: 200m
+        memory: 256Mi
+      type: Container
+kind: List
+metadata:
+  resourceVersion: ""
+[INFO] Testing quota enforcement...
+[INFO] Test 1: Attempting to create pod with excessive resources (should be rejected)...
+Error from server (Forbidden): error when creating "STDIN": pods "quota-test" is forbidden: [maximum cpu usage per Container is 4, but limit is 20, maximum memory usage per Container is 8Gi, but limit is 200Gi]
+[SUCCESS] ✅ Resource quota enforcement working correctly - pod was rejected
+Expected behavior: Pod rejected due to resource limits
+Quota limits: CPU=4, Memory=8Gi
+Pod requested: CPU=20, Memory=200Gi

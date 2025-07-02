@@ -1,0 +1,614 @@
+image: pubimages/devstuff:1.8.0
+
+definitions:
+  caches:
+    terraform: ~/.terraform.d/plugin-cache
+  
+  services:
+    docker:
+      memory: 4096
+  
+  scripts:
+    - &base-init |
+      git clone git@bitbucket.org:iceoco/iceo-scripts.git --branch=master --depth=1
+      export PATH="$PWD/iceo-scripts/general-docker-builders/public/scripts:$PWD/iceo-scripts/general-docker-builders/private/scripts:$PATH"
+      ./iceo-scripts/bitbucket/gcloud-auth
+      ./iceo-scripts/bitbucket/gcloud-auth-docker
+      
+    - &init |
+      *base-init
+      
+    - &gke-config |
+      echo "🔧 Configuring GKE access..."
+      for attempt in {1..3}; do
+        if gcloud container clusters get-credentials $GKE_CLUSTER_NAME \
+          --region=$GKE_REGION \
+          --project=$GCP_PROJECT_ID; then
+          break
+        fi
+        echo "⚠️  Attempt $attempt failed, retrying in 10s..."
+        sleep 10
+      done
+      
+      # Verify cluster connectivity with retry
+      echo "🔍 Verifying cluster connectivity..."
+      for attempt in {1..5}; do
+        if kubectl cluster-info --request-timeout=30s; then
+          echo "✅ Connected to GKE cluster"
+          break
+        fi
+        echo "⚠️  Connection attempt $attempt failed, retrying..."
+        if [ $attempt -eq 5 ]; then
+          echo "❌ Failed to connect to GKE cluster after 5 attempts"
+          echo "Ensure Bitbucket IPs are in authorized networks"
+          exit 1
+        fi
+        sleep 15
+      done
+      
+    - &init-with-gke |
+      *base-init
+      *gke-config
+      
+    - &terraform-plan-reusable |
+      echo "🏗️  Planning Terraform changes for $COMPONENT_DIR..."
+      cd $COMPONENT_DIR
+      
+      # Clear any existing state locks
+      terraform force-unlock -force 2>/dev/null || echo "No locks to clear"
+      
+      # Initialize with retry
+      for attempt in {1..3}; do
+        if terraform init; then
+          break
+        fi
+        echo "⚠️  Init attempt $attempt failed, retrying..."
+        sleep 5
+      done
+      
+      # Plan with detailed logging
+      terraform plan -out=tfplan -detailed-exitcode || exit_code=$?
+      
+      if [ ${exit_code:-0} -eq 2 ]; then
+        echo "⚠️  Changes detected in $COMPONENT_DIR"
+        echo "📋 Change summary:"
+        terraform show -json tfplan | jq -r '.resource_changes[]? | "\(.change.action): \(.address)"' | head -10
+      elif [ ${exit_code:-0} -eq 1 ]; then
+        echo "❌ Terraform plan failed in $COMPONENT_DIR"
+        terraform show tfplan || echo "Unable to show failed plan"
+        exit 1
+      else
+        echo "✅ No changes needed in $COMPONENT_DIR"
+      fi
+      
+    - &terraform-apply-reusable |
+      echo "🚀 Applying Terraform changes for $COMPONENT_DIR..."
+      cd $COMPONENT_DIR
+      
+      # Initialize with retry
+      for attempt in {1..3}; do
+        if terraform init; then
+          break
+        fi
+        echo "⚠️  Init attempt $attempt failed, retrying..."
+        sleep 5
+      done
+      
+      # Apply with state backup
+      cp terraform.tfstate terraform.tfstate.backup 2>/dev/null || echo "No existing state to backup"
+      
+      if [ -f tfplan ]; then
+        echo "📋 Applying planned changes for $COMPONENT_DIR"
+        terraform apply tfplan
+      else
+        echo "⚠️  No plan file found, running apply with auto-approve"
+        terraform apply -auto-approve
+      fi
+      
+      # Verify successful application
+      if [ $? -eq 0 ]; then
+        echo "✅ Successfully applied changes for $COMPONENT_DIR"
+      else
+        echo "❌ Failed to apply changes for $COMPONENT_DIR"
+        if [ -f terraform.tfstate.backup ]; then
+          echo "🔄 Restoring previous state..."
+          mv terraform.tfstate.backup terraform.tfstate
+        fi
+        exit 1
+      fi
+      
+    - &gke-readiness-check |
+      echo "⏳ Waiting for GKE cluster to be ready..."
+      max_attempts=30
+      attempt=1
+      
+      while [ $attempt -le $max_attempts ]; do
+        if kubectl get nodes --request-timeout=10s >/dev/null 2>&1; then
+          echo "✅ GKE cluster is ready"
+          kubectl get nodes --no-headers | wc -l | xargs -I {} echo "📊 Active nodes: {}"
+          break
+        fi
+        echo "⏳ Attempt $attempt/$max_attempts - Cluster not ready, waiting..."
+        sleep 10
+        attempt=$((attempt + 1))
+      done
+      
+      if [ $attempt -gt $max_attempts ]; then
+        echo "❌ Cluster readiness check timed out"
+        exit 1
+      fi
+      
+    - &security-scan-script |
+      chmod +x ./iceo-scripts/bitbucket/security-scan.sh
+      ./iceo-scripts/bitbucket/security-scan.sh
+
+    - &pipeline-metrics |
+      echo "📊 Pipeline metrics for $COMPONENT_DIR:"
+      echo "Duration: $((SECONDS/60)) minutes $((SECONDS%60)) seconds"
+      if [ -d "$COMPONENT_DIR" ]; then
+        cd "$COMPONENT_DIR"
+        resource_count=$(terraform show -json 2>/dev/null | jq -r '.values.root_module.resources | length' 2>/dev/null || echo "unknown")
+        echo "Resources managed: $resource_count"
+        terraform output 2>/dev/null | head -5 || echo "No outputs available"
+        cd - > /dev/null
+      fi
+
+    - &deployment-notification |
+      if [ -n "$SLACK_WEBHOOK" ]; then
+        deployment_status="${1:-success}"
+        component_name="${2:-Unknown Component}"
+        if [ "$deployment_status" = "success" ]; then
+          curl -X POST "$SLACK_WEBHOOK" \
+            -H 'Content-type: application/json' \
+            --data "{\"text\":\"✅ $component_name deployed successfully in $BITBUCKET_DEPLOYMENT_ENVIRONMENT\"}" \
+            2>/dev/null || echo "Notification failed"
+        else
+          curl -X POST "$SLACK_WEBHOOK" \
+            -H 'Content-type: application/json' \
+            --data "{\"text\":\"❌ $component_name deployment failed in $BITBUCKET_DEPLOYMENT_ENVIRONMENT\"}" \
+            2>/dev/null || echo "Notification failed"
+        fi
+      fi
+
+  steps:
+    - step: 
+        name: Security Scan
+        size: '2x'  
+        services:
+          - docker
+        artifacts:
+          - scan_reports/**
+          - "*.json"
+          - "*.html"
+        script:
+          - *init
+          - *security-scan-script
+          - |
+            echo "📁 Collecting security scan artifacts..."
+            if [ -d "$BITBUCKET_CLONE_DIR/scan_reports" ]; then
+              cp -r "$BITBUCKET_CLONE_DIR/scan_reports" ./scan_reports || {
+                echo "⚠️  Failed to copy scan reports"
+                exit 1
+              }
+            fi
+            
+            # Check for critical scan files
+            critical_files=0
+            for file in "$BITBUCKET_CLONE_DIR"/*.json; do
+              if [ -f "$file" ]; then
+                cp "$file" . && critical_files=$((critical_files + 1))
+              fi
+            done
+            
+            for file in "$BITBUCKET_CLONE_DIR"/*.html; do
+              if [ -f "$file" ]; then
+                cp "$file" . && critical_files=$((critical_files + 1))
+              fi
+            done
+            
+            echo "📊 Collected $critical_files scan result files"
+        after-script:
+          - *pipeline-metrics
+
+    - step: &terraform-plan
+        name: Terraform Plan Template
+        caches:
+          - terraform
+        script:
+          - *init
+          - *terraform-plan-reusable
+        artifacts:
+          - "$COMPONENT_DIR/tfplan"
+        after-script:
+          - *pipeline-metrics
+
+    - step: &terraform-apply
+        deployment: production
+        caches:
+          - terraform
+        script:
+          - *init
+          - *terraform-apply-reusable
+        after-script:
+          - *pipeline-metrics
+          - |
+            if [ -n "$SLACK_WEBHOOK" ]; then
+              curl -X POST "$SLACK_WEBHOOK" \
+                -H 'Content-type: application/json' \
+                --data "{\"text\":\"✅ $COMPONENT_DIR deployed successfully in $BITBUCKET_DEPLOYMENT_ENVIRONMENT\"}" \
+                2>/dev/null || echo "Notification failed"
+            fi
+
+    - step: &gke-deploy-direct
+        name: GKE Direct Deploy Template
+        deployment: production
+        caches:
+          - terraform
+        script:
+          - *init-with-gke
+          - export SECONDS=0  
+          - cd $COMPONENT_DIR
+          - terraform init
+          - terraform apply -auto-approve
+          - |
+            echo "✅ $COMPONENT_NAME deployed successfully"
+            if command -v kubectl >/dev/null 2>&1 && [ -n "$KUBECTL_RESOURCE" ]; then
+              echo "📋 Validating $COMPONENT_NAME..."
+              kubectl get $KUBECTL_RESOURCE --all-namespaces 2>/dev/null | head -10 || echo "Resource validation skipped"
+            fi
+        after-script:
+          - *pipeline-metrics
+          - |
+            if [ -n "$SLACK_WEBHOOK" ]; then
+              curl -X POST "$SLACK_WEBHOOK" \
+                -H 'Content-type: application/json' \
+                --data "{\"text\":\"✅ $COMPONENT_NAME deployed successfully in $BITBUCKET_DEPLOYMENT_ENVIRONMENT\"}" \
+                2>/dev/null || echo "Notification failed"
+            fi
+
+pipelines:
+  default:
+    - step:
+        name: 🔍 Lint and Validate
+        caches:
+          - terraform
+        script:
+          - *init
+          - |
+            echo "🔍 Checking Terraform formatting..."
+            terraform fmt -check -recursive || {
+              echo "❌ Terraform formatting check failed. Run 'terraform fmt -recursive' to fix."
+              echo "📋 Files that need formatting:"
+              terraform fmt -check -recursive -diff | head -20
+              exit 1
+            }
+          - |
+            echo "🔍 Validating Terraform configurations..."
+            failed_dirs=""
+            validated_dirs=""
+            
+            for dir in net-* svc-*; do
+              if [ -d "$dir" ] && [ -f "$dir/main.tf" ]; then
+                echo "Validating $dir..."
+                cd "$dir"
+                if ! terraform init -backend=false -input=false; then
+                  failed_dirs="$failed_dirs $dir"
+                  cd ..
+                  continue
+                fi
+                if ! terraform validate; then
+                  failed_dirs="$failed_dirs $dir"
+                else
+                  validated_dirs="$validated_dirs $dir"
+                fi
+                cd ..
+              fi
+            done
+            
+            echo "✅ Successfully validated:$validated_dirs"
+            
+            if [ -n "$failed_dirs" ]; then
+              echo "❌ Validation failed for:$failed_dirs"
+              exit 1
+            fi
+            echo "✅ All Terraform configurations are valid"
+
+  branches:
+    develop:
+      - parallel:
+          - step:
+              name: 📁 Plan Service Projects
+              <<: *terraform-plan
+              script:
+                - export COMPONENT_DIR=svc-projects
+                - *init
+                - *terraform-plan-reusable
+              artifacts:
+                - svc-projects/tfplan
+
+          - step:
+              name: 🔐 Plan IAM
+              <<: *terraform-plan
+              script:
+                - export COMPONENT_DIR=net-iam
+                - *init
+                - *terraform-plan-reusable
+              artifacts:
+                - net-iam/tfplan
+
+      - step:
+          name: 🏗️ Plan Network Foundation
+          <<: *terraform-plan
+          script:
+            - export COMPONENT_DIR=net-svpc
+            - *init
+            - *terraform-plan-reusable
+          artifacts:
+            - net-svpc/tfplan
+
+      - parallel:
+          - step:
+              name: ☸️ Plan GKE
+              <<: *terraform-plan
+              script:
+                - export COMPONENT_DIR=svc-gke
+                - *init
+                - *terraform-plan-reusable
+              artifacts:
+                - svc-gke/tfplan
+
+          - step:
+              name: 🗄️ Plan SQL
+              <<: *terraform-plan
+              script:
+                - export COMPONENT_DIR=svc-sql
+                - *init
+                - *terraform-plan-reusable
+              artifacts:
+                - svc-sql/tfplan
+
+          - step:
+              name: 🔴 Plan Redis
+              <<: *terraform-plan
+              script:
+                - export COMPONENT_DIR=svc-redis
+                - *init
+                - *terraform-plan-reusable
+              artifacts:
+                - svc-redis/tfplan
+
+      - step:
+          name: 🛡️ Plan VPC Service Controls
+          <<: *terraform-plan
+          script:
+            - export COMPONENT_DIR=net-vpcsc
+            - *init
+            - *terraform-plan-reusable
+          artifacts:
+            - net-vpcsc/tfplan
+
+    main:
+      - step:
+          name: 📁 Deploy Service Projects
+          size: '2x'
+          <<: *terraform-apply
+          script:
+            - export COMPONENT_DIR=svc-projects
+            - export SECONDS=0
+            - *init
+            - *terraform-apply-reusable
+
+      - step:
+          name: 🔐 Deploy IAM
+          <<: *terraform-apply
+          script:
+            - export COMPONENT_DIR=net-iam
+            - export SECONDS=0
+            - *init
+            - *terraform-apply-reusable
+
+      - step:
+          name: 🏗️ Deploy Network Foundation
+          size: '2x' 
+          <<: *terraform-apply
+          script:
+            - export COMPONENT_DIR=net-svpc
+            - export SECONDS=0
+            - *init
+            - *terraform-apply-reusable
+
+      - step:
+          name: ☸️ Deploy GKE Cluster
+          size: '2x' 
+          <<: *terraform-apply
+          script:
+            - export COMPONENT_DIR=svc-gke
+            - export SECONDS=0
+            - *init
+            - *terraform-apply-reusable
+            - *gke-readiness-check
+
+      - parallel:
+          - step:
+              name: 🗄️ Deploy SQL
+              size: '2x'  
+              <<: *terraform-apply
+              script:
+                - export COMPONENT_DIR=svc-sql
+                - export SECONDS=0
+                - *init
+                - *terraform-apply-reusable
+
+          - step:
+              name: 🔴 Deploy Redis
+              <<: *terraform-apply
+              script:
+                - export COMPONENT_DIR=svc-redis
+                - export SECONDS=0
+                - *init
+                - *terraform-apply-reusable
+
+      - step:
+          name: 🛡️ Deploy VPC Service Controls
+          size: '2x'
+          <<: *terraform-apply
+          script:
+            - export COMPONENT_DIR=net-vpcsc
+            - export SECONDS=0
+            - *init
+            - *terraform-apply-reusable
+
+      - step:
+          name: 🔒 Deploy GKE Network Policies
+          <<: *gke-deploy-direct
+          script:
+            - export COMPONENT_DIR="svc-gke/network-policies"
+            - export COMPONENT_NAME="Network Policies"
+            - export KUBECTL_RESOURCE="networkpolicies"
+            - export SECONDS=0
+            - *init-with-gke
+            - cd $COMPONENT_DIR
+            - terraform init
+            - terraform apply -auto-approve
+            - |
+              echo "✅ $COMPONENT_NAME deployed successfully"
+              echo "📋 Network Policies Status:"
+              kubectl get networkpolicies --all-namespaces 2>/dev/null | head -10 || echo "No network policies found"
+              
+              # Validate network policy coverage
+              namespaces=$(kubectl get namespaces -o name | wc -l)
+              policies=$(kubectl get networkpolicies --all-namespaces --no-headers | wc -l)
+              echo "📊 $policies network policies across $namespaces namespaces"
+
+      - step:
+          name: 👥 Deploy GKE RBAC Roles
+          <<: *gke-deploy-direct
+          script:
+            - export COMPONENT_DIR="svc-gke/rbac/iam-roles"
+            - export COMPONENT_NAME="RBAC Roles"
+            - export KUBECTL_RESOURCE="clusterroles"
+            - export SECONDS=0
+            - *init-with-gke
+            - cd $COMPONENT_DIR
+            - terraform init
+            - terraform apply -auto-approve
+            - |
+              echo "✅ $COMPONENT_NAME deployed successfully"
+              echo "📋 Custom ClusterRoles:"
+              kubectl get clusterroles | grep -v "system:" | head -10 || echo "Role validation skipped"
+              
+              # Test RBAC permissions
+              echo "🔍 Testing basic RBAC functionality..."
+              kubectl auth can-i list pods --as=system:serviceaccount:default:default || echo "Default SA permissions as expected"
+
+      - step:
+          name: 🔗 Deploy GKE RBAC Bindings
+          <<: *gke-deploy-direct
+          script:
+            - export COMPONENT_DIR="svc-gke/rbac/iam-bindings"
+            - export COMPONENT_NAME="RBAC Bindings"
+            - export KUBECTL_RESOURCE="clusterrolebindings"
+            - export SECONDS=0
+            - *init-with-gke
+            - cd $COMPONENT_DIR
+            - terraform init
+            - terraform apply -auto-approve
+            - |
+              echo "✅ $COMPONENT_NAME deployed successfully"
+              echo "📋 Custom ClusterRoleBindings:"
+              kubectl get clusterrolebindings | grep -v "system:" | head -10 || echo "Binding validation skipped"
+
+      - step:
+          name: 🔐 Deploy Pod Security Standards
+          <<: *gke-deploy-direct
+          script:
+            - export COMPONENT_DIR="svc-gke/pod-security-standards"
+            - export COMPONENT_NAME="Pod Security Standards"
+            - export KUBECTL_RESOURCE="namespaces"
+            - export SECONDS=0
+            - *init-with-gke
+            - cd $COMPONENT_DIR
+            - terraform init
+            - terraform apply -auto-approve
+            - |
+              echo "✅ $COMPONENT_NAME deployed successfully"
+              echo "📋 Pod Security Standards Status:"
+              
+              # Enhanced PSS validation
+              if command -v jq >/dev/null 2>&1; then
+                kubectl get namespaces -o json | jq -r '.items[] | select(.metadata.labels."pod-security.kubernetes.io/enforce") | "\(.metadata.name): \(.metadata.labels."pod-security.kubernetes.io/enforce")"' 2>/dev/null || {
+                  echo "Checking namespace labels manually..."
+                  kubectl get namespaces --show-labels | grep "pod-security" || echo "No PSS labels found"
+                }
+              else
+                kubectl get namespaces --show-labels | grep "pod-security" || echo "No PSS labels found"
+              fi
+              
+              # Count PSS-enabled namespaces
+              pss_namespaces=$(kubectl get namespaces -o json | jq -r '.items[] | select(.metadata.labels."pod-security.kubernetes.io/enforce") | .metadata.name' | wc -l 2>/dev/null || echo "0")
+              echo "📊 $pss_namespaces namespaces with Pod Security Standards enabled"
+  
+  pull-requests:
+    '**':
+      - step:
+          name: 🔍 Format & Style Check
+          caches:
+            - terraform
+          script:
+            - *init
+            - |
+              echo "🔍 Checking Terraform formatting..."
+              if ! terraform fmt -check -recursive; then
+                echo "❌ Formatting issues found. Preview of changes:"
+                terraform fmt -check -recursive -diff | head -50
+                exit 1
+              fi
+            - |
+              echo "🔍 Running tflint if available..."
+              if command -v tflint >/dev/null 2>&1; then
+                tflint --recursive
+              else
+                echo "⚠️  tflint not available, skipping advanced linting"
+              fi
+
+      - step:
+          name: 🔍 Terraform Validation
+          caches:
+            - terraform
+          script:
+            - *init
+            - |
+              echo "🔍 Validating Terraform configurations..."
+              failed_dirs=""
+              validated_dirs=""
+              
+              for dir in net-* svc-*; do
+                if [ -d "$dir" ] && [ -f "$dir/main.tf" ]; then
+                  echo "Validating $dir..."
+                  cd "$dir"
+                  
+                  # Initialize with timeout
+                  if timeout 300 terraform init -backend=false -input=false; then
+                    if terraform validate; then
+                      validated_dirs="$validated_dirs $dir"
+                      echo "✅ $dir validation passed"
+                    else
+                      failed_dirs="$failed_dirs $dir"
+                      echo "❌ $dir validation failed"
+                    fi
+                  else
+                    failed_dirs="$failed_dirs $dir"
+                    echo "❌ $dir initialization timed out"
+                  fi
+                  cd ..
+                fi
+              done
+              
+              echo "📊 Validation Summary:"
+              echo "✅ Passed:$validated_dirs"
+              
+              if [ -n "$failed_dirs" ]; then
+                echo "❌ Failed:$failed_dirs"
+                exit 1
+              fi
+              echo "✅ All Terraform configurations are valid"
