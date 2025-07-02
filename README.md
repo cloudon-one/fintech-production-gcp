@@ -1,4 +1,4 @@
-# fintech Production Infrastructure - Terraform
+# Fintech GCP Production-Ready IaC Infrastructure
 
 This repository contains Terraform configuration for deploying a multi-project GCP infrastructure with shared VPC, GKE, SQL, data services, bastion host, and comprehensive IAM management as per the fintech production architecture.
 
@@ -31,7 +31,7 @@ The infrastructure consists of:
 - **fintech-prod-private-sql-replica**: 10.61.2.0/24
 - **fintech-prod-private-redis**: 10.61.12.0/24
 
-#### Managed Airflow (Cloud Composer) for future considerations
+#### Managed Airflow (Cloud Composer)
 
 - **Composer Pods Secondary Range**: 10.61.128.0/17
 - **Composer Services Secondary Range**: 10.61.8.0/22
