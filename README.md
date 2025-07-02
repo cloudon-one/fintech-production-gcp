@@ -254,8 +254,8 @@ This project uses a **modular Terraform architecture** organized into service-sp
 ### 1. Clone and Setup
 
 ```bash
-git clone https://gitbub.com:fintech-prod-infrastructure.git
-cd fintech-prod-infrastructure
+git clone https://github.com/cloudon-one/fintech-production-ready-infra.git
+cd fintech-production-ready-infra
 ```
 
 ### 2. Check Prerequisites
@@ -612,7 +612,7 @@ Each service provides relevant outputs for other services:
 - `gke_project_number`, `data_project_number`
 - Service account emails for default compute accounts
 
-### net-svcp outputs
+### net-svpc outputs
 
 - `host_project_id` (validated from input)
 - `gke_network_id`, `gke_subnet_id`, `data_network_id`
