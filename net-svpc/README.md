@@ -15,7 +15,7 @@ Both VPCs are configured as Shared VPC host projects, allowing service projects 
 
 ```
 ┌────────────────────────────────────────────────────────────┐
-│                    fintech Production Infrastructure         │
+│                    Fintech Production Infrastructure       │
 ├────────────────────────────────────────────────────────────┤
 │                                                            │
 │  ┌─────────────────┐    ┌─────────────────┐                │
@@ -90,8 +90,8 @@ module "shared_vpc" {
   source = "./net-svpc"
 
   # Project Configuration
-  project_id = "fintech-prod-host-project-8hhr"
-  folder_id  = "832895978042"
+  project_id = "fintech-prod-host-project"
+  folder_id  = "1234567890"
   region     = "europe-central2"
 
   # VPC Names
@@ -135,11 +135,11 @@ module "shared_vpc" {
 
   # Service Projects
   gke_service_projects = {
-    gke = "fintech-prod-gke-project-3ypz"
+    gke = "fintech-prod-gke-project"
   }
   
   data_service_projects = {
-    data = "fintech-prod-data-project-mnch"
+    data = "fintech-prod-data-project"
   }
 
   # Labels
