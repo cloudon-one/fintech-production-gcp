@@ -4,7 +4,7 @@
 
 ### 1. Filter Activities by Specific User
 ```
-protoPayload.authenticationInfo.principalEmail="y.naumenko@iceo.co"
+protoPayload.authenticationInfo.principalEmail=""
 ```
 
 ### 2. Filter Activities by Service Account
@@ -32,19 +32,19 @@ protoPayload.authenticationInfo.principalEmail:"bastion-prod-host@beone-prod-hos
 ### 6. Activities in Last Hour
 ```
 timestamp >= "2025-06-30T10:00:00Z"
-protoPayload.authenticationInfo.principalEmail="y.naumenko@iceo.co"
+protoPayload.authenticationInfo.principalEmail="o"
 ```
 
 ### 7. Activities in Specific Time Window (Today)
 ```
 timestamp >= "2025-06-30T09:00:00Z" AND timestamp <= "2025-06-30T17:00:00Z"
-protoPayload.authenticationInfo.principalEmail="y.naumenko@iceo.co"
+protoPayload.authenticationInfo.principalEmail=""
 ```
 
 ## Terraform Plan Detection
 
 ```
-protoPayload.authenticationInfo.principalEmail="y.naumenko@iceo.co"
+protoPayload.authenticationInfo.principalEmail=""
 AND (
   protoPayload.methodName=~".*\.(get|list)$"
   AND (
@@ -62,7 +62,7 @@ AND timestamp >= "2025-06-30T10:00:00Z" AND timestamp <= "2025-06-30T10:30:00Z"
 
 ### 12. VPC-Related Terraform Apply Detection
 ```
-protoPayload.authenticationInfo.principalEmail="y.naumenko@iceo.co"
+protoPayload.authenticationInfo.principalEmail=""
 AND (
   protoPayload.methodName=("compute.networks.insert" OR 
                           "compute.networks.patch" OR 
@@ -81,7 +81,7 @@ AND timestamp >= "2025-06-30T10:00:00Z" AND timestamp <= "2025-06-30T11:00:00Z"
 
 ### 13. GKE-Related Terraform Apply Detection
 ```
-protoPayload.authenticationInfo.principalEmail="y.naumenko@iceo.co"
+protoPayload.authenticationInfo.principalEmail=""
 AND (
   protoPayload.methodName=("container.clusters.create" OR 
                           "container.clusters.update" OR 
@@ -123,14 +123,14 @@ AND protoPayload.serviceName="compute.googleapis.com"
 
 ### 16. High-Volume Read Operations (Likely Terraform Plan)
 ```
-protoPayload.authenticationInfo.principalEmail="y.naumenko@iceo.co"
+protoPayload.authenticationInfo.principalEmail=""
 AND protoPayload.methodName=~".*\.(get|list)$"
 AND timestamp >= "2025-06-30T10:00:00Z" AND timestamp <= "2025-06-30T10:05:00Z"
 ```
 
 ### 17. Detect Resource State Checks (Terraform Refresh)
 ```
-protoPayload.authenticationInfo.principalEmail="y.naumenko@iceo.co"
+protoPayload.authenticationInfo.principalEmail=""
 AND protoPayload.methodName=~".*\.get$"
 AND (
   protoPayload.resourceName=~"projects/.*/zones/.*/instances/.*" OR
@@ -145,7 +145,7 @@ AND timestamp >= "2025-06-30T10:00:00Z" AND timestamp <= "2025-06-30T10:30:00Z"
 
 ### 19. Storage-Related Activities
 ```
-protoPayload.authenticationInfo.principalEmail="y.naumenko@iceo.co"
+protoPayload.authenticationInfo.principalEmail=""
 AND protoPayload.serviceName="storage.googleapis.com"
 AND (
   protoPayload.methodName=("storage.buckets.create" OR 
@@ -159,7 +159,7 @@ AND (
 
 ### 20. Kubernetes Engine Extended Query
 ```
-protoPayload.authenticationInfo.principalEmail="y.naumenko@iceo.co"
+protoPayload.authenticationInfo.principalEmail=""
 AND protoPayload.serviceName="container.googleapis.com"
 AND (
   protoPayload.resourceName=~"projects/.*/zones/.*/clusters/.*" OR
@@ -199,7 +199,7 @@ AND (
 
 ```
 resource.type="gce_project"
-protoPayload.authenticationInfo.principalEmail="y.naumenko@iceo.co"
+protoPayload.authenticationInfo.principalEmail=""
 AND protoPayload.serviceName="compute.googleapis.com"
 AND (
   protoPayload.methodName:("networks.get" OR 
@@ -228,14 +228,14 @@ AND timestamp <= "2025-06-30T10:30:00Z"
 
 #### Step 1: Check if user has any activity
 ```
-protoPayload.authenticationInfo.principalEmail="y.naumenko@iceo.co"
+protoPayload.authenticationInfo.principalEmail=""
 AND timestamp >= "2025-06-30T10:00:00Z" 
 AND timestamp <= "2025-06-30T10:30:00Z"
 ```
 
 #### Step 2: Check compute service activity
 ```
-protoPayload.authenticationInfo.principalEmail="y.naumenko@iceo.co"
+protoPayload.authenticationInfo.principalEmail=""
 AND protoPayload.serviceName="compute.googleapis.com"
 AND timestamp >= "2025-06-30T10:00:00Z" 
 AND timestamp <= "2025-06-30T10:30:00Z"
@@ -243,7 +243,7 @@ AND timestamp <= "2025-06-30T10:30:00Z"
 
 #### Step 3: Find actual method names
 ```
-protoPayload.authenticationInfo.principalEmail="y.naumenko@iceo.co"
+protoPayload.authenticationInfo.principalEmail=""
 AND protoPayload.serviceName="compute.googleapis.com"
 AND protoPayload.methodName=~".*get.*"
 AND timestamp >= "2025-06-30T10:00:00Z" 
@@ -254,7 +254,7 @@ AND timestamp <= "2025-06-30T10:30:00Z"
 
 #### Version 1: Without compute prefix
 ```
-protoPayload.authenticationInfo.principalEmail="y.naumenko@iceo.co"
+protoPayload.authenticationInfo.principalEmail=""
 AND protoPayload.serviceName="compute.googleapis.com"
 AND (
   protoPayload.methodName=("v1.compute.networks.get" OR 
@@ -268,7 +268,7 @@ AND timestamp <= "2025-06-30T10:30:00Z"
 
 #### Version 2: Using regex pattern
 ```
-protoPayload.authenticationInfo.principalEmail="y.naumenko@iceo.co"
+protoPayload.authenticationInfo.principalEmail=""
 AND protoPayload.serviceName="compute.googleapis.com"
 AND protoPayload.methodName=~".*(networks|subnetworks|forwardingRules|backendServices)\.(get|list).*"
 AND timestamp >= "2025-06-30T10:00:00Z" 
@@ -278,7 +278,7 @@ AND timestamp <= "2025-06-30T10:30:00Z"
 #### Version 3: Broader search
 
 ```
-protoPayload.authenticationInfo.principalEmail="y.naumenko@iceo.co"
+protoPayload.authenticationInfo.principalEmail=""
 AND protoPayload.serviceName="compute.googleapis.com"
 AND protoPayload.methodName=~".*\.(get|list)$"
 AND timestamp >= "2025-06-30T10:00:00Z" 
