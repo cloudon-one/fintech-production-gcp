@@ -48,8 +48,15 @@ The infrastructure consists of:
 This project uses a **modular Terraform architecture** organized into service-specific directories:
 
 ```
+.
 ├── api
 │   └── api.yaml
+├── CLAUDE.md
+├── docs
+│   ├── GKE HLD.png
+│   ├── gke-lld.md
+│   └── vpc-lld.md
+├── LICENSE
 ├── modules
 │   ├── terraform-google-bastion
 │   │   ├── main.tf
@@ -110,6 +117,7 @@ This project uses a **modular Terraform architecture** organized into service-sp
 │   ├── backend.tf
 │   ├── main.tf
 │   ├── outputs.tf
+│   ├── README.md
 │   ├── terraform.tfvars
 │   ├── variables.tf
 │   └── versions.tf
@@ -127,6 +135,15 @@ This project uses a **modular Terraform architecture** organized into service-sp
 │   │   ├── setup-proxy-svc.sh
 │   │   ├── setup-proxy-vm.sh
 │   │   └── troubleshoot.md
+│   ├── README.md
+│   ├── terraform.tfvars
+│   ├── variables.tf
+│   └── versions.tf
+├── net-vpcsc
+│   ├── backend.tf
+│   ├── main.tf
+│   ├── provider.tf
+│   ├── README.md
 │   ├── terraform.tfvars
 │   ├── variables.tf
 │   └── versions.tf
@@ -156,9 +173,17 @@ This project uses a **modular Terraform architecture** organized into service-sp
 │   │   │       └── main.tf
 │   │   ├── outputs.tf
 │   │   ├── README.md
-│   │   ├── test-network-policies.sh
 │   │   └── variables.tf
 │   ├── outputs.tf
+│   ├── performance-management
+│   │   ├── backend.tf
+│   │   ├── load-testing.tf
+│   │   ├── main.tf
+│   │   ├── outputs.tf
+│   │   ├── performance-test.sh
+│   │   ├── README.md
+│   │   ├── terraform.tfvars
+│   │   └── variables.tf
 │   ├── pod-security-standards
 │   │   ├── backend.tf
 │   │   ├── main.tf
@@ -192,6 +217,7 @@ This project uses a **modular Terraform architecture** organized into service-sp
 │   ├── backend.tf
 │   ├── main.tf
 │   ├── outputs.tf
+│   ├── README.md
 │   ├── terraform.tfvars
 │   └── variables.tf
 ├── svc-redis
@@ -201,26 +227,15 @@ This project uses a **modular Terraform architecture** organized into service-sp
 │   ├── README.md
 │   ├── variables.tf
 │   └── versions.tf
-├── svc-sql
-│   ├── backend.tf
-│   ├── cert
-│   │   ├── client-cert.pem
-│   │   ├── client-key.pem
-│   │   ├── server-ca .pem
-│   │   └── sql-admin.json
-│   ├── main.tf
-│   ├── outputs.tf
-│   ├── README.md
-│   ├── terraform.tfvars
-│   ├── variables.tf
-│   └── versions.tf
-├── svc-vpcsc
-│   ├── backend.tf
-│   ├── main.tf
-│   ├── provider.tf
-│   ├── terraform.tfvars
-│   ├── variables.tf
-│   └── versions.tf
+└── svc-sql
+    ├── backend.tf
+    ├── cert
+    ├── main.tf
+    ├── outputs.tf
+    ├── README.md
+    ├── terraform.tfvars
+    ├── variables.tf
+    └── versions.tf
 ```
 
 ### Architecture Benefits
@@ -580,6 +595,7 @@ The bastion host is deployed with multiple network interfaces for secure access 
    ```
 
 3. **OS Login** (IAM-based access):
+
    ```bash
    gcloud compute ssh [USERNAME]@fintech-prod-bastion \
      --project=fintech-prod-host-project \
@@ -771,7 +787,7 @@ This configuration follows Terraform and GCP best practices:
    gcloud compute start-iap-tunnel fintech-prod-bastion 22 \
      --local-host-port=localhost:2222 \
      --zone=us-central1-a \
-     --project=fintech-prod-host-project-8hhr
+     --project=fintech-prod-host-project
 
    # Verify bastion instance status
    gcloud compute instances describe fintech-prod-bastion \
@@ -844,18 +860,12 @@ For support and questions:
 
 ## 📝 Recent Changes
 
-### Domain and Branding Updates (August 2025)
-
-All references have been updated throughout the codebase:
-- **Email domains**: Changed from `@iceo.co` and `@cloudon-one.com` to `@fintech.com`
-- **Project names**: Replaced all `beone` references with `fintech`
-- **Service endpoints**: Updated from `beone-api` to `fintech-api`
-- **Security groups**: Updated to use `@fintech.com` domain
-
 ### Infrastructure Enhancements
 
 #### Comprehensive Code Documentation
+
 Added detailed comments throughout all Terraform modules and configurations:
+
 - **Network modules**: Documented VPC architecture, subnet allocation, and routing decisions
 - **Security configurations**: Explained IAM roles, service accounts, and access controls
 - **GKE cluster**: Documented autoscaling, security features, and workload identity setup
@@ -864,6 +874,7 @@ Added detailed comments throughout all Terraform modules and configurations:
 - **VPC Service Controls**: Explained security perimeter and access level configurations
 
 #### Module Documentation
+
 Each module now includes:
 - Purpose and architectural context
 - Security considerations and best practices
