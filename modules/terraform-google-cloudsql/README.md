@@ -23,14 +23,14 @@ module "cloudsql_instance" {
   project_id      = "fintech-prod-data-project-mnch"
   instance_name   = "fintech-prod-<service>"
   database_version = "POSTGRES_15"
-  region          = "europe-central2"
+  region          = "us-central1"
 
   # Instance Configuration
   machine_type       = "db-n1-standard-4"
   disk_type          = "PD_SSD"
   disk_size          = 200
   availability_type  = "REGIONAL"
-  primary_zone       = "europe-central2-a"
+  primary_zone       = "us-central1-a"
 
   # Network Configuration
   ip_configuration = {
@@ -40,11 +40,11 @@ module "cloudsql_instance" {
     authorized_networks = [
       {
         name  = "gke-cluster"
-        value = "10.60.0.0/16"
+        value = "10.160.0.0/16"
       },
       {
         name  = "data-vpc"
-        value = "10.61.0.0/16"
+        value = "10.161.0.0/16"
       }
     ]
   }
@@ -108,8 +108,8 @@ module "cloudsql_instance" {
   # Read Replicas
   read_replicas = {
     "replica-1" = {
-      region                = "europe-west1"
-      zone                  = "europe-west1-a"
+      region                = "us-west1"
+      zone                  = "us-west1-a"
       machine_type          = "db-n1-standard-2"
       disk_type             = "PD_SSD"
       disk_size             = 100
@@ -118,7 +118,7 @@ module "cloudsql_instance" {
       deletion_protection   = true
       ip_configuration = {
         ipv4_enabled    = false
-        private_network = "projects/fintech-prod-host-project-8hhr/global/networks/data-vpc"
+        private_network = "projects/fintech-prod-host-project/global/networks/data-vpc"
         require_ssl     = true
         authorized_networks = []
       }
@@ -128,7 +128,7 @@ module "cloudsql_instance" {
   # Labels
   user_labels = {
     environment = "production"
-    team        = "fintech-technology-devops"
+    team        = "fintech-devops"
     cost_center = "fintech-production"
   }
 }
@@ -325,10 +325,10 @@ This module supports the following database engines:
 module "mysql_basic" {
   source = "../modules/terraform-google-cloudsql"
 
-  project_id      = "fintech-prod-data-project-mnch"
-  instance_name   = "fintech-prod-data-project-mnch"
+  project_id      = "fintech-prod-data-project"
+  instance_name   = "fintech-prod-data-project"
   database_version = "POSTGRES_15"
-  region          = "europe-central2"
+  region          = "us-central1"
   machine_type    = "db-n1-standard-2"
 }
 ```
@@ -339,12 +339,12 @@ module "mysql_basic" {
 module "postgres_ha" {
   source = "../modules/terraform-google-cloudsql"
 
-  project_id       = "fintech-prod-data-project-mnch"
-  instance_name    = "fintech-prod-data-project-mnch">"
+  project_id       = "fintech-prod-data-project"
+  instance_name    = "fintech-prod-data-project">"
   database_version = "POSTGRES_15"
-  region           = "europe-central2"
+  region           = "us-central1"
   availability_type = "REGIONAL"
-  primary_zone     = "ueurope-central2-a"
+  primary_zone     = "uus-central1-a"
   machine_type     = "db-n1-standard-4"
 }
 ```
@@ -355,21 +355,21 @@ module "postgres_ha" {
 module "mysql_with_replicas" {
   source = "../modules/terraform-google-cloudsql"
 
-  project_id      = "fintech-prod-data-project-mnch""
+  project_id      = "fintech-prod-data-project""
   instance_name   = "fintech-prod-<service>""
   database_version = "POSTGRES_15"
   region          = "europe-central"
 
   read_replicas = {
     "europe-west4" = {
-      region = "europe-west4"
-      zone   = "europe-west4-b"
+      region = "us-west4"
+      zone   = "us-west4-b"
       machine_type = "db-n1-standard-2"
       # ... other configuration
     }
     "europe-west1" = {
-      region = "europe-west1"
-      zone   = "europe-west1-a"
+      region = "us-west1"
+      zone   = "us-west1-a"
       machine_type = "db-n1-standard-2"
       # ... other configuration
     }

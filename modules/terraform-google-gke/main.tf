@@ -1,3 +1,5 @@
+# Create GKE cluster with enterprise security features
+# Implements private cluster with workload identity and encryption
 resource "google_container_cluster" "primary" {
   name                        = var.cluster_name
   location                    = var.region
@@ -12,6 +14,8 @@ resource "google_container_cluster" "primary" {
   datapath_provider           = var.datapath_provider
   resource_labels             = var.resource_labels
 
+  # Configure private cluster for enhanced security
+  # Nodes have only private IPs, control plane optionally public
   private_cluster_config {
     enable_private_nodes        = true
     enable_private_endpoint     = var.enable_private_endpoint
@@ -21,6 +25,8 @@ resource "google_container_cluster" "primary" {
     }
   }
 
+  # Restrict control plane access to authorized networks
+  # Enhances security by limiting API server exposure
   master_authorized_networks_config {
     gcp_public_cidrs_access_enabled = false
     dynamic "cidr_blocks" {
@@ -32,6 +38,8 @@ resource "google_container_cluster" "primary" {
     }
   }
 
+  # Configure IP ranges for pods and services
+  # Uses secondary ranges for proper network isolation
   ip_allocation_policy {
     cluster_secondary_range_name  = var.ip_allocation_policy.cluster_secondary_range_name
     services_secondary_range_name = var.ip_allocation_policy.services_secondary_range_name
@@ -46,6 +54,8 @@ resource "google_container_cluster" "primary" {
     channel = var.release_channel
   }
 
+  # Enable Workload Identity for secure pod authentication
+  # Allows pods to authenticate as GCP service accounts
   workload_identity_config {
     workload_pool = "${var.project_id}.svc.id.goog"
   }
@@ -55,6 +65,8 @@ resource "google_container_cluster" "primary" {
     provider = var.enable_fqdn_network_policy ? "CALICO" : "CALICO"
   }
 
+  # Enable Confidential GKE Nodes for memory encryption
+  # Protects data in use with hardware-based security
   confidential_nodes {
     enabled = var.confidential_nodes.enabled
   }
@@ -80,6 +92,8 @@ resource "google_container_cluster" "primary" {
     enabled = var.vertical_pod_autoscaling.enabled
   }
 
+  # Configure cluster autoscaling for dynamic resource management
+  # Automatically adjusts cluster size based on workload demands
   dynamic "cluster_autoscaling" {
     for_each = var.cluster_autoscaling.enabled ? [1] : []
     content {

@@ -140,40 +140,30 @@ This module replaces the previous hardcoded configuration with:
 ```hcl
 # net-vpcsc/terraform.tfvars
 organization_id = "your-org-id"
-host_project_id = "fintech-prod-host-project-8hhr"
-gke_project_id  = "fintech-prod-gke-project-3ypz"
-data_project_id = "fintech-prod-data-project-mnch"
+host_project_id = "fintech-prod-host-project"
+gke_project_id  = "fintech-prod-gke-project"
+data_project_id = "fintech-prod-data-project"
 
 devops_team_members = [
-  "user:y.naumenko@iceo.co",
-  "user:m.sowa@iceo.co",
-  "user:p.rostkowski@iceo.co",
-  "user:m.koniuszko@iceo.co",
-  "user:p.kutera@iceo.co",
-  "user:j.gryczan@iceo.co"
+  "user:user1@fintech.com",
 ]
 
 service_accounts = [
-  "serviceAccount:bastion-prod-host@fintech-prod-host-project-8hhr.iam.gserviceaccount.com",
-  "serviceAccount:gke-service-account@fintech-prod-gke-project-3ypz.iam.gserviceaccount.com",
-  "serviceAccount:cloudsql-admin@fintech-prod-data-project-mnch.iam.gserviceaccount.com"
+  "serviceAccount:bastion-prod-host@fintech-prod-host-project.iam.gserviceaccount.com",
+  "serviceAccount:gke-service-account@fintech-prod-gke-project.iam.gserviceaccount.com",
+  "serviceAccount:cloudsql-admin@fintech-prod-data-project.iam.gserviceaccount.com"
 ]
 
 gke_workload_identity_service_accounts = [
-  "serviceAccount:fintech-prod-gke-project-3ypz.svc.id.goog[backend/backend-sa]",
-  "serviceAccount:fintech-prod-gke-project-3ypz.svc.id.goog[frontend/frontend-sa]",
-  "serviceAccount:fintech-prod-gke-project-3ypz.svc.id.goog[api/api-sa]",
-  "serviceAccount:fintech-prod-gke-project-3ypz.svc.id.goog[workers/workers-sa]",
-  "serviceAccount:fintech-prod-gke-project-3ypz.svc.id.goog[monitoring/monitoring-sa]"
+  "serviceAccount:fintech-prod-gke-project.svc.id.goog[backend/backend-sa]",
+  "serviceAccount:fintech-prod-gke-project.svc.id.goog[frontend/frontend-sa]",
+  "serviceAccount:fintech-prod-gke-project.svc.id.goog[api/api-sa]",
+  "serviceAccount:fintech-prod-gke-project.svc.id.goog[workers/workers-sa]",
+  "serviceAccount:fintech-prod-gke-project.svc.id.goog[monitoring/monitoring-sa]"
 ]
 
 iap_tunnel_users = [
-  "user:y.naumenko@iceo.co",
-  "user:m.sowa@iceo.co",
-  "user:p.rostkowski@iceo.co",
-  "user:m.koniuszko@iceo.co",
-  "user:p.kutera@iceo.co",
-  "user:j.gryczan@iceo.co"
+  "user:user1@fintech.com",
 ]
 ```
 

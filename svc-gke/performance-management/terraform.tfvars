@@ -1,6 +1,6 @@
 kubeconfig_path = "~/.kube/config"
-cluster_name    = "beone-prod-gke-cluster"
-project_id      = "beone-prod-gke-project-3ypz"
+cluster_name    = "fintech-prod-gke-cluster"
+project_id      = "fintech-prod-gke-project"
 
 performance_config = {
   enable_burst_scaling          = true

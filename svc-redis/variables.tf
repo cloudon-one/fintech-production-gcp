@@ -1,7 +1,7 @@
 variable "region" {
   description = "The region to deploy to"
   type        = string
-  default     = "europe-central2"
+  default     = "us-central1"
 }
 
 variable "net_svpc_backend_bucket" {

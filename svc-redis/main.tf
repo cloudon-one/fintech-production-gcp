@@ -1,7 +1,10 @@
+# Configure Google Cloud provider for Redis resources
 provider "google" {
   region = var.region
 }
 
+# Retrieve network configuration from Shared VPC state
+# Provides network IDs for Redis private connectivity
 data "terraform_remote_state" "net_svpc" {
   backend = "gcs"
   config = {
@@ -10,6 +13,8 @@ data "terraform_remote_state" "net_svpc" {
   }
 }
 
+# Retrieve data project ID from service projects state
+# Redis instances are deployed in the data project
 data "terraform_remote_state" "svc_projects" {
   backend = "gcs"
   config = {
@@ -18,6 +23,8 @@ data "terraform_remote_state" "svc_projects" {
   }
 }
 
+# Retrieve IAM configuration from remote state
+# Contains access policies and security groups
 data "terraform_remote_state" "net_iam" {
   backend = "gcs"
   config = {
@@ -26,6 +33,8 @@ data "terraform_remote_state" "net_iam" {
   }
 }
 
+# Define local variables for Redis configuration
+# Consolidates project IDs, network details, and naming patterns
 locals {
   data_project_id   = data.terraform_remote_state.svc_projects.outputs.data_project_id
   host_project_id   = data.terraform_remote_state.net_svpc.outputs.host_project_id
@@ -42,6 +51,8 @@ locals {
   })
 }
 
+# Enable Redis API for Memorystore management
+# Required for creating and managing Redis instances
 resource "google_project_service" "redis_api" {
   project = local.data_project_id
   service = "redis.googleapis.com"
@@ -50,6 +61,8 @@ resource "google_project_service" "redis_api" {
   disable_on_destroy         = false
 }
 
+# Enable Service Networking API for private service connection
+# Required for private IP connectivity to Redis
 resource "google_project_service" "servicenetworking_api" {
   project = local.data_project_id
   service = "servicenetworking.googleapis.com"
@@ -58,6 +71,8 @@ resource "google_project_service" "servicenetworking_api" {
   disable_on_destroy         = false
 }
 
+# Create Memorystore Redis instances for caching and session storage
+# Configured with high availability and encryption
 module "fintech_redis_instances" {
   for_each = var.redis_instances_config
   source   = "../modules/terraform-google-memorystore"
@@ -74,15 +89,21 @@ module "fintech_redis_instances" {
   connect_mode       = "PRIVATE_SERVICE_ACCESS"
   reserved_ip_range  = "fintech-prod-private-redis"
 
+  # Enable authentication and encryption for security
+  # Protects data in transit between clients and Redis
   auth_enabled            = true
   transit_encryption_mode = "SERVER_AUTHENTICATION"
 
+  # Schedule maintenance during low-traffic periods
+  # Sunday early morning to minimize impact
   maintenance_window = {
     day    = "SUNDAY" # Sunday
     hour   = 2        # 2 AM
     minute = 0
   }
 
+  # Configure data persistence with RDB snapshots
+  # Ensures data durability with regular backups
   persistence_config = {
     persistence_mode    = "RDB"
     rdb_snapshot_period = "TWELVE_HOURS"
@@ -90,13 +111,15 @@ module "fintech_redis_instances" {
 
   redis_configs = each.value.redis_configs
 
+  # Configure read replicas for high availability and read scaling
+  # Distributes read load across multiple instances
   replica_count      = each.value.replica_count
   read_replicas_mode = "READ_REPLICAS_ENABLED"
 
   user_labels = merge(local.common_labels, {
-    cost_center = "fintech-technology-devops"
-    owner       = "fintech-technology-devops"
-    team        = "fintech-technology-devops"
+    cost_center = "fintech-devops"
+    owner       = "fintech-devops"
+    team        = "fintech-devops"
   })
 
   depends_on = [
@@ -105,6 +128,8 @@ module "fintech_redis_instances" {
   ]
 }
 
+# Configure firewall rule for GKE to Redis connectivity
+# Allows caching and session storage from Kubernetes workloads
 resource "google_compute_firewall" "redis_access_from_gke" {
   name    = "allow-redis-access-from-gke"
   network = local.data_network_name
@@ -115,8 +140,8 @@ resource "google_compute_firewall" "redis_access_from_gke" {
     ports    = ["6379"]
   }
 
-  source_ranges      = ["10.60.0.0/16"]
-  destination_ranges = ["10.61.12.0/28"]
+  source_ranges      = ["10.160.0.0/16"]
+  destination_ranges = ["10.161.12.0/28"]
 
   log_config {
     metadata = "INCLUDE_ALL_METADATA"
@@ -125,6 +150,8 @@ resource "google_compute_firewall" "redis_access_from_gke" {
   description = "Allow Redis access from GKE cluster"
 }
 
+# Configure firewall rule for data VPC internal access
+# Enables data processing workloads to use Redis caching
 resource "google_compute_firewall" "redis_access_from_data" {
   name    = "allow-redis-access-from-data"
   network = local.data_network_name
@@ -135,8 +162,8 @@ resource "google_compute_firewall" "redis_access_from_data" {
     ports    = ["6379"]
   }
 
-  source_ranges      = ["10.61.0.0/16"]
-  destination_ranges = ["10.61.12.0/28"]
+  source_ranges      = ["10.161.0.0/16"]
+  destination_ranges = ["10.161.12.0/28"]
 
   log_config {
     metadata = "INCLUDE_ALL_METADATA"
@@ -145,6 +172,8 @@ resource "google_compute_firewall" "redis_access_from_data" {
   description = "Allow Redis access from data VPC"
 }
 
+# Configure firewall rule for IAP tunnel access
+# Enables secure administrative access for debugging
 resource "google_compute_firewall" "redis_access_from_iap" {
   name    = "allow-redis-access-from-iap"
   network = local.data_network_name
@@ -156,7 +185,7 @@ resource "google_compute_firewall" "redis_access_from_iap" {
   }
 
   source_ranges      = ["35.235.240.0/20"]
-  destination_ranges = ["10.61.12.0/28"]
+  destination_ranges = ["10.161.12.0/28"]
 
   log_config {
     metadata = "INCLUDE_ALL_METADATA"

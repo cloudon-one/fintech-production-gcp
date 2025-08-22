@@ -4,19 +4,19 @@ gke_project_id  = "fintech-prod-gke-project"
 data_project_id = "fintech-prod-data-project"
 
 devops_team_members = [
-  "user:devops1@cloudon-one.com"
+  "user:devops1@fintech.com"
 ]
 
 backend_team_members = [
-  "group:fintech-technology-backend@cloudon-one.com"
+  "group:fintech-technology-backend@fintech.com"
 ]
 
 frontend_team_members = [
-  "group:fintech-technology-frontend@cloudon-one.como"
+  "group:fintech-technology-frontend@fintech.com"
 ]
 
 mobile_team_members = [
-  "group:fintech-technology-mobile@cloudon-one.com"
+  "group:fintech-technology-mobile@fintech.com"
 ]
 
 service_accounts = [
@@ -34,7 +34,7 @@ gke_workload_identity_service_accounts = [
 ]
 
 iap_tunnel_users = [
-"user:devops1@cloudon-one.com"
+"user:devops1@fintech.com"
 ]
 
 restricted_services     = []

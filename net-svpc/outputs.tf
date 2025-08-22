@@ -1,8 +1,10 @@
+# Regional deployment information
 output "region" {
   description = "Region where resources are deployed"
   value       = local.region
 }
 
+# GKE VPC CIDR blocks for network planning and firewall rules
 output "gke_vpc_cidr" {
   description = "CIDR block of the GKE VPC"
   value       = local.gke_vpc_cidr
@@ -48,7 +50,8 @@ output "data_composer_services_cidr" {
   value       = local.data_composer_services_cidr
 }
 
-# Project outputs
+# Project outputs for cross-module references
+# Host project manages shared VPC resources
 output "host_project_id" {
   description = "ID of the host project"
   value       = var.project_id
@@ -59,7 +62,8 @@ output "gke_project_id" {
   value       = var.project_id
 }
 
-# Network outputs
+# Network outputs for GKE cluster configuration
+# These outputs are consumed by the svc-gke module
 output "gke_network_id" {
   description = "ID of the GKE VPC network"
   value       = module.gke_vpc.vpc_id
@@ -110,7 +114,8 @@ output "data_subnet_name" {
   value       = var.data_subnet.name
 }
 
-# GKE VPC Outputs
+# GKE VPC detailed outputs for peering and routing
+# Used for VPC peering and NAT configuration
 output "gke_vpc_id" {
   description = "The ID of the GKE VPC"
   value       = module.gke_vpc.vpc_id

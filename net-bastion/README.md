@@ -7,7 +7,7 @@ The fintech Bastion Host is a secured jump host deployed in Google Cloud Platfor
 **Infrastructure Details:**
 
 - **Host Project**: `fintech-prod-host-project`
-- **Primary Region**: `europe-central2`
+- **Primary Region**: `us-central1`
 - **Network**: Connected to gke-vpc and data-vpc (gke-subnet and data-subnet) with public NAT IP
 
 
@@ -57,19 +57,19 @@ Create a `terraform.tfvars` file in the `net-bastion` directory:
 
 ```hcl
 # Backend configuration
-net_svpc_backend_bucket = "fintech-prod-tfstate-bucket-bucket-bucket"
+net_svpc_backend_bucket = "fintech-prod-tfstate-bucket"
 net_svpc_backend_prefix = "net-svpc"
-svc_projects_backend_bucket = "fintech-prod-tfstate-bucket-bucket-bucket"
+svc_projects_backend_bucket = "fintech-prod-tfstate-bucket"
 svc_projects_backend_prefix = "svc-projects"
 
 # Bastion configuration
-region = "europe-central2"
+region = "us-central1"
 zone   = "a"
 
 # Security configuration
 authorized_networks = [
-  "10.60.0.0/16",    # gke-vpc
-  "10.61.0.0/16"     # data-vpc
+  "10.160.0.0/16",    # gke-vpc
+  "10.161.0.0/16"     # data-vpc
 ]
 
 ssh_keys = {
@@ -77,7 +77,7 @@ ssh_keys = {
 }
 
 enable_iap_tunnel = true
-iap_user         = "ynaumneko@cloudon-one.com"
+iap_user         = "user1@fintech.com"
 
 # Optional: Enable NAT if needed
 enable_nat = true
@@ -113,7 +113,7 @@ terraform output bastion_iap_command
 
 gcloud compute start-iap-tunnel fintech-bastion 22 \
   --local-host-port=localhost:2222 \
-  --zone=europe-central2-a \
+  --zone=us-central1-a \
   --project=fintech-prod-host-project-8hhr
 ```
 
@@ -135,7 +135,7 @@ terraform output bastion_ssh_command
 
 # Or use the command directly
 gcloud compute ssh fintech-bastion \
-  --zone=europe-central2-a \
+  --zone=us-central1-a \
   --project=fintech-prod-host-project-8hhr
 ```
 
@@ -162,7 +162,7 @@ ssh fintech-bastion
 
 When OS Login is enabled, access is managed via IAM roles.
 ```bash
-gcloud compute ssh [USERNAME]@[INSTANCE_NAME] --project=fintech-prod-host-project-8hhr --zone=europe-central2-a
+gcloud compute ssh [USERNAME]@[INSTANCE_NAME] --project=fintech-prod-host-project --zone=us-central1-a
 ```
 
 ## GKE Cluster Access with Kubectl
@@ -178,7 +178,7 @@ Use one of the methods described above (IAP Tunnel is recommended) to SSH into t
 Once on the bastion host, run the following command to configure `kubectl` to communicate with your GKE cluster. The bastion's service account is used for authentication.
 
 ```bash
-gcloud container clusters get-credentials fintech-prod-gke-cluster --location europe-central2
+gcloud container clusters get-credentials fintech-prod-gke-cluster --location us-central1
 ```
 
 ### 3. Verify Cluster Access
@@ -199,10 +199,10 @@ You can now use `kubectl` to manage your GKE resources as needed.
 
 ```bash
 # Generate a new SSH key pair
-ssh-keygen -t ed25519 -C "your-email@iceo.co" -f ~/.ssh/fintech_bastion
+ssh-keygen -t ed25519 -C "your-email@fintech.com" -f ~/.ssh/fintech_bastion
 
 # Or generate RSA key (if needed)
-ssh-keygen -t rsa -b 4096 -C "your-email@iceo.co" -f ~/.ssh/fintech_bastion
+ssh-keygen -t rsa -b 4096 -C "your-email@fintech.com" -f ~/.ssh/fintech_bastion
 ```
 
 #### Add Public Key to Bastion
@@ -232,8 +232,8 @@ Configure the `authorized_networks` variable to restrict access:
 
 ```hcl
 authorized_networks = [
-  "10.60.0.0/16",     # gke-vpc
-  "10.61.0.0/16",     # data-vpc
+  "10.160.0.0/16",     # gke-vpc
+  "10.161.0.0/16",     # data-vpc
 ]
 ```
 
@@ -269,7 +269,7 @@ gcloud projects get-iam-policy fintech-prod-host-project \
 
 1. **Generate SSH Key for User**:
 ```bash
-ssh-keygen -t ed25519 -C "user@iceo.co"
+ssh-keygen -t ed25519 -C "user1@fintech.com"
 ```
 
 2. **Add Public Key to Configuration**:
@@ -378,7 +378,7 @@ ps aux | grep iap
 
 gcloud compute start-iap-tunnel fintech-bastion 22 \
   --local-host-port=localhost:2222 \
-  --zone=europe-central2-a \
+  --zone=us-central1-a \
   --project=fintech-prod-host-project
 
 gcloud compute firewall-rules list --filter="name:fintech-bastion" --project=fintech-prod-host-project
@@ -422,7 +422,7 @@ gcloud projects add-iam-policy-binding fintech-prod-host-project \
 
 ```bash
 gcloud compute instances get-serial-port-output fintech-bastion \
-  --zone=europe-central2-a \
+  --zone=us-central1-a \
   --project=fintech-prod-host-project
 
 gcloud logging read "resource.type=gce_instance AND resource.labels.instance_name=fintech-bastion" \

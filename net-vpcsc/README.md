@@ -21,7 +21,7 @@ The `net-vpcsc` module creates a comprehensive security perimeter around the fin
 │  ┌─────────────────────────────────────────────────────────┐  │
 │  │                Access Policy                            │  │
 │  │  ┌─────────────────────────────────────────────────────┐│  │
-│  │  │ • Organization: cloudon-one.com                             ││  │
+│  │  │ • Organization: fintech.com                             ││  │
 │  │  │ • Policy Name: fintech-prod-access-policy             ││  │
 │  │  │ • Description: fintech Production Access Control      ││  │
 │  │  └─────────────────────────────────────────────────────┘│  │
@@ -37,7 +37,7 @@ The `net-vpcsc` module creates a comprehensive security perimeter around the fin
 │  │  │   _access           │  │  │ • Status: ACTIVE        │  ││
 │  │  │ • Trusted Groups:   │  │  │ • Projects:             │  ││
 │  │  │   - fintech-technology│  │  │   - Host Project        │  ││
-│  │  │     -devops@cloudon-one.com │  │  │   - GKE Project         │  ││
+│  │  │     -devops@fintech.com │  │  │   - GKE Project         │  ││
 │  │  │ • Conditions:       │  │  │   - Data Project        │  ││
 │  │  │   - Identity-based  │  │  │ • Restricted Services:  │  ││
 │  │  │   - Location-based  │  │  │   - Storage APIs        │  ││
@@ -113,9 +113,9 @@ The `net-vpcsc` module creates a comprehensive security perimeter around the fin
 - **Type**: `PERIMETER_TYPE_REGULAR`
 - **Status**: `ACTIVE`
 - **Protected Projects**:
-  - Host Project: `fintech-prod-host-project-8hhr`
-  - GKE Project: `fintech-prod-gke-project-3ypz`
-  - Data Project: `fintech-prod-data-project-mnch`
+  - Host Project: `fintech-prod-host-project`
+  - GKE Project: `fintech-prod-gke-project`
+  - Data Project: `fintech-prod-data-project`
 
 ### 4. Restricted Services
 
@@ -159,9 +159,9 @@ module "vpc_service_controls" {
   organization_id = "123456789012"
 
   # Project Configuration
-  host_project_id = "fintech-prod-host-project-8hhr"
-  gke_project_id  = "fintech-prod-gke-project-3ypz"
-  data_project_id = "fintech-prod-data-project-mnch"
+  host_project_id = "fintech-prod-host-project"
+  gke_project_id  = "fintech-prod-gke-project"
+  data_project_id = "fintech-prod-data-project"
 }
 ```
 
@@ -183,10 +183,10 @@ module "vpc_service_controls" {
   perimeter_name = "fintech-prod-perimeter"
   access_level_name = "fintech_devops_access"
   
-  # Trusted Groups (optional - defaults to fintech-technology-devops@cloudon-one.com)
+  # Trusted Groups (optional - defaults to fintech-technology-devops@fintech.com)
   trusted_groups = [
-    "fintech-technology-devops@cloudon-one.com",
-    "fintech-security@cloudon-one.com"
+    "fintech-technology-devops@fintech.com",
+    "fintech-security@fintech.com"
   ]
 
   # Custom Restricted Services (optional - uses defaults if not specified)
@@ -230,7 +230,7 @@ module "vpc_service_controls" {
 |----------|-------------|------|---------|:--------:|
 | `perimeter_name` | Name of the service perimeter | `string` | `"fintech-prod-perimeter"` | no |
 | `access_level_name` | Name of the access level | `string` | `"fintech_devops_access"` | no |
-| `trusted_groups` | List of trusted Google Groups for access | `list(string)` | `["fintech-technology-devops@cloudon-one.com"]` | no |
+| `trusted_groups` | List of trusted Google Groups for access | `list(string)` | `["fintech-devops@fintech.com"]` | no |
 | `restricted_services` | List of services to restrict in the perimeter | `list(string)` | See below | no |
 | `perimeter_type` | Type of perimeter | `string` | `"PERIMETER_TYPE_REGULAR"` | no |
 | `use_explicit_dry_run_spec` | Whether to use explicit dry run specification | `bool` | `false` | no |
@@ -281,9 +281,9 @@ restricted_services = [
   "container.googleapis.com"
 ]
 protected_projects = [
-  "fintech-prod-host-project-8hhr",
-  "fintech-prod-gke-project-3ypz",
-  "fintech-prod-data-project-mnch"
+  "fintech-prod-host-project",
+  "fintech-prod-gke-project",
+  "fintech-prod-data-project"
 ]
 ```
 
@@ -379,7 +379,7 @@ The following APIs must be enabled in the organization:
 
 Trusted Google Groups must exist and be accessible:
 
-- `fintech-technology-devops@cloudon-one.com` - Primary DevOps team
+- `fintech-technology-devops@fintech.com` - Primary DevOps team
 - Additional groups as specified in configuration
 
 ## Troubleshooting

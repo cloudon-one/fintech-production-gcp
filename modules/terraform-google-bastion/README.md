@@ -21,16 +21,16 @@ module "bastion" {
   source = "../modules/terraform-google-bastion"
 
   project_id = "fintech-prod-host-project"
-  region     = "europe-central2"
+  region     = "us-central1"
   zone       = "a"
   
   vpc_name   = "shared-vpc"
   subnet_name = "bastion-subnet"
   
   authorized_networks = [
-    "10.60.0.0/16",    # gke-vpc
-    "10.61.0.0/16",    # data-vpc
-    "10.100.0.0/24"    # vpn-network
+    "10.160.0.0/16",    # gke-vpc
+    "10.161.0.0/16",    # data-vpc
+    "10.100.0.0/22"    # vpn-network
   ]
   
   ssh_keys = {
@@ -39,21 +39,21 @@ module "bastion" {
   }
   
   enable_iap_tunnel = true
-  iap_user         = "admin@yourcompany.com"
+  iap_user         = "admin@fintech.com"
   
   # Optional: Enable OS Login for IAM-based SSH access
   enable_os_login = true
   os_login_users = [
-    "user:admin@yourcompany.com",
-    "user:dev@yourcompany.com",
+    "user:admin@fintech.com",
+    "user:dev@fintech.com",
   ]
   
   # Optional: Enable an HTTPS proxy on the bastion
   enable_https_proxy = true
   proxy_port = 3128
   proxy_source_ranges = [
-    "10.60.0.0/16", # gke-vpc
-    "10.61.0.0/16", # data-vpc
+    "10.160.0.0/16", # gke-vpc
+    "10.161.0.0/16", # data-vpc
   ]
   
   # Optional: Enable NAT for outbound internet access
@@ -170,13 +170,13 @@ The bastion host comes pre-installed with the following tools to facilitate clus
 
 ### 1. Direct SSH (if authorized networks configured)
 ```bash
-gcloud compute ssh fintech-bastion --zone=europe-central2-a --project=fintech-prod-host-project
+gcloud compute ssh fintech-bastion --zone=us-central1-a --project=fintech-prod-host-project
 ```
 
 ### 2. IAP Tunnel (recommended)
 ```bash
 # Start IAP tunnel
-gcloud compute start-iap-tunnel fintech-bastion 22 --local-host-port=localhost:2222 --zone=europe-central2-a --project=fintech-prod-host-project
+gcloud compute start-iap-tunnel fintech-bastion 22 --local-host-port=localhost:2222 --zone=us-central1-a --project=fintech-prod-host-project
 
 # Connect via tunnel
 ssh -p 2222 user@localhost

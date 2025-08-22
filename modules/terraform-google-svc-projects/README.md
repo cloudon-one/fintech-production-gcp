@@ -20,8 +20,8 @@ module "service_projects" {
 
   # Basic Configuration
   suffix            = "a1b2"  # Random 4-character suffix
-  billing_account_id = "01B990-D98512-3FA49A"
-  folder_id         = "832895978042"
+  billing_account_id = "01234-567890-ABCD"
+  folder_id         = "1234567890"
 
   # Project Names (will have suffix appended)
   host_project_name = "fintech-prod-host-project"
@@ -31,9 +31,9 @@ module "service_projects" {
   # Labels
   labels = {
     environment = "production"
-    team        = "fintech-technology-devops"
-    cost_center = "fintech-technology-devops"
-    owner       = "fintech-technology-devops"
+    team        = "fintech-devops"
+    cost_center = "fintech-devops"
+    owner       = "fintech-devops"
   }
 }
 ```
@@ -195,23 +195,23 @@ This module creates the following resources:
 
 ```hcl
 host_project = {
-  project_id = "fintech-prod-host-project-8hhr"
+  project_id = "fintech-prod-host-project"
   name       = "fintech-prod-host-project"
-  number     = "624000001094"
+  number     = "1234567890"
 }
 
 gke_project = {
-  project_id              = "fintech-prod-gke-project-3ypz"
+  project_id              = "fintech-prod-gke-project"
   name                    = "fintech-prod-gke-project"
-  number                  = "144339494137"
-  default_service_account = "144339494137-compute@developer.gserviceaccount.com"
+  number                  = "1234567890"
+  default_service_account = "1234567890-compute@developer.gserviceaccount.com"
 }
 
 data_project = {
-  project_id              = "fintech-prod-data-project-mnch"
+  project_id              = "fintech-prod-data-project"
   name                    = "fintech-prod-data-project"
-  number                  = "764139977641"
-  default_service_account = "764139977641s-compute@developer.gserviceaccount.com"
+  number                  = "1234567890"
+  default_service_account = "1234567890-compute@developer.gserviceaccount.com"
 }
 ```
 
@@ -236,7 +236,7 @@ The user or service account running Terraform must have:
 
 The billing account ID must be in the format: `XXXXXX-XXXXXX-XXXXXX`
 
-Example: `01B990-D98512-3FA49A`
+Example: `0123451-678901-ABCDEF`
 
 ## Example Configurations
 
@@ -252,8 +252,8 @@ module "service_projects" {
   source = "../modules/terraform-google-svc-projects"
 
   suffix             = random_string.suffix.result
-  billing_account_id = "01B990-D98512-3FA49A"
-  folder_id          = "832895978042"
+  billing_account_id = "0123451-678901-ABCDEF"
+  folder_id          = "1234567890"
   
   labels = {
     environment = "production"
@@ -268,7 +268,7 @@ module "custom_projects" {
   source = "../modules/terraform-google-svc-projects"
 
   suffix             = "dev1"
-  billing_account_id = "01B990-D98512-3FA49A"
+  billing_account_id = "0123451-678901-ABCDEF"
   folder_id          = "folders/dev-folder"
   
   host_project_name = "fintech-prod-host-project"
@@ -277,8 +277,8 @@ module "custom_projects" {
   
   labels = {
     environment = "production"
-    team        = "fintech-technology-devops"
-    cost_center = "fintech-technology-devops"
+    team        = "fintech-devops"
+    cost_center = "fintech-devops"
   }
 }
 ```

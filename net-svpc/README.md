@@ -23,17 +23,17 @@ Both VPCs are configured as Shared VPC host projects, allowing service projects 
 │  │                 │    │                 │                │
 │  │ ┌─────────────┐ │    │ ┌─────────────┐ │                │
 │  │ │ GKE Subnet  │ │    │ │ Data Subnet │ │                │
-│  │ │ 10.60.4.0/22│ │    │ │10.60.8.0/22 │ │                │
+│  │ │ 10.160.4.0/22│ │    │ │10.160.8.0/22 │ │                │
 │  │ └─────────────┘ │    │ └─────────────┘ │                │
 │  │                 │    │                 │                │
 │  │ ┌─────────────┐ │    │ ┌─────────────┐ │                │
 │  │ │Proxy Subnet │ │    │ │Proxy Subnet │ │                │
-│  │ │10.60.0.0/24 │ │    │ │10.60.12.0/24│ │                │
+│  │ │10.160.0.0/24 │ │    │ │10.160.12.0/24│ │                │
 │  │ └─────────────┘ │    │ └─────────────┘ │                │
 │  │                 │    │                 │                │
 │  │ ┌─────────────┐ │    │                 │                │
 │  │ │Control Plane│ │    │                 │                │
-│  │ │10.60.16.0/24│ │    │                 │                │
+│  │ │10.160.16.0/24│ │    │                 │                │
 │  │ └─────────────┘ │    │                 │                │
 │  └─────────────────┘    └─────────────────┘                │
 │           │                       │                        │
@@ -55,17 +55,17 @@ Both VPCs are configured as Shared VPC host projects, allowing service projects 
 
 - **Purpose**: Hosts Kubernetes clusters and containerized applications
 - **Subnets**:
-  - **GKE Subnet**: Primary subnet for GKE nodes (10.60.4.0/22)
-  - **Proxy Subnet**: Internal HTTPS load balancer subnet (10.60.0.0/24)
-  - **Control Plane Subnet**: GKE control plane subnet (10.60.16.0/24)
+  - **GKE Subnet**: Primary subnet for GKE nodes (10.160.4.0/22)
+  - **Proxy Subnet**: Internal HTTPS load balancer subnet (10.160.0.0/24)
+  - **Control Plane Subnet**: GKE control plane subnet (10.160.16.0/24)
 - **Features**: Cloud NAT, firewall rules, VPC peering, private DNS
 
 ### 2. Data VPC Network
 
 - **Purpose**: Hosts data processing, analytics, and storage services
 - **Subnets**:
-  - **Data Subnet**: Primary subnet for data services (10.60.8.0/22)
-  - **Proxy Subnet**: Internal HTTPS load balancer subnet (10.60.12.0/24)
+  - **Data Subnet**: Primary subnet for data services (10.160.8.0/22)
+  - **Proxy Subnet**: Internal HTTPS load balancer subnet (10.160.12.0/24)
 - **Features**: Cloud NAT, firewall rules, VPC peering, private service access
 
 ### 3. Shared VPC Configuration
@@ -92,7 +92,7 @@ module "shared_vpc" {
   # Project Configuration
   project_id = "fintech-prod-host-project"
   folder_id  = "1234567890"
-  region     = "europe-central2"
+  region     = "us-central1"
 
   # VPC Names
   gke_vpc_name = "gke-vpc"
@@ -101,15 +101,15 @@ module "shared_vpc" {
   # GKE Subnet Configuration
   gke_subnet = {
     name          = "gke-subnet"
-    ip_cidr_range = "10.60.4.0/22"
+    ip_cidr_range = "10.160.4.0/22"
     secondary_ip_ranges = [
       {
         range_name    = "pods"
-        ip_cidr_range = "10.60.128.0/17"
+        ip_cidr_range = "10.160.128.0/17"
       },
       {
         range_name    = "services"
-        ip_cidr_range = "10.60.8.0/22"
+        ip_cidr_range = "10.160.8.0/22"
       }
     ]
     private_ip_google_access = true
@@ -123,7 +123,7 @@ module "shared_vpc" {
   # Data Subnet Configuration
   data_subnet = {
     name          = "data-subnet"
-    ip_cidr_range = "10.60.8.0/22"
+    ip_cidr_range = "10.160.8.0/22"
     secondary_ip_ranges = []
     private_ip_google_access = true
     log_config = {
@@ -160,7 +160,7 @@ module "shared_vpc" {
   # Cloud NAT Configuration
   gke_cloud_nat_config = {
     router_name                        = "fintech-prod-gke-router"
-    router_region                      = "europe-central2"
+    router_region                      = "us-central1"
     router_asn                         = 64514
     nat_name                           = "fintech-prod-gke-nat"
     nat_ip_allocate_option             = "AUTO_ONLY"
@@ -173,7 +173,7 @@ module "shared_vpc" {
 
   data_cloud_nat_config = {
     router_name                        = "fintech-prod-data-router"
-    router_region                      = "europe-central2"
+    router_region                      = "us-central1"
     router_asn                         = 64514
     nat_name                           = "fintech-prod-data-nat"
     nat_ip_allocate_option             = "AUTO_ONLY"
@@ -193,7 +193,7 @@ module "shared_vpc" {
       disabled      = false
       enable_logging = true
       priority      = 1000
-      source_ranges = ["10.60.0.0/16"]
+      source_ranges = ["10.160.0.0/16"]
       target_tags   = []
       allow = [
         {
@@ -235,7 +235,7 @@ module "shared_vpc" {
   gke_vpc_peering_config = {
     to-data-vpc = {
       name                 = "gke-to-data-peering"
-      peer_network         = "projects/fintech-prod-host-project-8hhr/global/networks/data-vpc"
+      peer_network         = "projects/fintech-prod-host-project/global/networks/data-vpc"
       auto_create_routes   = true
       export_custom_routes = true
       import_custom_routes = true
@@ -245,7 +245,7 @@ module "shared_vpc" {
   data_vpc_peering_config = {
     to-gke-vpc = {
       name                 = "data-to-gke-peering"
-      peer_network         = "projects/fintech-prod-host-project-8hhr/global/networks/gke-vpc"
+      peer_network         = "projects/fintech-prod-host-project/global/networks/gke-vpc"
       auto_create_routes   = true
       export_custom_routes = true
       import_custom_routes = true
@@ -256,7 +256,7 @@ module "shared_vpc" {
   data_private_service_access_ranges = {
     cloudsql = {
       name          = "cloudsql-private-access"
-      ip_cidr_range = "10.60.32.0/24"
+      ip_cidr_range = "10.160.32.0/24"
     }
   }
 
@@ -267,8 +267,8 @@ module "shared_vpc" {
       dns_name    = "fintech.prod.internal."
       description = "Internal DNS zone for production services"
       networks = [
-        "projects/fintech-prod-host-project-8hhr/global/networks/gke-vpc",
-        "projects/fintech-prod-host-project-8hhr/global/networks/data-vpc"
+        "projects/fintech-prod-host-project/global/networks/gke-vpc",
+        "projects/fintech-prod-host-project/global/networks/data-vpc"
       ]
     }
   }

@@ -106,14 +106,14 @@ module "iam" {
 
   # OS Login Users
   os_login_users = [
-    "user:admin@cloudon-one.com",
-    "user:devops@cloudon-one.com"
+    "user:admin@fintech.com",
+    "user:devops@fintech.com"
   ]
 
   # IAP Tunnel Users
   iap_tunnel_users = [
-    "user:admin@cloudon-one.com",
-    "user:devops@cloudon-one.com"
+    "user:admin@fintech.com",
+    "user:devops@fintech.com"
   ]
 
   # Bastion Service Account Configuration

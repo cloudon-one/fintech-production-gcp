@@ -1,7 +1,10 @@
+# Configure Google Cloud provider for SQL resources
 provider "google" {
   region = var.region
 }
 
+# Retrieve network configuration from Shared VPC state
+# Provides network IDs and subnet configurations for SQL instances
 data "terraform_remote_state" "net_svpc" {
   backend = "gcs"
   config = {
@@ -10,6 +13,8 @@ data "terraform_remote_state" "net_svpc" {
   }
 }
 
+# Retrieve service project IDs from remote state
+# Contains data project ID for SQL deployment
 data "terraform_remote_state" "svc_projects" {
   backend = "gcs"
   config = {
@@ -18,6 +23,8 @@ data "terraform_remote_state" "svc_projects" {
   }
 }
 
+# Retrieve IAM configuration from remote state
+# Contains security roles and access policies
 data "terraform_remote_state" "net_iam" {
   backend = "gcs"
   config = {
@@ -26,6 +33,8 @@ data "terraform_remote_state" "net_iam" {
   }
 }
 
+# Define local variables for SQL instance configuration
+# Consolidates project IDs, network details, and naming conventions
 locals {
   data_project_id   = data.terraform_remote_state.svc_projects.outputs.data_project_id
   host_project_id   = data.terraform_remote_state.net_svpc.outputs.host_project_id
@@ -44,6 +53,8 @@ locals {
   })
 }
 
+# Enable Cloud SQL Admin API for instance management
+# Required for creating and managing Cloud SQL instances
 resource "google_project_service" "cloudsql_admin_api" {
   project = local.data_project_id
   service = "sqladmin.googleapis.com"
@@ -52,6 +63,8 @@ resource "google_project_service" "cloudsql_admin_api" {
   disable_on_destroy         = false
 }
 
+# Enable Cloud SQL component API
+# Required for SQL instance operations
 resource "google_project_service" "cloudsql_api" {
   project = local.data_project_id
   service = "sql-component.googleapis.com"
@@ -60,6 +73,8 @@ resource "google_project_service" "cloudsql_api" {
   disable_on_destroy         = false
 }
 
+# Enable Compute Engine API for network connectivity
+# Required for private IP configuration
 resource "google_project_service" "compute_api" {
   project = local.data_project_id
   service = "compute.googleapis.com"
@@ -68,6 +83,8 @@ resource "google_project_service" "compute_api" {
   disable_on_destroy         = false
 }
 
+# Enable Service Networking API for private service connection
+# Enables private IP connectivity to Cloud SQL
 resource "google_project_service" "servicenetworking_api" {
   project = local.data_project_id
   service = "servicenetworking.googleapis.com"
@@ -76,6 +93,8 @@ resource "google_project_service" "servicenetworking_api" {
   disable_on_destroy         = false
 }
 
+# Create Cloud SQL instances for different workloads
+# Each instance is configured with high availability and security features
 module "fintech_cloudsql_instances" {
   for_each = var.sql_instances_config
   source   = "../modules/terraform-google-cloudsql"
@@ -94,6 +113,8 @@ module "fintech_cloudsql_instances" {
   primary_zone          = each.value.primary_zone
   deletion_protection   = each.value.deletion_protection
 
+  # Configure private IP connectivity for secure database access
+  # Disables public IP and enforces SSL connections
   ip_configuration = {
     ipv4_enabled                                  = false
     private_network                               = local.data_network_id
@@ -103,6 +124,8 @@ module "fintech_cloudsql_instances" {
     authorized_networks                           = []
   }
 
+  # Configure automated backups with point-in-time recovery
+  # Ensures data durability and disaster recovery capability
   backup_configuration = {
     enabled                        = true
     start_time                     = "00:00"
@@ -112,6 +135,8 @@ module "fintech_cloudsql_instances" {
     location                       = "eu"
   }
 
+  # Schedule maintenance window during low-traffic periods
+  # Friday nights to minimize business impact
   maintenance_window = {
     day          = 5  # Friday
     hour         = 22 # 10 PM
@@ -120,6 +145,8 @@ module "fintech_cloudsql_instances" {
 
   database_flags = each.value.database_flags
 
+  # Enable Query Insights for performance monitoring
+  # Tracks slow queries and application patterns
   insights_config = {
     query_insights_enabled  = true
     query_string_length     = 10000
@@ -136,10 +163,10 @@ module "fintech_cloudsql_instances" {
   retain_backups_on_delete     = true
 
   user_labels = {
-    cost_center = "fintech-technology-devops"
+    cost_center = "fintech-devops"
     environment = "production"
-    owner       = "fintech-technology-devops"
-    team        = "fintech-technology-devops"
+    owner       = "fintech-devops"
+    team        = "fintech-devops"
   }
 
   depends_on = [
@@ -150,6 +177,8 @@ module "fintech_cloudsql_instances" {
   ]
 }
 
+# Configure firewall rule for GKE to Cloud SQL connectivity
+# Allows database access from Kubernetes workloads
 resource "google_compute_firewall" "cloudsql_access_from_gke" {
   name    = "allow-cloudsql-access-from-gke"
   network = local.data_network_name
@@ -160,8 +189,8 @@ resource "google_compute_firewall" "cloudsql_access_from_gke" {
     ports    = ["5432"]
   }
 
-  source_ranges      = ["10.60.0.0/16"]
-  destination_ranges = ["10.61.1.0/24", "10.61.2.0/24"]
+  source_ranges      = ["10.160.0.0/16"]
+  destination_ranges = ["10.161.1.0/24", "10.161.2.0/24"]
 
   log_config {
     metadata = "INCLUDE_ALL_METADATA"
@@ -170,6 +199,8 @@ resource "google_compute_firewall" "cloudsql_access_from_gke" {
   description = "Allow Cloud SQL access from GKE cluster"
 }
 
+# Configure firewall rule for data VPC internal access
+# Enables data processing workloads to access databases
 resource "google_compute_firewall" "cloudsql_access_from_data" {
   name    = "allow-cloudsql-access-from-data"
   network = local.data_network_name
@@ -180,8 +211,8 @@ resource "google_compute_firewall" "cloudsql_access_from_data" {
     ports    = ["5432"]
   }
 
-  source_ranges      = ["10.61.0.0/16"]
-  destination_ranges = ["10.61.1.0/24", "10.61.2.0/24"]
+  source_ranges      = ["10.161.0.0/16"]
+  destination_ranges = ["10.161.1.0/24", "10.161.2.0/24"]
 
   log_config {
     metadata = "INCLUDE_ALL_METADATA"
@@ -190,6 +221,8 @@ resource "google_compute_firewall" "cloudsql_access_from_data" {
   description = "Allow Cloud SQL access from data VPC"
 }
 
+# Configure firewall rule for IAP tunnel access
+# Enables secure administrative access through Identity-Aware Proxy
 resource "google_compute_firewall" "cloudsql_access_from_iap" {
   name    = "allow-cloudsql-access-from-iap"
   network = local.data_network_name
@@ -201,7 +234,7 @@ resource "google_compute_firewall" "cloudsql_access_from_iap" {
   }
 
   source_ranges      = ["35.235.240.0/20"]
-  destination_ranges = ["10.61.1.0/24", "10.61.2.0/24"]
+  destination_ranges = ["10.161.1.0/24", "10.161.2.0/24"]
 
   log_config {
     metadata = "INCLUDE_ALL_METADATA"

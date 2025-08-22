@@ -1,7 +1,10 @@
+# Configure Google Cloud provider for GKE deployment
 provider "google" {
   region = var.region
 }
 
+# Retrieve shared VPC network configuration from remote state
+# Contains network IDs, subnet configurations, and CIDR ranges
 data "terraform_remote_state" "net_svpc" {
   backend = "gcs"
   config = {
@@ -10,6 +13,8 @@ data "terraform_remote_state" "net_svpc" {
   }
 }
 
+# Retrieve service project information from remote state
+# Contains project IDs and service account details
 data "terraform_remote_state" "svc_projects" {
   backend = "gcs"
   config = {
@@ -18,6 +23,8 @@ data "terraform_remote_state" "svc_projects" {
   }
 }
 
+# Retrieve IAM configuration from remote state
+# Contains security groups and role bindings
 data "terraform_remote_state" "net_iam" {
   backend = "gcs"
   config = {
@@ -26,6 +33,8 @@ data "terraform_remote_state" "net_iam" {
   }
 }
 
+# Define local variables for resource configuration
+# Consolidates remote state outputs and configuration values
 locals {
   gke_project_id      = data.terraform_remote_state.svc_projects.outputs.gke_project_id
   host_project_id     = data.terraform_remote_state.net_svpc.outputs.host_project_id
@@ -36,14 +45,18 @@ locals {
   services_range_name = data.terraform_remote_state.net_svpc.outputs.gke_services_secondary_range_name
   gke_cluster_name    = var.gke_config.cluster_name_suffix != "" ? "fintech-prod-gke-${var.gke_config.cluster_name_suffix}" : "fintech-prod-gke"
 
+  # Define availability zones for node distribution
+  # Ensures high availability across multiple zones
   gke_zones = [
     "${var.region}-a",
     "${var.region}-b",
     "${var.region}-c"
   ]
 
+  # Node pool configuration for different workload types
   all_node_pools = var.gke_node_pools_config
 
+  # Common labels for resource identification and cost tracking
   common_labels = merge(var.labels, {
     environment     = "production"
     project         = "fintech"
@@ -53,6 +66,8 @@ locals {
   })
 }
 
+# Create private GKE cluster with advanced security features
+# Implements defense-in-depth with multiple security layers
 module "fintech_gke_cluster" {
   count  = var.gke_config.enabled ? 1 : 0
   source = "../modules/terraform-google-gke"
@@ -63,6 +78,8 @@ module "fintech_gke_cluster" {
   network      = local.network_id
   subnetwork   = local.subnetwork_id
 
+  # Configure IP allocation for pods and services
+  # Uses secondary IP ranges for pod-to-pod communication
   ip_allocation_policy = {
     cluster_secondary_range_name  = "pods"
     services_secondary_range_name = "services"
@@ -114,6 +131,8 @@ module "fintech_gke_cluster" {
     enabled = true
   }
 
+  # Configure cluster autoscaling for dynamic resource allocation
+  # Automatically adjusts node count based on workload demands
   cluster_autoscaling = {
     enabled                     = true
     autoscaling_profile         = "BALANCED"
@@ -152,6 +171,8 @@ module "fintech_gke_cluster" {
     ]
   }
 
+  # Configure GKE addons for enhanced functionality
+  # Includes storage drivers, backup, and monitoring capabilities
   addons_config = {
     dns_cache_config = {
       enabled = true
@@ -193,30 +214,37 @@ module "fintech_gke_cluster" {
   }
 
   release_channel = var.gke_config.release_channel
+  # Configure comprehensive monitoring for all cluster components
+  # Enables Managed Prometheus for metric collection
   monitoring = {
     enable_components         = ["SYSTEM_COMPONENTS", "STORAGE", "POD", "DEPLOYMENT", "STATEFULSET", "DAEMONSET", "HPA", "JOBSET", "CADVISOR", "KUBELET", "APISERVER", "SCHEDULER", "CONTROLLER_MANAGER"]
     enable_managed_prometheus = true
   }
 
+  # Configure centralized logging for audit and troubleshooting
   logging = {
     enable_components = ["SYSTEM_COMPONENTS", "WORKLOADS", "APISERVER", "SCHEDULER", "CONTROLLER_MANAGER"]
   }
   deletion_protection = var.gke_config.deletion_protection
 
+  # Define maintenance window for cluster updates
+  # Scheduled during weekend nights to minimize disruption
   maintenance_window = {
     daily_window_start_time = null
     recurring_window = {
-      start_time = "2025-06-19T23:00:00Z"
-      end_time   = "2025-06-20T23:00:00Z"
+      start_time = "2025-08-19T23:00:00Z"
+      end_time   = "2025-08-20T23:00:00Z"
       recurrence = "FREQ=WEEKLY;BYDAY=SA,SU"
     }
   }
 
+  # Configure security posture scanning and vulnerability detection
   security_posture_config = {
     mode               = "BASIC"
     vulnerability_mode = "VULNERABILITY_ENTERPRISE"
   }
 
+  # Enable cost tracking and optimization features
   cost_management_config = {
     enabled = true
   }
@@ -245,6 +273,8 @@ module "fintech_gke_cluster" {
     }
   }
 
+  # Configure node pools with different specifications for various workloads
+  # Each pool is optimized for specific resource requirements
   node_pools = {
     for name, config in local.all_node_pools : name => {
       name              = config.name
@@ -264,7 +294,7 @@ module "fintech_gke_cluster" {
         "goog-gke-node-pool-provisioning-model" = "on-demand"
         "pool"                                  = config.name == "app-pool" ? "app-pool" : "service"
       }
-      boot_disk_kms_key = "projects/fintech-general/locations/europe-central2/keyRings/fintech-prod-gke-kms/cryptoKeys/fintech-prod-gke-kms"
+      boot_disk_kms_key = "projects/fintech-one/locations/us-central1/keyRings/fintech-prod-gke-kms/cryptoKeys/fintech-prod-gke-kms"
       confidential_nodes = {
         enabled = config.security.enable_confidential_computing
       }
@@ -338,14 +368,18 @@ module "fintech_gke_cluster" {
     security_group = var.gke_security_group
   }
 
+  # Configure etcd encryption at rest using Cloud KMS
+  # Ensures control plane data is encrypted
   database_encryption = {
     state    = "ENCRYPTED"
-    key_name = "projects/fintech-general/locations/europe-central2/keyRings/fintech-prod-gke-kms/cryptoKeys/fintech-prod-gke-kms"
+    key_name = "projects/fintech-one/locations/us-central1/keyRings/fintech-prod-gke-kms/cryptoKeys/fintech-prod-gke-kms"
   }
 
   pod_security_standards = var.gke_config.security.pod_security_standards
 }
 
+# Create service accounts for Workload Identity
+# Enables pods to securely access GCP services
 resource "google_service_account" "workload_service_accounts" {
   for_each = var.gke_config.workload_identity_service_accounts
 
@@ -355,6 +389,8 @@ resource "google_service_account" "workload_service_accounts" {
   description  = each.value.description
 }
 
+# Bind Kubernetes service accounts to GCP service accounts
+# Implements Workload Identity for secure pod authentication
 resource "google_service_account_iam_binding" "workload_identity_bindings" {
   for_each = var.gke_config.workload_identity_service_accounts
 
@@ -366,6 +402,8 @@ resource "google_service_account_iam_binding" "workload_identity_bindings" {
   ]
 }
 
+# Grant IAM roles to workload service accounts
+# Provides necessary permissions for pod operations
 resource "google_project_iam_member" "workload_service_account_roles" {
   for_each = {
     for pair in flatten([
@@ -383,6 +421,8 @@ resource "google_project_iam_member" "workload_service_account_roles" {
   member  = "serviceAccount:${google_service_account.workload_service_accounts[each.value.sa_name].email}"
 }
 
+# Configure firewall rule for webhook admission controllers
+# Allows control plane to communicate with validating/mutating webhooks
 resource "google_compute_firewall" "gke_master_webhook_access" {
   count = var.gke_config.enabled ? 1 : 0
 

@@ -21,7 +21,7 @@ module "shared_vpc" {
   source = "../modules/terraform-google-svpc"
 
   # Basic Configuration
-  project_id = "fintech-prod-host-project-8hhr"
+  project_id = "fintech-prod-host-project"
   vpc_name   = "gke-vpc"
 
   # Network Configuration
@@ -32,8 +32,8 @@ module "shared_vpc" {
   subnets = {
     gke = {
       name                     = "gke-subnet"
-      ip_cidr_range            = "10.60.4.0/22"
-      region                   = "europe-central2"
+      ip_cidr_range            = "10.160.4.0/22"
+      region                   = "us-central1"
       purpose                  = null
       role                     = null
       private_ip_google_access = true
@@ -41,11 +41,11 @@ module "shared_vpc" {
       secondary_ip_ranges = [
         {
           range_name    = "pods"
-          ip_cidr_range = "10.60.128.0/17"
+          ip_cidr_range = "10.160.128.0/17"
         },
         {
           range_name    = "services"
-          ip_cidr_range = "10.60.8.0/22"
+          ip_cidr_range = "10.160.8.0/22"
         }
       ]
       
@@ -58,8 +58,8 @@ module "shared_vpc" {
     
     proxy = {
       name                     = "gke-proxy-subnet"
-      ip_cidr_range           = "10.60.0.0/24"
-      region                  = "europe-central2"
+      ip_cidr_range           = "10.160.0.0/24"
+      region                  = "us-central1"
       purpose                 = "INTERNAL_HTTPS_LOAD_BALANCER"
       role                    = "ACTIVE"
       private_ip_google_access = true
@@ -71,7 +71,7 @@ module "shared_vpc" {
   # Cloud NAT Configuration
   cloud_nat_config = {
     router_name                        = "fintech-prod-router"
-    router_region                      = "europe-central2"
+    router_region                      = "us-central1"
     router_asn                         = 64514
     nat_name                           = "fintech-prod-gke-nat"
     nat_ip_allocate_option             = "AUTO_ONLY"
@@ -91,7 +91,7 @@ module "shared_vpc" {
       disabled      = false
       enable_logging = true
       priority      = 1000
-      source_ranges = ["10.60.0.0/16"]
+      source_ranges = ["10.160.0.0/16"]
       target_tags   = []
       
       allow = [
@@ -135,7 +135,7 @@ module "shared_vpc" {
   vpc_peering_config = {
     to-data-vpc = {
       name                 = "gke-to-data-peering"
-      peer_network         = "projects/fintech-prod-host-project-8hhr/global/networks/data-vpc"
+      peer_network         = "projects/fintech-prod-host-project/global/networks/data-vpc"
       auto_create_routes   = true
       export_custom_routes = true
       import_custom_routes = true
@@ -145,8 +145,8 @@ module "shared_vpc" {
   # Shared VPC Configuration
   enable_shared_vpc = true
   service_projects = {
-    gke  = "fintech-prod-gke-project-3ypz"
-    data = "fintech-prod-data-project-mnch"
+    gke  = "fintech-prod-gke-project"
+    data = "fintech-prod-data-project"
   }
 
   # Private DNS Configuration
@@ -156,7 +156,7 @@ module "shared_vpc" {
       dns_name    = "fintech.prod.internal."
       description = "Internal DNS zone for production services"
       networks = [
-        "projects/fintech-prod-host-project-8hhr/global/networks/production-vpc"
+        "projects/fintech-prod-host-project/global/networks/production-vpc"
       ]
     }
   }
@@ -167,7 +167,7 @@ module "shared_vpc" {
       zone_key = "fintech-prod-internal"
       type     = "A"
       ttl      = 300
-      rrdatas  = ["10.60.4.10"]
+      rrdatas  = ["10.160.4.10"]
     }
     
     database = {
@@ -175,14 +175,14 @@ module "shared_vpc" {
       zone_key = "fintech-prod-internal"
       type     = "A"
       ttl      = 300
-      rrdatas  = ["10.60.4.20"]
+      rrdatas  = ["10.160.4.20"]
     }
   }
 
   # Resource Labels
   labels = {
     environment = "production"
-    team        = "fintech-technology-devops"
+    team        = "fintech-devops"
     managed_by  = "terraform"
   }
 }
@@ -381,22 +381,22 @@ Each subnet in the `subnets` map supports:
 module "simple_vpc" {
   source = "../modules/terraform-google-svpc"
 
-  project_id = "fintech-prod-host-project-8hhr"
+  project_id = "fintech-prod-host-project"
   vpc_name   = "gke-vpc"
 
   subnets = {
     
   gke_subnet = {
     name          = "gke-subnet"
-    ip_cidr_range = "10.60.4.0/22"
+    ip_cidr_range = "10.160.4.0/22"
     secondary_ip_ranges = [
       {
         range_name    = "pods"
-        ip_cidr_range = "10.60.128.0/17"
+        ip_cidr_range = "10.160.128.0/17"
       },
       {
         range_name    = "services"
-        ip_cidr_range = "10.60.8.0/22"
+        ip_cidr_range = "10.160.8.0/22"
       }
     ]
     private_ip_google_access = true
@@ -420,18 +420,18 @@ module "gke_vpc" {
   subnets = {
     gke = {
       name          = "gke-nodes"
-      ip_cidr_range = "10.0.0.0/24"
-      region        = "europe-central2"
+      ip_cidr_range = "10.160.0.0/24"
+      region        = "us-central1"
       private_ip_google_access = true
       
       secondary_ip_ranges = [
         {
           range_name    = "pods"
-          ip_cidr_range = "10.60.128.0/17"
+          ip_cidr_range = "10.160.128.0/17"
         },
         {
           range_name    = "services"
-          ip_cidr_range = "10.60.8.0/22"
+          ip_cidr_range = "10.160.8.0/22"
         }
       ]
       
@@ -445,7 +445,7 @@ module "gke_vpc" {
 
   cloud_nat_config = {
     router_name    = "fintech-prod-gke-router"
-    router_region  = "europe-central2"
+    router_region  = "us-central1"
     router_asn     = 64514
     nat_name       = "fintech-prod-gke-nat"
     nat_ip_allocate_option = "AUTO_ONLY"
@@ -463,14 +463,14 @@ module "gke_vpc" {
 module "shared_vpc" {
   source = "../modules/terraform-google-svpc"
 
-  project_id = "fintech-prod-host-project-8hhr"
+  project_id = "fintech-prod-host-project"
   vpc_name   = "data-vpc"
 
   subnets = {
     shared = {
       name          = "data-subnet"
-      ip_cidr_range = "10.61.4.0/22"
-      region        = "europe-central2"
+      ip_cidr_range = "10.161.4.0/22"
+      region        = "us-central1"
       private_ip_google_access = true
       secondary_ip_ranges = []
       log_config = null
@@ -491,7 +491,7 @@ module "shared_vpc" {
       dns_name    = "fintech.prod.internal."
       description = "Internal DNS for shared services"
       networks = [
-        "projects/fintech-prod-host-project-8hhr/global/networks/data-vpc"
+        "projects/fintech-prod-host-project/global/networks/data-vpc"
       ]
     }
   }
@@ -502,7 +502,7 @@ module "shared_vpc" {
       zone_key = "internal"
       type     = "A"
       ttl      = 300
-      rrdatas  = ["10.61.1.10"]
+      rrdatas  = ["10.161.1.10"]
     }
   }
 }

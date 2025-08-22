@@ -12,34 +12,34 @@ The infrastructure consists of:
 
 ### Network Architecture
 
-#### GKE VPC (10.60.0.0/16)
+#### GKE VPC (10.160.0.0/16)
 
-- **Nodes Subnet**: 10.60.4.0/22
-- **Control Plane**: 10.60.1.0/28
-- **Proxy Subnet**: 10.60.0.0/24 (Reserved for regional ILB)
-- **Pod Secondary Range**: 10.60.128.0/17
-- **Service Secondary Range**: 10.60.8.0/22
+- **Nodes Subnet**: 10.160.4.0/22
+- **Control Plane**: 10.160.1.0/28
+- **Proxy Subnet**: 10.160.0.0/24 (Reserved for regional ILB)
+- **Pod Secondary Range**: 10.160.128.0/17
+- **Service Secondary Range**: 10.160.8.0/22
 
-#### Data VPC (10.61.0.0/16)
+#### Data VPC (10.161.0.0/16)
 
-- **Data Services Subnet**: 10.61.4.0/22
-- **Proxy Subnet**: 10.61.0.0/24 (Reserved for regional ILB)
+- **Data Services Subnet**: 10.161.4.0/22
+- **Proxy Subnet**: 10.161.0.0/24 (Reserved for regional ILB)
 
 #### Service Network Segments for Google Private Connection
 
-- **fintech-prod-private-sql**: 10.61.1.0/24
-- **fintech-prod-private-sql-replica**: 10.61.2.0/24
-- **fintech-prod-private-redis**: 10.61.12.0/24
+- **fintech-prod-private-sql**: 10.161.1.0/24
+- **fintech-prod-private-sql-replica**: 10.161.2.0/24
+- **fintech-prod-private-redis**: 10.161.12.0/24
 
 #### Managed Airflow (Cloud Composer)
 
-- **Composer Pods Secondary Range**: 10.61.128.0/17
-- **Composer Services Secondary Range**: 10.61.8.0/22
+- **Composer Pods Secondary Range**: 10.161.128.0/17
+- **Composer Services Secondary Range**: 10.161.8.0/22
 
 #### Bastion Host Network Configuration
 
-- **Primary Interface**: Connected to GKE VPC (10.60.0.0/16) - gke-subnet
-- **Secondary Interface**: Connected to Data VPC (10.61.0.0/16) - data-subnet
+- **Primary Interface**: Connected to GKE VPC (10.160.0.0/16) - gke-subnet
+- **Secondary Interface**: Connected to Data VPC (10.161.0.0/16) - data-subnet
 - **IP Forwarding**: Enabled for multi-VPC routing
 - **IAP Tunnel**: Secure access via Google's IAP range (35.235.240.0/20)
 
@@ -50,12 +50,6 @@ This project uses a **modular Terraform architecture** organized into service-sp
 ```
 ├── api
 │   └── api.yaml
-├── docs
-│   ├── GKE HLD.png
-│   ├── SVPC.png
-│   ├── VPC SC.png
-│   ├── gke-lld.md
-│   └── vpc-lld.md
 ├── modules
 │   ├── terraform-google-bastion
 │   │   ├── main.tf
@@ -405,7 +399,7 @@ This infrastructure uses modular Terraform design:
 |----------|-------------|---------|----------|
 | `billing_account_id` | GCP Billing Account ID (format: XXXXXX-XXXXXX-XXXXXX) | - | ✅ |
 | `folder_id` | GCP Organization Folder ID | `1234567890` | ✅ |
-| `region` | Target region for all resources | `europe-central2` | ✅ |
+| `region` | Target region for all resources | `us-central1` | ✅ |
 | `enable_flow_logs` | Enable VPC flow logs for monitoring | `true` | - |
 | `enable_private_google_access` | Enable Private Google Access for subnets | `true` | - |
 | `enable_shared_vpc` | Enable Shared VPC configuration | `true` | - |
@@ -483,7 +477,7 @@ The Cloud SQL service (`svc-sql`) provides database instances deployed in the **
 - **Availability**: Regional (high availability)
 - **Databases**: `fintech_analytics`, `fintech_reporting`
 - **Users**: `analytics_user`, `reporting_user`
-- **Read Replicas**: Cross-region replica in europe-west1
+- **Read Replicas**: Cross-region replica in us-west1
 - **Features**: Query insights, performance monitoring, maintenance windows
 
 ### Security Features
@@ -517,7 +511,7 @@ The Redis service (`svc-redis`) provides Redis instances deployed in the **data 
 - **Availability**: Regional (high availability)
 - **Memory**: 1GB (configurable)
 - **Features**: TLS encryption, persistence, maintenance windows
-- **Private Network**: Connected to fintech data VPC (10.61.5.0/24)
+- **Private Network**: Connected to fintech data VPC (10.161.5.0/24)
 - **Authentication**: AUTH enabled for secure access
 
 ### Security Features
@@ -559,8 +553,8 @@ The bastion host (`net-bastion`) provides secure access to private resources:
 
 The bastion host is deployed with multiple network interfaces for secure access to all VPCs:
 
-- **Primary Interface**: Connected to GKE VPC (10.60.0.0/16) via gke-subnet
-- **Secondary Interface**: Connected to Data VPC (10.61.0.0/16) via data-subnet
+- **Primary Interface**: Connected to GKE VPC (10.160.0.0/16) via gke-subnet
+- **Secondary Interface**: Connected to Data VPC (10.161.0.0/16) via data-subnet
 - **IP Forwarding**: Enabled to allow routing between VPCs
 - **IAP Access**: Secure tunnel access from Google's IAP range (35.235.240.0/20)
 - **Proxy Access**: Internal networks can use HTTPS proxy for internet access
@@ -572,8 +566,8 @@ The bastion host is deployed with multiple network interfaces for secure access 
    ```bash
    gcloud compute start-iap-tunnel fintech-prod-bastion 22 \
      --local-host-port=localhost:2222 \
-     --zone=europe-central2-a \
-     --project=fintech-prod-host-project-8hhr
+     --zone=us-central1-a \
+     --project=fintech-prod-host-project
    ssh -p 2222 user@localhost
    ```
 
@@ -581,7 +575,7 @@ The bastion host is deployed with multiple network interfaces for secure access 
 
    ```bash
    gcloud compute ssh fintech-prod-bastion \
-     --zone=europe-central2-a \
+     --zone=us-central1-a \
      --project=fintech-prod-host-project
    ```
 
@@ -589,7 +583,7 @@ The bastion host is deployed with multiple network interfaces for secure access 
    ```bash
    gcloud compute ssh [USERNAME]@fintech-prod-bastion \
      --project=fintech-prod-host-project \
-     --zone=europe-central2-a
+     --zone=us-central1-a
    ```
 
 #### GKE Cluster Access
@@ -597,7 +591,7 @@ The bastion host is deployed with multiple network interfaces for secure access 
 From the bastion host, you can securely manage GKE clusters:
 
 ```bash
-gcloud container clusters get-credentials fintech-prod-gke cluster --location europe-central2
+gcloud container clusters get-credentials fintech-prod-gke cluster --location us-central1
 kubectl get nodes
 kubectl get pods --all-namespaces
 ```
@@ -776,25 +770,25 @@ This configuration follows Terraform and GCP best practices:
    # Check IAP tunnel status
    gcloud compute start-iap-tunnel fintech-prod-bastion 22 \
      --local-host-port=localhost:2222 \
-     --zone=europe-central2-a \
+     --zone=us-central1-a \
      --project=fintech-prod-host-project-8hhr
 
    # Verify bastion instance status
    gcloud compute instances describe fintech-prod-bastion \
-     --zone=europe-central2-a \
-     --project=fintech-prod-host-project-8hhr
+     --zone=us-central1-a \
+     --project=fintech-prod-host-project
 
    # Check bastion service account permissions
-   gcloud projects get-iam-policy fintech-prod-host-project-8hhr \
+   gcloud projects get-iam-policy fintech-prod-host-project \
      --flatten="bindings[].members" \
      --format="table(bindings.role)" \
      --filter="bindings.members:bastion-prod-host@fintech-prod-host-project.iam.gserviceaccount.com"
 
    # Test network connectivity from bastion
    gcloud compute ssh fintech-prod-bastion \
-     --zone=europe-central2-a \
-     --project=fintech-prod-host-project-8hhr \
-     --command="ping -c 3 10.60.4.1"
+     --zone=us-central1-a \
+     --project=fintech-prod-host-project \
+     --command="ping -c 3 10.160.4.1"
    ```
 
 9. **Configuration Issues**
@@ -848,9 +842,38 @@ For support and questions:
 - Create an issue in this repository
 - Contact the DevOps team
 
+## 📝 Recent Changes
+
+### Domain and Branding Updates (August 2025)
+
+All references have been updated throughout the codebase:
+- **Email domains**: Changed from `@iceo.co` and `@cloudon-one.com` to `@fintech.com`
+- **Project names**: Replaced all `beone` references with `fintech`
+- **Service endpoints**: Updated from `beone-api` to `fintech-api`
+- **Security groups**: Updated to use `@fintech.com` domain
+
+### Infrastructure Enhancements
+
+#### Comprehensive Code Documentation
+Added detailed comments throughout all Terraform modules and configurations:
+- **Network modules**: Documented VPC architecture, subnet allocation, and routing decisions
+- **Security configurations**: Explained IAM roles, service accounts, and access controls
+- **GKE cluster**: Documented autoscaling, security features, and workload identity setup
+- **Database services**: Added comments for HA configurations, backup strategies, and encryption
+- **Bastion host**: Documented secure access patterns and multi-VPC connectivity
+- **VPC Service Controls**: Explained security perimeter and access level configurations
+
+#### Module Documentation
+Each module now includes:
+- Purpose and architectural context
+- Security considerations and best practices
+- Resource relationships and dependencies
+- Configuration options and their impacts
+- Troubleshooting guidance
+
 ---
 
 **Infrastructure Type**: Multi-Project GCP with Shared VPC, Cloud SQL, VPC Service Controls, Bastion Host, and Comprehensive IAM  
-**Last Updated**: June 2025  
+**Last Updated**: August 2025  
 **Terraform Version**: >= 1.5.0  
 **GCP Provider Version**: >= 5.45.0  

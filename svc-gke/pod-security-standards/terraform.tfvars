@@ -1,4 +1,4 @@
-region       = "europe-central2"
+region       = "us-central1"
 project_id   = "fintech-prod-gke-project"
 cluster_name = "fintech-prod-gke-cluster"
 

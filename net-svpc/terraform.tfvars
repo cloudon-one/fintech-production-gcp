@@ -1,12 +1,12 @@
-billing_account_id = "123456-7890AB-CDEF12" # Replace with your actual billing account ID
-folder_id          = "832895978042"
-region             = "europe-central2"
+billing_account_id = "0123451-678901-ABCDEF" # Replace with your actual billing account ID
+folder_id          = "1234567890"
+region             = "us-central1"
 
 labels = {
   environment = "production"
-  team        = "fintech-technology-devops"
-  cost_center = "fintech-technology-devops"
-  owner       = "fintech-technology-devops"
+  team        = "fintech-devops"
+  cost_center = "fintech-devops"
+  owner       = "fintech-devops"
 }
 
 enable_private_google_access = true
@@ -40,15 +40,15 @@ data_vpc_name = "data-vpc"
 
 gke_subnet = {
   name          = "gke-subnet"
-  ip_cidr_range = "10.60.4.0/22"
+  ip_cidr_range = "10.160.4.0/22"
   secondary_ip_ranges = [
     {
       range_name    = "pods"
-      ip_cidr_range = "10.60.128.0/17"
+      ip_cidr_range = "10.160.128.0/17"
     },
     {
       range_name    = "services"
-      ip_cidr_range = "10.60.8.0/22"
+      ip_cidr_range = "10.160.8.0/22"
     }
   ]
   private_ip_google_access = true
@@ -61,14 +61,14 @@ gke_subnet = {
 
 gke_proxy_subnet = {
   name          = "gke-proxy-subnet"
-  ip_cidr_range = "10.60.0.0/24"
+  ip_cidr_range = "10.160.0.0/24"
   purpose       = "REGIONAL_MANAGED_PROXY"
   role          = "ACTIVE"
 }
 
 gke_control_plane_subnet = {
   name                     = "gke-control-plane-subnet"
-  ip_cidr_range            = "10.60.1.0/28"
+  ip_cidr_range            = "10.160.1.0/28"
   private_ip_google_access = true
   log_config = {
     aggregation_interval = "INTERVAL_10_MIN"
@@ -79,15 +79,15 @@ gke_control_plane_subnet = {
 
 data_subnet = {
   name          = "data-subnet"
-  ip_cidr_range = "10.61.4.0/22"
+  ip_cidr_range = "10.161.4.0/22"
   secondary_ip_ranges = [
     {
       range_name    = "composer-pods"
-      ip_cidr_range = "10.61.128.0/17"
+      ip_cidr_range = "10.161.128.0/17"
     },
     {
       range_name    = "composer-services"
-      ip_cidr_range = "10.61.8.0/22"
+      ip_cidr_range = "10.161.8.0/22"
     }
   ]
   private_ip_google_access = true
@@ -100,14 +100,14 @@ data_subnet = {
 
 data_proxy_subnet = {
   name          = "data-proxy-subnet"
-  ip_cidr_range = "10.61.0.0/24"
+  ip_cidr_range = "10.161.0.0/24"
   purpose       = "REGIONAL_MANAGED_PROXY"
   role          = "ACTIVE"
 }
 
 gke_cloud_nat_config = {
   router_name                        = "fintech-prod-gke-router"
-  router_region                      = "europe-central2"
+  router_region                      = "us-central1"
   router_asn                         = 64514
   nat_name                           = "fintech-prod-gke-nat"
   nat_ip_allocate_option             = "AUTO_ONLY"
@@ -120,7 +120,7 @@ gke_cloud_nat_config = {
 
 data_cloud_nat_config = {
   router_name                        = "fintech-prod-data-router"
-  router_region                      = "europe-central2"
+  router_region                      = "us-central1"
   router_asn                         = 64514
   nat_name                           = "fintech-prod-data-nat"
   nat_ip_allocate_option             = "AUTO_ONLY"
@@ -139,7 +139,7 @@ gke_firewall_rules = {
     priority                = 1000
     disabled                = false
     enable_logging          = false
-    source_ranges           = ["10.60.0.0/16", "10.61.0.0/16"]
+    source_ranges           = ["10.160.0.0/16", "10.161.0.0/16"]
     destination_ranges      = null
     source_tags             = null
     source_service_accounts = null
@@ -169,7 +169,7 @@ gke_firewall_rules = {
     priority                = 1000
     disabled                = false
     enable_logging          = false
-    source_ranges           = ["10.60.128.0/17"]  # GKE pods subnet
+    source_ranges           = ["10.160.128.0/17"]  # GKE pods subnet
     destination_ranges      = null
     source_tags             = null
     source_service_accounts = null
@@ -223,7 +223,7 @@ data_firewall_rules = {
     priority                = 1000
     disabled                = false
     enable_logging          = false
-    source_ranges           = ["10.60.0.0/16", "10.61.0.0/16"]
+    source_ranges           = ["10.160.0.0/16", "10.161.0.0/16"]
     destination_ranges      = null
     source_tags             = null
     source_service_accounts = null
@@ -272,14 +272,14 @@ enable_shared_vpc = true
 gke_subnet_iam_bindings = {
   gke-subnet = {
     subnetwork = "gke-subnet"
-    region     = "europe-central2"
+    region     = "us-central1"
     members = [
       # GKE service accounts will be added dynamically based on service projects
     ]
   }
   gke-proxy-subnet = {
     subnetwork = "gke-proxy-subnet"
-    region     = "europe-central2"
+    region     = "us-central1"
     members = [
       # GKE service accounts will be added dynamically based on service projects
     ]
@@ -290,14 +290,14 @@ gke_subnet_iam_bindings = {
 data_subnet_iam_bindings = {
   data-subnet = {
     subnetwork = "data-subnet"
-    region     = "europe-central2"
+    region     = "us-central1"
     members = [
       # Data service accounts will be added dynamically based on service projects
     ]
   }
   data-proxy-subnet = {
     subnetwork = "data-proxy-subnet"
-    region     = "europe-central2"
+    region     = "us-central1"
     members = [
       # Data service accounts will be added dynamically based on service projects
     ]
@@ -307,19 +307,19 @@ data_subnet_iam_bindings = {
 data_private_service_access_ranges = {
   cloudsql = {
     name          = "fintech-prod-private-sql"
-    ip_cidr_range = "10.61.1.0/24"
+    ip_cidr_range = "10.161.1.0/24"
     purpose       = "VPC_PEERING"
     address_type  = "INTERNAL"
   },
   cloudsql_replica = {
     name          = "fintech-prod-sql-replica"
-    ip_cidr_range = "10.61.2.0/24"
+    ip_cidr_range = "10.161.2.0/24"
     purpose       = "VPC_PEERING"
     address_type  = "INTERNAL"
   },
   redis = {
     name          = "fintech-prod-private-redis"
-    ip_cidr_range = "10.61.12.0/28"
+    ip_cidr_range = "10.161.12.0/28"
     purpose       = "VPC_PEERING"
     address_type  = "INTERNAL"
   }
@@ -343,28 +343,28 @@ dns_config = {
 #    zone_key = "private-zone"
 #    type     = "A"
 #    ttl      = 300
-#    rrdatas  = ["10.60.4.10"]
+#    rrdatas  = ["10.160.4.10"]
 #  }
 #  api = {
 #    name     = "api.fintech-prod.internal."
 #    zone_key = "private-zone"
 #    type     = "A"
 #    ttl      = 300
-#    rrdatas  = ["10.60.4.11"]
+#    rrdatas  = ["10.160.4.11"]
 #  }
 #  sql = {
 #    name     = "sql.fintech-prod.internal."
 #    zone_key = "private-zone"
 #    type     = "A"
 #    ttl      = 300
-#    rrdatas  = ["10.61.4.10"]
+#    rrdatas  = ["10.161.4.10"]
 #  }
 #  composer = {
 #    name     = "composer.fintech-prod.internal."
 #    zone_key = "private-zone"
 #    type     = "A"
 #    ttl      = 300
-#    rrdatas  = ["10.61.4.11"]
+#    rrdatas  = ["10.161.4.11"]
 #  }
 #}
 

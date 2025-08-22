@@ -17,13 +17,13 @@ The Cloud SQL infrastructure provides:
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   GKE Cluster   │    │  Cloud SQL      │    │  Read Replicas  │
-│  (10.60.4.0/22) │◄──►│  Primary        │◄──►│  (Multi-region) │
+│  (10.160.4.0/22) │◄──►│  Primary        │◄──►│  (Multi-region) │
 └─────────────────┘    │  (Private IP)   │    └─────────────────┘
                        └─────────────────┘
                                 │
                        ┌─────────────────┐
                        │  data-subnet    │
-                       │  (10.61.4.0/22) │
+                       │  (10.161.4.0/22) │
                        └─────────────────┘
 ```
 
@@ -130,7 +130,7 @@ terraform apply tfplan
 
 ```bash
 ./cloud-sql-proxy --credentials-file /opt/gcp-keys/prod/sql-admin.json \
-  fintech-prod-data-project-mnch:europe-central2:fintech-prod-cloud-sql
+  fintech-prod-data-project:us-central1:fintech-prod-cloud-sql
 ```
 
 ## Troubleshooting
@@ -154,6 +154,6 @@ gcloud sql backups list --instance=<instance-name>
 
 For issues and questions:
 
-- **DevOps Team**: fintech-technology-devops
+- **DevOps Team**: fintech-devops
 - **Documentation**: [Cloud SQL Documentation](https://cloud.google.com/sql/docs)
 - **Google Cloud Support**: [Support Portal](https://cloud.google.com/support) 

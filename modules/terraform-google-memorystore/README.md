@@ -22,7 +22,7 @@ module "redis_instance" {
   # Basic Configuration
   project_id      = "fintech-prod-data-project-mnch"
   instance_name   = "fintech-prod-redis"
-  region          = "europe-central2"
+  region          = "us-central1"
 
   # Instance Configuration
   tier            = "STANDARD_HA"
@@ -30,7 +30,7 @@ module "redis_instance" {
   redis_version   = "REDIS_7_0"
 
   # Network Configuration
-  authorized_network = "projects/fintech-prod-host-project-8hhr/global/networks/data-vpc"
+  authorized_network = "projects/fintech-prod-host-project/global/networks/data-vpc"
   connect_mode       = "PRIVATE_SERVICE_ACCESS"
 
   # Security Configuration
@@ -64,7 +64,7 @@ module "redis_instance" {
   # Labels
   user_labels = {
     environment = "production"
-    team        = "fintech-technology-devops"
+    team        = "fintech-devops"
     cost_center = "fintech-production"
   }
 }

@@ -1,11 +1,17 @@
+# Create Access Context Manager policy for VPC Service Controls
+# Foundation for defining access levels and service perimeters
 resource "google_access_context_manager_access_policy" "policy" {
   parent = "organizations/${var.organization_id}"
   title  = "fintech Production Access Policy"
 }
 
+# Define access levels for different teams and service accounts
+# Controls who can access resources within service perimeters
 resource "google_access_context_manager_access_levels" "access_levels" {
   parent = "accessPolicies/${google_access_context_manager_access_policy.policy.name}"
 
+  # Create access level for DevOps team members
+  # Grants administrative access to infrastructure resources
   dynamic "access_levels" {
     for_each = length(var.devops_team_members) > 0 ? [1] : []
     content {
@@ -58,6 +64,8 @@ resource "google_access_context_manager_access_levels" "access_levels" {
     }
   }
 
+  # Create access level for service accounts
+  # Enables automated service-to-service communication
   dynamic "access_levels" {
     for_each = length(var.service_accounts) > 0 ? [1] : []
     content {
@@ -71,6 +79,8 @@ resource "google_access_context_manager_access_levels" "access_levels" {
     }
   }
 
+  # Create access level for GKE Workload Identity service accounts
+  # Allows Kubernetes pods to access GCP resources securely
   dynamic "access_levels" {
     for_each = length(var.gke_workload_identity_service_accounts) > 0 ? [1] : []
     content {
@@ -84,6 +94,8 @@ resource "google_access_context_manager_access_levels" "access_levels" {
     }
   }
 
+  # Create access level for IAP tunnel users
+  # Enables secure administrative access through Identity-Aware Proxy
   dynamic "access_levels" {
     for_each = length(var.iap_tunnel_users) > 0 ? [1] : []
     content {

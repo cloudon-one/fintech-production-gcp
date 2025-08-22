@@ -9,12 +9,12 @@ ssh_keys = {
 }
 enable_iap_tunnel = true
 sa_impersonators = [
-  "user:user1@cloudon-one.com",
+  "user:user1@fintech.com",
 ]
 
 proxy_source_ranges = [
-  "10.60.0.0/16", # GKE network
-  "10.61.0.0/16"  # Data network
+  "10.160.0.0/16", # GKE network
+  "10.161.0.0/16"  # Data network
 ]
 additional_network_interfaces = [
   {

@@ -86,10 +86,10 @@ if [ -n "$SECONDARY_IF" ]; then
         
         ip link set $SECONDARY_IF up
         echo "200 data-vpc" >> /etc/iproute2/rt_tables 2>/dev/null || true
-        ip route add 10.61.0.0/16 dev $SECONDARY_IF table data-vpc 2>/dev/null || true
+        ip route add 10.161.0.0/16 dev $SECONDARY_IF table data-vpc 2>/dev/null || true
         ip route add default via $SECONDARY_GATEWAY dev $SECONDARY_IF table data-vpc 2>/dev/null || true
         ip rule add from $SECONDARY_IP table data-vpc 2>/dev/null || true
-        ip rule add to 10.61.0.0/16 table data-vpc 2>/dev/null || true
+        ip rule add to 10.161.0.0/16 table data-vpc 2>/dev/null || true
     fi
 fi
 

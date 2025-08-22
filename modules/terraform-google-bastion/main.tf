@@ -1,20 +1,24 @@
+# Retrieve VPC network information for bastion placement
 data "google_compute_network" "vpc" {
   name    = var.vpc_name
   project = var.project_id
 }
 
+# Retrieve subnet information for bastion network interface
 data "google_compute_subnetwork" "subnet" {
   name    = var.subnet_name
   region  = var.region
   project = var.project_id
 }
 
+# Retrieve additional VPC networks for multi-VPC access
 data "google_compute_network" "additional_vpcs" {
   count   = length(var.additional_network_interfaces)
   name    = var.additional_network_interfaces[count.index].vpc_name
   project = var.project_id
 }
 
+# Retrieve additional subnets for multi-VPC connectivity
 data "google_compute_subnetwork" "additional_subnets" {
   count   = length(var.additional_network_interfaces)
   name    = var.additional_network_interfaces[count.index].subnet_name
@@ -22,6 +26,8 @@ data "google_compute_subnetwork" "additional_subnets" {
   project = var.project_id
 }
 
+# Create service account for bastion host authentication
+# Used for secure access and audit logging
 resource "google_service_account" "bastion" {
   account_id   = var.service_account_name
   display_name = "Bastion Host Service Account"
@@ -29,18 +35,24 @@ resource "google_service_account" "bastion" {
   project      = var.project_id
 }
 
+# Grant logging permissions to bastion service account
+# Enables audit trail for administrative access
 resource "google_project_iam_member" "bastion_log_writer" {
   project = var.project_id
   role    = "roles/logging.logWriter"
   member  = "serviceAccount:${google_service_account.bastion.email}"
 }
 
+# Grant monitoring permissions to bastion service account
+# Enables metrics collection for health monitoring
 resource "google_project_iam_member" "bastion_monitoring_writer" {
   project = var.project_id
   role    = "roles/monitoring.metricWriter"
   member  = "serviceAccount:${google_service_account.bastion.email}"
 }
 
+# Configure service account impersonation permissions
+# Allows authorized users to act as bastion service account
 resource "google_service_account_iam_member" "bastion_sa_impersonation" {
   count              = length(var.sa_impersonators)
   service_account_id = google_service_account.bastion.name
@@ -54,6 +66,8 @@ resource "google_service_account_iam_binding" "bastion_sa_users" {
   members            = var.sa_impersonators
 }
 
+# Create firewall rule for SSH access to bastion
+# Restricts access to authorized networks only
 resource "google_compute_firewall" "bastion_ssh" {
   name    = "${var.name_prefix}-bastion-ssh"
   network = data.google_compute_network.vpc.name
@@ -74,6 +88,8 @@ resource "google_compute_firewall" "bastion_ssh" {
   }
 }
 
+# Create firewall rule for IAP tunnel access
+# Enables secure access through Identity-Aware Proxy
 resource "google_compute_firewall" "bastion_iap" {
   name    = "${var.name_prefix}-bastion-iap"
   network = data.google_compute_network.vpc.name
@@ -93,6 +109,8 @@ resource "google_compute_firewall" "bastion_iap" {
   }
 }
 
+# Create firewall rules for IAP access on additional VPCs
+# Extends secure access across multiple networks
 resource "google_compute_firewall" "bastion_iap_additional" {
   count   = length(var.additional_network_interfaces)
   name    = "${var.name_prefix}-bastion-iap-${count.index}"

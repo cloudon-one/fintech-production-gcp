@@ -15,7 +15,7 @@ resource "google_project_iam_binding" "container_viewers_devops" {
   role    = "roles/container.viewer"
 
   members = [
-    "group:fintech-technology-devops@cloudon-one.com",
+    "group:fintech-technology-devops@fintech.com",
   ]
 }
 
@@ -24,9 +24,9 @@ resource "google_project_iam_binding" "container_developers" {
   role    = "roles/container.developer"
 
   members = [
-    "group:fintech-technology-backend@cloudon-one.com",
-    "group:fintech-technology-frontend@cloudon-one.com",
-    "group:fintech-technology-mobile@cloudon-one.com",
+    "group:fintech-technology-backend@fintech.com",
+    "group:fintech-technology-frontend@fintech.com",
+    "group:fintech-technology-mobile@fintech.com",
   ]
 }
 
@@ -35,8 +35,8 @@ resource "google_project_iam_binding" "monitoring_viewers" {
   role    = "roles/monitoring.viewer"
 
   members = [
-    "group:fintech-technology-qa@cloudon-one.com",
-    "group:fintech-technology-devops@cloudon-one.com"
+    "group:fintech-technology-qa@fintech.com",
+    "group:fintech-technology-devops@fintech.com"
   ]
 }
 
@@ -45,7 +45,7 @@ resource "google_project_iam_binding" "logging_viewers" {
   role    = "roles/logging.viewer"
 
   members = [
-    "group:fintech-technology-devops@cloudon-one.com",
-    "group:fintech-technology-qa@cloudon-one.com"
+    "group:fintech-technology-devops@fintech.com",
+    "group:fintech-technology-qa@fintech.com"
   ]
 }

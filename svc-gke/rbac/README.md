@@ -23,12 +23,12 @@ The RBAC configuration is properly integrated with the main GKE cluster configur
 
 ### 1. Security Group Configuration
 
-- **GKE Cluster**: Uses `authenticator_groups_config` with security group `gke-security-groups@cloudon-one.com`
+- **GKE Cluster**: Uses `authenticator_groups_config` with security group `gke-security-groups@fintech.com`
 - **RBAC**: Creates namespace `gke-security-groups` and assigns group-based permissions
 
 ### 2. Provider Configuration
 
-- **Google Provider**: Configured for `europe-central2` region
+- **Google Provider**: Configured for `us-central1` region
 - **Kubernetes Provider**: Configured with proper aliases for different environments
 - **Backend**: Uses GCS backend with proper state management
 
@@ -38,10 +38,10 @@ The configuration implements a comprehensive RBAC strategy:
 
 #### Google Cloud IAM Roles
 
-- **Container Viewer**: `fintech-technology-devops@cloudon-one.com`
-- **Container Developer**: `fintech-technology-backend@cloudon-one.com`, `fintech-technology-frontend@cloudon-one.com`, `fintech-technology-mobile@cloudon-one.com`
-- **Monitoring Viewer**: `fintech-technology-devops@cloudon-one.com`, `fintech-technology-qa@cloudon-one.com`
-- **Logging Viewer**: `fintech-technology-devops@cloudon-one.com`, `fintech-technology-qa@cloudon-one.com`
+- **Container Viewer**: `fintech-devops@fintech.com`
+- **Container Developer**: `fintech-backend@fintech.com`, `fintech-frontend@fintech.com`, `fintech-mobile@fintech.com`
+- **Monitoring Viewer**: `fintech-devops@fintech.com`, `fintech-qa@fintech.com`
+- **Logging Viewer**: `fintech-devops@fintech.com`, `fintech-qa@fintech.com`
 
 #### Kubernetes ClusterRoles
 

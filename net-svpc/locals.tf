@@ -7,19 +7,19 @@ locals {
   host_project_name      = "${local.prefix}-svpc-host-${local.suffix}"
   gke_project_name       = "${local.prefix}-gke-svc-${local.suffix}"
   data_project_name      = "${local.prefix}-data-svc-${local.suffix}"
-  gke_vpc_cidr           = "10.60.0.0/16"
-  gke_subnet_cidr        = "10.60.4.0/22"   # Nodes subnet
-  gke_control_plane_cidr = "10.60.1.0/28"   # GKE control plane
-  gke_proxy_cidr         = "10.60.0.0/24"   # Proxy-only subnet for ILB
-  gke_pods_cidr          = "10.60.128.0/17" # Pod secondary range
-  gke_services_cidr      = "10.60.8.0/22"   # Service secondary range
+  gke_vpc_cidr           = "10.160.0.0/16"
+  gke_subnet_cidr        = "10.160.4.0/22"   # Nodes subnet
+  gke_control_plane_cidr = "10.160.1.0/28"   # GKE control plane
+  gke_proxy_cidr         = "10.160.0.0/24"   # Proxy-only subnet for ILB
+  gke_pods_cidr          = "10.160.128.0/17" # Pod secondary range
+  gke_services_cidr      = "10.160.8.0/22"   # Service secondary range
 
-  data_vpc_cidr               = "10.61.0.0/16"
-  data_subnet_cidr            = "10.61.4.0/22"   # Data services subnet
-  data_proxy_cidr             = "10.61.0.0/24"   # Proxy-only subnet for ILB
-  data_cloudsql_cidr          = "10.61.1.0/24"   # Cloud SQL private connection
-  data_composer_pods_cidr     = "10.61.128.0/17" # Composer pods secondary range
-  data_composer_services_cidr = "10.61.8.0/22"   # Composer services secondary range
+  data_vpc_cidr               = "10.161.0.0/16"
+  data_subnet_cidr            = "10.161.4.0/22"   # Data services subnet
+  data_proxy_cidr             = "10.161.0.0/24"   # Proxy-only subnet for ILB
+  data_cloudsql_cidr          = "10.161.1.0/24"   # Cloud SQL private connection
+  data_composer_pods_cidr     = "10.161.128.0/17" # Composer pods secondary range
+  data_composer_services_cidr = "10.161.8.0/22"   # Composer services secondary range
 
   common_labels = merge(var.labels, {
     environment     = "production"

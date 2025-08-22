@@ -1,33 +1,21 @@
 # GKE Security Group for RBAC
-gke_security_group = "gke-security-groups@cloudon-one.com"
+gke_security_group = "gke-security-groups@fintech.com"
 
 gke_config = {
   enabled                = true
   cluster_name_suffix    = "cluster"
-  region                 = "europe-central2"
+  region                 = "us-central1"
   network                = "gke-vpc"
   subnetwork             = "gke-subnet"
-  master_ipv4_cidr_block = "10.60.1.0/28"
+  master_ipv4_cidr_block = "10.160.1.0/28"
   master_authorized_networks = [
     {
-      cidr_block   = "10.60.0.0/16"
+      cidr_block   = "10.160.0.0/16"
       display_name = "gke-vpc"
     },
     {
-      cidr_block   = "10.61.0.0/16"
+      cidr_block   = "10.161.0.0/16"
       display_name = "data-vpc"
-    },
-    {
-      cidr_block   = "104.192.136.0/21"
-      display_name = "bitbucket-pipleines-1"
-    },
-    {
-      cidr_block   = "185.166.140.0/22"
-      display_name = "bitbucket-pipleines-2"
-    },
-    {
-      cidr_block   = "13.200.41.128/25"
-      display_name = "bitbucket-pipleines-3"
     },
   ]
   enable_private_endpoint           = false
@@ -58,18 +46,18 @@ gke_config = {
         "roles/bigquery.jobUser"
       ]
     }
-    beone-app = {
+    fintech-app = {
       display_name               = "Application Service Account"
       description                = "Service account for general application workloads"
       kubernetes_namespace       = "production"
-      kubernetes_service_account = "beone-app-sa"
+      kubernetes_service_account = "fintech-app-sa"
       gcp_roles = [
         "roles/storage.objectViewer",
         "roles/cloudsql.client",
         "roles/secretmanager.secretAccessor"
       ]
     }
-    beone-monitoring = {
+    fintech-monitoring = {
       display_name               = "Monitoring Service Account"
       description                = "Service account for monitoring and observability workloads"
       kubernetes_namespace       = "monitoring"
@@ -135,7 +123,7 @@ gke_node_pools_config = {
     machine_type = "n2d-standard-4"
     disk_size_gb = 100
     disk_type    = "pd-balanced"
-    zones        = ["europe-central2-a", "europe-central2-b", "europe-central2-c"]
+    zones        = ["us-central1-a", "us-central1-b", "us-central1-c"]
     autoscaling = {
       min_node_count  = 3
       max_node_count  = 9
@@ -162,7 +150,7 @@ gke_node_pools_config = {
     }
     workload_config = {
       workload_identity_config = {
-        workload_pool = "beone-prod-gke-project-3ypz.svc.id.goog"
+        workload_pool = "fintech-prod-gke-project.svc.id.goog"
       }
       resource_limits = {
         cpu    = "2"
@@ -183,7 +171,7 @@ gke_node_pools_config = {
     machine_type = "n2d-standard-4"
     disk_size_gb = 100
     disk_type    = "pd-balanced"
-    zones        = ["europe-central2-a", "europe-central2-b", "europe-central2-c"]
+    zones        = ["us-central1-a", "us-central1-b", "us-central1-c"]
     autoscaling = {
       min_node_count  = 2
       max_node_count  = 6
@@ -210,7 +198,7 @@ gke_node_pools_config = {
     }
     workload_config = {
       workload_identity_config = {
-        workload_pool = "beone-prod-gke-project-3ypz.svc.id.goog"
+        workload_pool = "fintech-prod-gke-project.svc.id.goog"
       }
       resource_limits = {
         cpu    = "2"
@@ -229,8 +217,8 @@ gke_node_pools_config = {
 
 labels = {
   environment = "production"
-  project     = "beone-prod-gke-project-3ypz"
-  cost_center = "beone-production"
-  owner       = "beone-technology-devops"
+  project     = "fintech-prod-gke-project"
+  cost_center = "production"
+  owner       = "fintech-devops"
   managed_by  = "terraform"
 }

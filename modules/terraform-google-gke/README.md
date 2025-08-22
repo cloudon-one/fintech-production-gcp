@@ -21,13 +21,13 @@ module "gke_cluster" {
 
   # Basic Configuration
   cluster_name = "fintech-prod-gke-cluster"
-  project_id   = "fintech-prod-gke-project-3ypz"
-  region       = "europe-central2"
+  project_id   = "fintech-prod-gke-project"
+  region       = "us-central1"
 
   # Network Configuration
-  network                  = "projects/fintech-prod-host-project-8hhr/global/networks/gke-vpc"
-  subnetwork              = "projects/fintech-prod-host-project-8hhr/regions/europe-central2/subnetworks/gke-subnet"
-  master_ipv4_cidr_block  = "10.60.1.0/28"
+  network                  = "projects/fintech-prod-host-project/global/networks/gke-vpc"
+  subnetwork              = "projects/fintech-prod-host-project/regions/us-central1/subnetworks/gke-subnet"
+  master_ipv4_cidr_block  = "10.160.1.0/28"
 
   # IP Allocation for Pods and Services
   ip_allocation_policy = {
@@ -61,11 +61,11 @@ module "gke_cluster" {
   # Security Configuration
   master_authorized_networks = [
     {
-      cidr_block   = "10.60.0.0/16"
+      cidr_block   = "10.160.0.0/16"
       display_name = "gke-vpc"
     },
     {
-      cidr_block   = "10.61.0.0/16"
+      cidr_block   = "10.161.0.0/16"
       display_name = "data-vpc"
     }
   ]
@@ -85,9 +85,9 @@ module "gke_cluster" {
   # Labels
   llabels = {
   environment = "production"
-  project     = "fintech-prod-gke-project-3ypz"
+  project     = "fintech-prod-gke-project"
   cost_center = "fintech-production"
-  owner       = "fintech-technology-devops"
+  owner       = "fintech-devops"
   managed_by  = "terraform"
 }
 }

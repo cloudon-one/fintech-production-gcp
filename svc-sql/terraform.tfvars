@@ -1,8 +1,8 @@
 labels = {
   environment = "production"
-  team        = "fintech-technology-devops"
-  cost_center = "fintech-technology-devops"
-  owner       = "fintech-technology-devops"
+  team        = "fintech-devops"
+  cost_center = "fintech-devops"
+  owner       = "fintech-devops"
 }
 
 sql_config = {
@@ -21,7 +21,7 @@ sql_instances_config = {
     disk_autoresize       = true
     disk_autoresize_limit = 0
     availability_type     = "REGIONAL"
-    primary_zone          = "europe-central2-b"
+    primary_zone          = "us-central1-b"
     deletion_protection   = true
     database_flags = [
       {
@@ -60,8 +60,8 @@ sql_instances_config = {
     }
     read_replicas = {
       replica = {
-        region                = "europe-west3"
-        zone                  = "europe-west3-c"
+        region                = "us-west3"
+        zone                  = "us-west3-c"
         machine_type          = "db-perf-optimized-N-2"
         disk_type             = "PD_SSD"
         disk_size             = 250

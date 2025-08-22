@@ -67,20 +67,20 @@ output "firewall_rules" {
   value = {
     gke_access = {
       name        = google_compute_firewall.redis_access_from_gke.name
-      source      = "10.60.0.0/16"
-      destination = "10.61.12.0/28"
+      source      = "10.160.0.0/16"
+      destination = "10.161.12.0/28"
       ports       = ["6379"]
     }
     data_access = {
       name        = google_compute_firewall.redis_access_from_data.name
-      source      = "10.61.0.0/16"
-      destination = "10.61.12.0/28"
+      source      = "10.161.0.0/16"
+      destination = "10.161.12.0/28"
       ports       = ["6379"]
     }
     iap_access = {
       name        = google_compute_firewall.redis_access_from_iap.name
       source      = "35.235.240.0/20"
-      destination = "10.61.12.0/28"
+      destination = "10.161.12.0/28"
       ports       = ["6379"]
     }
   }

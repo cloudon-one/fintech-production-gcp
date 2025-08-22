@@ -17,14 +17,14 @@ The Redis service provides high-performance, managed Redis instances with:
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   GKE Cluster   │    │   Data VPC      │    │   IAP Tunnel    │
-│  10.60.0.0/16   │    │  10.61.0.0/16   │    │ 35.235.240.0/20 │
+│  10.160.0.0/16   │    │  10.161.0.0/16   │    │ 35.235.240.0/20 │
 └─────────┬───────┘    └─────────┬───────┘    └─────────┬───────┘
           │                      │                      │
           └──────────────────────┼──────────────────────┘
                                  │
                     ┌────────────▼───────────── ┐
                     │    Redis Instances        │
-                    │     10.61.12.0/28         │
+                    │     10.161.12.0/28         │
                     │                           │
                     └───────────────────────────┘
 ```
@@ -51,7 +51,7 @@ The service creates a main Redis instance with the following specifications:
 - **Redis Version**: 7.0
 - **Replicas**: 1 read replica
 - **Network**: Private service access within data VPC
-- **CIDR Block**: 10.61.12.0/28
+- **CIDR Block**: 10.161.12.0/28
 
 ### Redis Configuration
 
@@ -70,8 +70,8 @@ redis_configs = {
 
 The service creates three firewall rules for secure access:
 
-1. **GKE Access**: Allows Redis access from GKE cluster (10.60.0.0/16)
-2. **Data VPC Access**: Allows Redis access from data VPC (10.61.0.0/16)
+1. **GKE Access**: Allows Redis access from GKE cluster (10.160.0.0/16)
+2. **Data VPC Access**: Allows Redis access from data VPC (10.161.0.0/16)
 3. **IAP Access**: Allows Redis access from IAP tunnel (35.235.240.0/20)
 
 ## Usage

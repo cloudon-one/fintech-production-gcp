@@ -9,7 +9,7 @@ This module configures Kubernetes Pod Security Standards for the GKE cluster usi
 
    ```bash
    gcloud container clusters get-credentials fintech-prod-gke-cluster \
-     --region=europe-central2 \
+     --region=us-central1 \
      --project=fintech-prod-gke-project
    ```
 
@@ -129,7 +129,7 @@ For private GKE clusters, ensure one of:
 kubectl cluster-info
 
 gcloud container clusters describe fintech-prod-gke-cluster \
-  --region=europe-central2 --format="get(masterAuthorizedNetworksConfig)"
+  --region=us-central1 --format="get(masterAuthorizedNetworksConfig)"
 ```
 
 **Namespace already exists errors**:
@@ -141,8 +141,8 @@ gcloud container clusters describe fintech-prod-gke-cluster \
 
 ```bash
 gcloud container clusters get-credentials fintech-prod-gke-cluster \
-  --region=europe-central2 \
-  --project=fintech-prod-gke-project-3ypz
+  --region=us-central1 \
+  --project=fintech-prod-gke-project
 
 kubectl auth can-i get pods --all-namespaces
 ```

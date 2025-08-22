@@ -92,7 +92,7 @@ variable "enable_iap_tunnel" {
 variable "iap_user" {
   description = "The user email for IAP tunnel access"
   type        = string
-  default     = "y.naumenko@iceo.co"
+  default     = "user1@fintech.com"
 }
 
 variable "enable_nat" {

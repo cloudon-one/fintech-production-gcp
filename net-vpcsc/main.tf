@@ -1,3 +1,5 @@
+# Deploy VPC Service Controls for enhanced security perimeter
+# Restricts data exfiltration and enforces access boundaries
 module "vpc_sc" {
   source = "../modules/terraform-google-vpc-sc"
 

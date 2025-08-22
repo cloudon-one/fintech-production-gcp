@@ -1,3 +1,5 @@
+# Create VPC network with custom subnets
+# Foundation for Shared VPC architecture
 resource "google_compute_network" "vpc" {
   name                    = var.vpc_name
   auto_create_subnetworks = var.auto_create_subnetworks
@@ -14,6 +16,8 @@ resource "google_compute_network" "vpc" {
     }
   }
 }
+# Create standard subnets for workloads
+# Excludes proxy subnets which are handled separately
 resource "google_compute_subnetwork" "subnets" {
   for_each = { for k, v in var.subnets : k => v if try(v.purpose, null) != "REGIONAL_MANAGED_PROXY" }
   name                     = each.value.name
@@ -41,6 +45,8 @@ resource "google_compute_subnetwork" "subnets" {
   }
 }
 
+# Create regional managed proxy subnets
+# Required for internal HTTP(S) load balancers
 resource "google_compute_subnetwork" "proxy_subnets" {
   provider = google-beta
   for_each = { for k, v in var.subnets : k => v if try(v.purpose, null) == "REGIONAL_MANAGED_PROXY" }
@@ -62,6 +68,8 @@ resource "google_compute_subnetwork" "proxy_subnets" {
   }
 }
 
+# Create Cloud Router for NAT gateway
+# Enables outbound internet connectivity for private instances
 resource "google_compute_router" "router" {
   for_each = var.cloud_nat_config != null ? { "nat" = var.cloud_nat_config } : {}
 
@@ -75,6 +83,8 @@ resource "google_compute_router" "router" {
   }
 }
 
+# Configure Cloud NAT for secure outbound connectivity
+# Allows private instances to reach internet without public IPs
 resource "google_compute_router_nat" "nat" {
   for_each = var.cloud_nat_config != null ? { "nat" = var.cloud_nat_config } : {}
   name                               = each.value.nat_name
@@ -113,6 +123,8 @@ resource "google_compute_router_nat" "nat" {
   }
 }
 
+# Create firewall rules for network security
+# Controls traffic flow between resources
 resource "google_compute_firewall" "rules" {
   for_each = var.firewall_rules
   name        = each.value.name

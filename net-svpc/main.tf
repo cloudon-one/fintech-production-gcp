@@ -1,3 +1,5 @@
+# Retrieve service project information from remote state
+# This allows the network module to access project IDs and service accounts
 data "terraform_remote_state" "service_projects" {
   backend = "gcs"
   config = {
@@ -5,17 +7,22 @@ data "terraform_remote_state" "service_projects" {
     prefix = "svc-projects"
   }
 }
+# Define local variables for service project configurations
 locals {
+  # Filter and extract GKE service projects from remote state
   gke_service_projects = {
     for k, v in data.terraform_remote_state.service_projects.outputs.service_projects : k => v.project_id
     if v.type == "gke"
   }
   
+  # Filter and extract data service projects from remote state
   data_service_projects = {
     for k, v in data.terraform_remote_state.service_projects.outputs.service_projects : k => v.project_id
     if v.type == "data"
   }
   
+  # Configure IAM bindings for GKE subnets
+  # Automatically includes GKE project service accounts alongside manually specified members
   gke_subnet_iam_bindings = {
     for subnet_name, subnet_config in var.gke_subnet_iam_bindings : subnet_name => {
       subnetwork = subnet_config.subnetwork
@@ -31,6 +38,8 @@ locals {
     }
   }
   
+  # Configure IAM bindings for data subnets
+  # Automatically includes data project service accounts alongside manually specified members
   data_subnet_iam_bindings = {
     for subnet_name, subnet_config in var.data_subnet_iam_bindings : subnet_name => {
       subnetwork = subnet_config.subnetwork
@@ -47,6 +56,8 @@ locals {
   }
 }
 
+# Create Shared VPC for GKE workloads
+# This VPC hosts the GKE cluster and related resources
 module "gke_vpc" {
   source = "../modules/terraform-google-svpc"
 
@@ -74,6 +85,8 @@ module "gke_vpc" {
   labels = var.labels
 }
 
+# Create Shared VPC for data services
+# This VPC hosts databases, storage, and data processing resources
 module "data_vpc" {
   source = "../modules/terraform-google-svpc"
   project_id = var.project_id

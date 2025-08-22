@@ -4,9 +4,9 @@ set -e
 
 echo "🚀 Starting Performance Testing for GKE Cluster..."
 
-CLUSTER_NAME="beone-prod-gke-cluster"
-REGION="europe-central2"
-PROJECT_ID="beone-prod-gke-project-3ypz"
+CLUSTER_NAME="fintech-prod-gke-cluster"
+REGION="us-central1"
+PROJECT_ID="fintech-prod-gke-project"
 NAMESPACE="production"
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -340,7 +340,7 @@ test_load_testing() {
         kubectl get pods -n load-testing -l app=ab-load-test-runner
         
         print_status "Running sample load test..."
-        kubectl run load-test-sample --image=httpd:alpine --rm -i --restart=Never -- sh -c "apk add --no-cache apache2-utils && ab -n 10 -c 2 http://beone-api.production.svc.cluster.local:8080/health" || print_warning "Load test failed - API endpoint may not be available"
+        kubectl run load-test-sample --image=httpd:alpine --rm -i --restart=Never -- sh -c "apk add --no-cache apache2-utils && ab -n 10 -c 2 http://fintech-api.production.svc.cluster.local:8080/health" || print_warning "Load test failed - API endpoint may not be available"
         
     else
         print_warning "Apache Bench load testing not deployed"

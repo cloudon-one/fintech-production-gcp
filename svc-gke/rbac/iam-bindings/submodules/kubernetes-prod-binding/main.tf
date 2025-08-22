@@ -36,7 +36,7 @@ resource "kubernetes_role_binding" "custom_secrets_admin" {
   subject {
     api_group = "rbac.authorization.k8s.io"
     kind      = "Group"
-    name      = "fintech-technology-devops@cloudon-one.com"
+    name      = "fintech-devops@fintech.com"
     namespace = kubernetes_namespace.gke_security_groups.metadata[0].name
   }
 }
@@ -62,14 +62,14 @@ resource "kubernetes_role_binding" "custom_pod_manager_backend" {
   subject {
     api_group = "rbac.authorization.k8s.io"
     kind      = "Group"
-    name      = "fintech-technology-backend@cloudon-one.com"
+    name      = "fintech-backend@fintech.com"
     namespace = kubernetes_namespace.gke_security_groups.metadata[0].name
   }
 
   subject {
     api_group = "rbac.authorization.k8s.io"
     kind      = "Group"
-    name      = "fintech-technology-devops@cloudon-one.com"
+    name      = "fintech-devops@fintech.com"
     namespace = kubernetes_namespace.gke_security_groups.metadata[0].name
   }
 }
@@ -93,14 +93,14 @@ resource "kubernetes_role_binding" "custom_pod_manager_frontend" {
   subject {
     api_group = "rbac.authorization.k8s.io"
     kind      = "Group"
-    name      = "fintech-technology-frontend@cloudon-one.com"
+    name      = "fintech-frontend@fintech.com"
     namespace = kubernetes_namespace.gke_security_groups.metadata[0].name
   }
 
   subject {
     api_group = "rbac.authorization.k8s.io"
     kind      = "Group"
-    name      = "fintech-technology-devops@cloudon-one.com"
+    name      = "fintech-devops@fintech.com"
     namespace = kubernetes_namespace.gke_security_groups.metadata[0].name
   }
 }
@@ -124,14 +124,14 @@ resource "kubernetes_role_binding" "custom_pod_manager_mobile" {
   subject {
     api_group = "rbac.authorization.k8s.io"
     kind      = "Group"
-    name      = "fintech-technology-mobile@cloudon-one.com"
+    name      = "fintech-mobile@fintech.com"
     namespace = kubernetes_namespace.gke_security_groups.metadata[0].name
   }
 
   subject {
     api_group = "rbac.authorization.k8s.io"
     kind      = "Group"
-    name      = "fintech-technology-devops@cloudon-one.com"
+    name      = "fintech-devops@fintech.com"
     namespace = kubernetes_namespace.gke_security_groups.metadata[0].name
   }
 }
@@ -159,7 +159,7 @@ resource "kubernetes_role_binding" "custom_deployment_manager" {
   subject {
     api_group = "rbac.authorization.k8s.io"
     kind      = "Group"
-    name      = "fintech-technology-devops@cloudon-one.com"
+    name      = "fintech-devops@fintech.com"
     namespace = kubernetes_namespace.gke_security_groups.metadata[0].name
   }
 
@@ -168,7 +168,7 @@ resource "kubernetes_role_binding" "custom_deployment_manager" {
     content {
       api_group = "rbac.authorization.k8s.io"
       kind      = "Group"
-      name      = "fintech-technology-backend@cloudon-one.com"
+      name      = "fintech-backend@fintech.com"
       namespace = kubernetes_namespace.gke_security_groups.metadata[0].name
     }
   }
@@ -178,7 +178,7 @@ resource "kubernetes_role_binding" "custom_deployment_manager" {
     content {
       api_group = "rbac.authorization.k8s.io"
       kind      = "Group"
-      name      = "fintech-technology-frontend@cloudon-one.com"
+      name      = "fintech-frontend@fintech.com"
       namespace = kubernetes_namespace.gke_security_groups.metadata[0].name
     }
   }
@@ -188,7 +188,7 @@ resource "kubernetes_role_binding" "custom_deployment_manager" {
     content {
       api_group = "rbac.authorization.k8s.io"
       kind      = "Group"
-      name      = "fintech-technology-mobile@cloudon-one.com"
+      name      = "fintech-mobile@fintech.com"
       namespace = kubernetes_namespace.gke_security_groups.metadata[0].name
     }
   }
@@ -217,7 +217,7 @@ resource "kubernetes_role_binding" "custom_service_manager" {
   subject {
     api_group = "rbac.authorization.k8s.io"
     kind      = "Group"
-    name      = "fintech-technology-devops@cloudon-one.com"
+    name      = "fintech-devops@fintech.com"
     namespace = kubernetes_namespace.gke_security_groups.metadata[0].name
   }
 
@@ -226,7 +226,7 @@ resource "kubernetes_role_binding" "custom_service_manager" {
     content {
       api_group = "rbac.authorization.k8s.io"
       kind      = "Group"
-      name      = "fintech-technology-backend@cloudon-one.com"
+      name      = "fintech-backend@fintech.com"
       namespace = kubernetes_namespace.gke_security_groups.metadata[0].name
     }
   }
@@ -236,7 +236,7 @@ resource "kubernetes_role_binding" "custom_service_manager" {
     content {
       api_group = "rbac.authorization.k8s.io"
       kind      = "Group"
-      name      = "fintech-technology-frontend@cloudon-one.com"
+      name      = "fintech-frontend@fintech.com"
       namespace = kubernetes_namespace.gke_security_groups.metadata[0].name
     }
   }
@@ -246,7 +246,7 @@ resource "kubernetes_role_binding" "custom_service_manager" {
     content {
       api_group = "rbac.authorization.k8s.io"
       kind      = "Group"
-      name      = "fintech-technology-mobile@cloudon-one.com"
+      name      = "fintech-mobile@fintech.com"
       namespace = kubernetes_namespace.gke_security_groups.metadata[0].name
     }
   }
@@ -276,7 +276,7 @@ resource "kubernetes_role_binding" "custom_configmap_manager" {
   subject {
     api_group = "rbac.authorization.k8s.io"
     kind      = "Group"
-    name      = "fintech-technology-devops@cloudon-one.com"
+    name      = "fintech-devops@fintech.com"
     namespace = kubernetes_namespace.gke_security_groups.metadata[0].name
   }
 
@@ -285,7 +285,7 @@ resource "kubernetes_role_binding" "custom_configmap_manager" {
     content {
       api_group = "rbac.authorization.k8s.io"
       kind      = "Group"
-      name      = "fintech-technology-backend@cloudon-one.com"
+      name      = "fintech-backend@fintech.com"
       namespace = kubernetes_namespace.gke_security_groups.metadata[0].name
     }
   }
@@ -295,7 +295,7 @@ resource "kubernetes_role_binding" "custom_configmap_manager" {
     content {
       api_group = "rbac.authorization.k8s.io"
       kind      = "Group"
-      name      = "fintech-technology-frontend@cloudon-one.com"
+      name      = "fintech-frontend@fintech.com"
       namespace = kubernetes_namespace.gke_security_groups.metadata[0].name
     }
   }
@@ -305,7 +305,7 @@ resource "kubernetes_role_binding" "custom_configmap_manager" {
     content {
       api_group = "rbac.authorization.k8s.io"
       kind      = "Group"
-      name      = "fintech-technology-mobile@cloudon-one.com"
+      name      = "fintech-mobile@fintech.com"
       namespace = kubernetes_namespace.gke_security_groups.metadata[0].name
     }
   }
@@ -325,14 +325,14 @@ resource "kubernetes_cluster_role_binding" "custom_monitoring_viewer" {
   subject {
     api_group = "rbac.authorization.k8s.io"
     kind      = "Group"
-    name      = "fintech-technology-qa@cloudon-one.com"
+    name      = "fintech-qa@fintech.com"
     namespace = kubernetes_namespace.gke_security_groups.metadata[0].name
   }
 
   subject {
     api_group = "rbac.authorization.k8s.io"
     kind      = "Group"
-    name      = "fintech-technology-devops@cloudon-one.com"
+    name      = "fintech-devops@fintech.com"
     namespace = kubernetes_namespace.gke_security_groups.metadata[0].name
   }
 }

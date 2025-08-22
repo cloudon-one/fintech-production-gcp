@@ -1,5 +1,5 @@
 provider "google" {
-  region = "europe-central2"
+  region = "us-central1"
 }
 
 provider "kubernetes" {

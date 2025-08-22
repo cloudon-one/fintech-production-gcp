@@ -96,15 +96,15 @@ resource "kubernetes_config_map" "ab_load_test_scripts" {
       
       # Test 1: Burst load (50 concurrent users for 30 seconds)
       echo "=== Burst Test ==="
-      ab -n 1000 -c 50 -t 30 http://beone-api.production.svc.cluster.local:8080/health
+      ab -n 1000 -c 50 -t 30 http://fintech-api.production.svc.cluster.local:8080/health
       
       # Test 2: Sustained load (20 concurrent users for 2 minutes)
       echo "=== Sustained Test ==="
-      ab -n 2000 -c 20 -t 120 http://beone-api.production.svc.cluster.local:8080/health
+      ab -n 2000 -c 20 -t 120 http://fintech-api.production.svc.cluster.local:8080/health
       
       # Test 3: Peak load (100 concurrent users for 1 minute)
       echo "=== Peak Test ==="
-      ab -n 2000 -c 100 -t 60 http://beone-api.production.svc.cluster.local:8080/health
+      ab -n 2000 -c 100 -t 60 http://fintech-api.production.svc.cluster.local:8080/health
       
       echo "Load testing completed"
     EOT
@@ -114,7 +114,7 @@ resource "kubernetes_config_map" "ab_load_test_scripts" {
       echo "Starting peak load test..."
       
       # Test with high concurrency
-      ab -n 5000 -c 100 -t 300 http://beone-api.production.svc.cluster.local:8080/api/v1/endpoint
+      ab -n 5000 -c 100 -t 300 http://fintech-api.production.svc.cluster.local:8080/api/v1/endpoint
       
       echo "Peak load testing completed"
     EOT

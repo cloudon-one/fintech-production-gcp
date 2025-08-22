@@ -8,12 +8,12 @@ This service deploys a production-ready Google Kubernetes Engine (GKE) cluster w
 
 - **Cluster Name**: `fintech-prod-gke-cluster`
 - **Project**: `fintech-prod-gke-project`
-- **Region**: `europe-central2`
+- **Region**: `us-central1`
 - **Release Channel**: `STABLE`
-- **Network**: Private GKE VPC (10.60.0.0/16)
-- **Master CIDR**: 10.60.1.0/28
-- **Pod Range**: 10.60.128.0/17
-- **Service Range**: 10.60.8.0/22
+- **Network**: Private GKE VPC (10.160.0.0/16)
+- **Master CIDR**: 10.160.1.0/28
+- **Pod Range**: 10.160.128.0/17
+- **Service Range**: 10.160.8.0/22
 
 ### Node Pools
 
@@ -61,11 +61,11 @@ enable_private_endpoint = true
 # Master authorized networks
 master_authorized_networks = [
   {
-    cidr_block   = "10.60.0.0/16"  # GKE VPC
+    cidr_block   = "10.160.0.0/16"  # GKE VPC
     display_name = "gke-vpc"
   },
   {
-    cidr_block   = "10.61.0.0/16"  # Data VPC
+    cidr_block   = "10.161.0.0/16"  # Data VPC
     display_name = "data-vpc"
   }
 ]
@@ -96,7 +96,7 @@ insecure_kubelet_readonly_port_enabled = "FALSE"
 enable_workload_identity = true
 
 # Workload pool configuration
-workload_pool = "fintech-prod-gke-projectz.svc.id.goog"
+workload_pool = "fintech-prod-gke-project.svc.id.goog"
 ```
 
 ### 🗝️ Database Encryption
@@ -105,7 +105,7 @@ workload_pool = "fintech-prod-gke-projectz.svc.id.goog"
 # Encrypt etcd data with customer-managed keys
 database_encryption = {
   state    = "ENCRYPTED"
-  key_name = "projects/fintech-general/locations/europe-central2/keyRings/fintech-prod-gke-kms/cryptoKeys/fintech-prod-gke-kms"
+  key_name = "projects/fintech-one/locations/us-central1/keyRings/fintech-prod-gke-kms/cryptoKeys/fintech-prod-gke-kms"
 }
 ```
 
@@ -252,14 +252,14 @@ The `rbac/` directory implements comprehensive access control for the GKE cluste
 
 #### IAM Roles
 
-- **Container Viewer**: `fintech-technology-devops@cloudon-one.com`
+- **Container Viewer**: `fintech-devops@fintech.com`
 - **Container Developer**: Backend, frontend, and mobile teams
 - **Monitoring Viewer**: DevOps and QA teams
 - **Logging Viewer**: DevOps and QA teams
 
 #### Security Groups
 
-- **GKE Security Group**: `gke-security-groups@cloudon-one.com`
+- **GKE Security Group**: `gke-groups@fintech.com`
 - **Group-Based Access**: Integrated with Kubernetes RBAC
 
 ### Kubernetes RBAC
@@ -340,7 +340,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: data-processor
-        image: gcr.io/fintech-prod-gke-project-3ypz/data-processor:latest
+        image: gcr.io/fintech-prod-gke-project/data-processor:latest
 ```
 
 ### IAM Role Binding
@@ -452,8 +452,8 @@ vertical_pod_autoscaling = {
 # Weekend maintenance window
 maintenance_window = {
   recurring_window = {
-    start_time = "2025-06-19T23:00:00Z"
-    end_time   = "2025-06-20T23:00:00Z"
+    start_time = "2025-08-19T23:00:00Z"
+    end_time   = "2025-08-20T23:00:00Z"
     recurrence = "FREQ=WEEKLY;BYDAY=SA,SU"
   }
 }
@@ -601,7 +601,7 @@ kubectl get networkpolicies --all-namespaces
 
 ```bash
 gcloud container clusters get-credentials fintech-prod-gke-cluster \
-  --region=europe-central2 \
+  --region=us-central1 \
   --project=fintech-prod-gke-project
 
 cd svc-gke/pod-security-standards
@@ -702,8 +702,8 @@ kubectl get pdb --all-namespaces
 gcloud iam service-accounts create my-app \
   --display-name="Application Service Account"
 
-gcloud projects add-iam-policy-binding fintech-prod-gke-project-3ypz \
-  --member="serviceAccount:my-app@fintech-prod-gke-project-3ypz.iam.gserviceaccount.com" \
+gcloud projects add-iam-policy-binding fintech-prod-gke-project \
+  --member="serviceAccount:my-app@fintech-prod-gke-project.iam.gserviceaccount.com" \
   --role="roles/storage.objectViewer"
 
 kubectl apply -f - <<EOF
@@ -757,8 +757,8 @@ kubectl exec -it frontend-test -n frontend -- wget -q --timeout=5 prometheus-ser
 ### Monitoring Application Metrics
 
 ```bash
-gcloud container clusters describe fintech-prod-gkecluster \
-  --region europe-central2 \
+gcloud container clusters describe fintech-prod-gke-cluster \
+  --region us-central1 \
   --project fintech-prod-gke-project \
   --format="value(masterAuth.clusterCaCertificate)" | base64 -d > cluster-ca.pem
 
@@ -776,7 +776,7 @@ gcloud monitoring metrics list --filter="metric.type:kubernetes"
    kubectl get serviceaccount my-app-sa -n production -o yaml
    
    # Check IAM policy
-   gcloud projects get-iam-policy fintech-prod-gke-project-3ypz \
+   gcloud projects get-iam-policy fintech-prod-gke-project \
      --flatten="bindings[].members" \
      --format="table(bindings.role)" \
      --filter="bindings.members:my-app@fintech-prod-gke-project.iam.gserviceaccount.com"
@@ -858,11 +858,11 @@ gcloud monitoring metrics list --filter="metric.type:kubernetes"
    
    # Check authorized networks
    gcloud container clusters describe fintech-prod-gke-cluster \
-     --region=europe-central2 --format="get(masterAuthorizedNetworksConfig)"
+     --region=us-central1 --format="get(masterAuthorizedNetworksConfig)"
    
    # Refresh cluster credentials
    gcloud container clusters get-credentials fintech-prod-gke-cluster \
-     --region=europe-central2 \
+     --region=us-central1 \
      --project=fintech-prod-gke-project-3ypz
    ```
 

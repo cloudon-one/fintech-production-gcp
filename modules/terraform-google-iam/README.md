@@ -20,9 +20,9 @@ module "iam" {
   enable_bastion_iam = true
   enable_iap_tunnel_iam = true
 
-  host_project_id = "fintech-prod-host-project-8hhr"
-  gke_project_id  = "fintech-prod-gke-project-3ypz"
-  data_project_id = "fintech-prod-data-project-mnch"
+  host_project_id = "fintech-prod-host-project"
+  gke_project_id  = "fintech-prod-gke-project"
+  data_project_id = "fintech-prod-data-project"
 
   gke_workload_identity_service_accounts = {
     "example-sa" = {
@@ -35,13 +35,13 @@ module "iam" {
   }
 
   os_login_users = [
-    "user:user1@company.com",
-    "user:user2@company.com"
+    "user:user1@fintech.com",
+    "user:user2@fintech.com"
   ]
 
   iap_tunnel_users = [
-    "user:user1@company.com",
-    "user:user2@company.com"
+    "user:user1@fintech.com",
+    "user:user2@fintech.com"
   ]
 }
 ```

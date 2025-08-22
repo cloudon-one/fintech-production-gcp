@@ -1,4 +1,5 @@
-# Host project
+# Create host project for Shared VPC architecture
+# This project contains shared network resources
 resource "google_project" "host_project" {
   name                = var.host_project.name
   project_id          = "${var.host_project.name}-${var.host_project.suffix}"
@@ -8,7 +9,8 @@ resource "google_project" "host_project" {
   labels              = var.labels
 }
 
-# Service projects
+# Create service projects attached to Shared VPC
+# Each project serves specific workloads (GKE, data, etc.)
 resource "google_project" "service_projects" {
   for_each = var.service_projects
 
@@ -20,7 +22,8 @@ resource "google_project" "service_projects" {
   labels              = var.labels
 }
 
-# Host project APIs
+# Enable required APIs in host project
+# Includes networking, compute, and security APIs
 resource "google_project_service" "host_project_apis" {
   for_each = toset(var.host_project.apis)
 
@@ -30,7 +33,8 @@ resource "google_project_service" "host_project_apis" {
   disable_dependent_services = false
 }
 
-# Service project APIs
+# Enable required APIs in service projects
+# APIs are selected based on project type (GKE, data, etc.)
 resource "google_project_service" "service_project_apis" {
   for_each = {
     for combination in flatten([
@@ -50,7 +54,8 @@ resource "google_project_service" "service_project_apis" {
   disable_on_destroy         = false
 }
 
-# Default service accounts for service projects
+# Retrieve default service accounts for service projects
+# Used for resource provisioning and access management
 data "google_compute_default_service_account" "service_project_defaults" {
   for_each = var.service_projects
 
@@ -58,7 +63,8 @@ data "google_compute_default_service_account" "service_project_defaults" {
   depends_on = [google_project_service.service_project_apis]
 }
 
-# Organization policy to disable default network creation
+# Enforce organization policy to disable default network creation
+# Ensures all networks are explicitly defined and managed
 resource "google_folder_organization_policy" "disable_default_network" {
   count      = var.disable_default_network_creation ? 1 : 0
   folder     = var.folder_id

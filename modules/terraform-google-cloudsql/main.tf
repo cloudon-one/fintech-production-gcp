@@ -1,3 +1,5 @@
+# Create Cloud SQL instance with enterprise features
+# Configured for high availability, security, and performance
 resource "google_sql_database_instance" "instance" {
   name             = var.instance_name
   database_version = var.database_version
@@ -13,6 +15,8 @@ resource "google_sql_database_instance" "instance" {
     availability_type           = var.availability_type
     deletion_protection_enabled = var.deletion_protection
     edition                     = var.edition
+    # Configure automated backups and point-in-time recovery
+    # Ensures data durability and disaster recovery capability
     backup_configuration {
       enabled                        = var.backup_configuration.enabled
       start_time                     = var.backup_configuration.start_time
@@ -25,11 +29,15 @@ resource "google_sql_database_instance" "instance" {
       }
     }
 
+    # Schedule maintenance during specified window
+    # Minimizes impact on production workloads
     maintenance_window {
       day          = var.maintenance_window.day
       hour         = var.maintenance_window.hour
       update_track = var.maintenance_window.update_track
     }
+    # Configure network connectivity and security
+    # Private IP only with SSL enforcement
     ip_configuration {
       ipv4_enabled                    = var.ip_configuration.ipv4_enabled
       private_network                 = var.ip_configuration.private_network
@@ -54,6 +62,8 @@ resource "google_sql_database_instance" "instance" {
       }
     }
 
+    # Enable Query Insights for performance monitoring
+    # Tracks slow queries and application patterns
     insights_config {
       query_insights_enabled  = var.insights_config.query_insights_enabled
       query_string_length     = var.insights_config.query_string_length
@@ -88,6 +98,8 @@ resource "google_sql_database_instance" "instance" {
   }
 }
 
+# Create databases within the SQL instance
+# Each database can have specific charset and collation
 resource "google_sql_database" "databases" {
   for_each = var.databases
 

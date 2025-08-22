@@ -1,7 +1,7 @@
 variable "region" {
   description = "The region to deploy to"
   type        = string
-  default     = "europe-central2"
+  default     = "us-central1"
 }
 
 variable "net_svpc_backend_bucket" {
@@ -121,7 +121,7 @@ variable "sql_instances_config" {
       disk_autoresize       = true
       disk_autoresize_limit = 0
       availability_type     = "REGIONAL"
-      primary_zone          = "europe-central2-b"
+      primary_zone          = "us-central1-b"
       deletion_protection   = false
       database_flags = [
         {
@@ -163,8 +163,8 @@ variable "sql_instances_config" {
       }
       read_replicas = {
         "replica" = {
-          region                = "europe-west3"
-          zone                  = "europe-west3-a"
+          region                = "us-west3"
+          zone                  = "us-west3-a"
           machine_type          = "db-perf-optimized-N-2"
           disk_type             = "PD_SSD"
           disk_size             = 250

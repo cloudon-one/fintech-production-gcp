@@ -1,7 +1,10 @@
+# Configure Google Cloud provider for bastion host deployment
 provider "google" {
   region = var.region
 }
 
+# Retrieve network configuration from Shared VPC state
+# Contains VPC names and subnet configurations for bastion placement
 data "terraform_remote_state" "net_svpc" {
   backend = "gcs"
   config = {
@@ -10,6 +13,8 @@ data "terraform_remote_state" "net_svpc" {
   }
 }
 
+# Retrieve service project information from remote state
+# Used for cross-project access configuration
 data "terraform_remote_state" "svc_projects" {
   backend = "gcs"
   config = {
@@ -18,6 +23,8 @@ data "terraform_remote_state" "svc_projects" {
   }
 }
 
+# Define local variables for bastion configuration
+# Consolidates project IDs and network names from remote state
 locals {
   host_project_id  = data.terraform_remote_state.net_svpc.outputs.host_project_id
   gke_vpc_name     = data.terraform_remote_state.net_svpc.outputs.gke_network_name
@@ -28,6 +35,8 @@ locals {
 }
 
 
+# Deploy bastion host for secure administrative access
+# Provides jump server for accessing private resources
 module "bastion" {
   source = "../modules/terraform-google-bastion"
 

@@ -3,9 +3,9 @@ folder_id          = "12345678901234567890"
 
 labels = {
   environment = "production"
-  team        = "fintech-technology-devops"
-  cost_center = "fintech-technology-devops"
-  owner       = "fintech-technology-devops"
+  team        = "fintech-devops"
+  cost_center = "fintech-devops"
+  owner       = "fintech-devops"
 }
 
 host_project_name = "fintech-prod-host-project"

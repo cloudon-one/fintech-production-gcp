@@ -1,30 +1,37 @@
+# Project configuration variables
 variable "project_id" {
   description = "The ID of the project where the VPCs will be created"
   type        = string
 }
 
+# GCP folder for organizing projects
 variable "folder_id" {
   description = "The folder ID where the projects will be created"
   type        = string
 }
 
+# Network configuration for GKE workloads
 variable "gke_vpc_name" {
   description = "The name of the GKE VPC network"
   type        = string
   default     = "gke-vpc"
 }
 
+# Network configuration for data services
 variable "data_vpc_name" {
   description = "The name of the Data VPC network"
   type        = string
   default     = "data-vpc"
 }
 
+# Primary region for resource deployment
 variable "region" {
   description = "The region where the VPC will be created"
   type        = string
 }
 
+# Subnet configuration for GKE nodes and pods
+# Includes secondary ranges for pod and service IPs
 variable "gke_subnet" {
   description = "Configuration for the GKE subnet"
   type = object({
@@ -43,6 +50,8 @@ variable "gke_subnet" {
   })
 }
 
+# Proxy subnet for GKE load balancers
+# Used for internal HTTP(S) load balancing
 variable "gke_proxy_subnet" {
   description = "Configuration for the GKE VPC proxy subnet"
   type = object({
@@ -53,6 +62,8 @@ variable "gke_proxy_subnet" {
   })
 }
 
+# Private subnet for GKE control plane
+# Ensures control plane isolation and security
 variable "gke_control_plane_subnet" {
   description = "Configuration for the GKE control plane subnet"
   type = object({
@@ -67,6 +78,8 @@ variable "gke_control_plane_subnet" {
   })
 }
 
+# Subnet configuration for data services
+# Hosts databases, storage, and data processing workloads
 variable "data_subnet" {
   description = "Configuration for the data subnet"
   type = object({
@@ -85,6 +98,7 @@ variable "data_subnet" {
   })
 }
 
+# Proxy subnet for data services load balancers
 variable "data_proxy_subnet" {
   description = "Configuration for the Data VPC proxy subnet"
   type = object({
@@ -95,6 +109,8 @@ variable "data_proxy_subnet" {
   })
 }
 
+# Cloud NAT configuration for GKE VPC
+# Enables outbound internet connectivity for private nodes
 variable "gke_cloud_nat_config" {
   description = "Configuration for GKE Cloud NAT"
   type = object({
