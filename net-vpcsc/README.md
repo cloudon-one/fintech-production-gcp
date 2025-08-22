@@ -11,84 +11,6 @@ The `net-vpcsc` module creates a comprehensive security perimeter around the fin
 - **Identity-Based Access**: Defines trusted user groups with specific access levels
 - **Multi-Project Security**: Encompasses host, GKE, and data projects in a unified security perimeter
 
-## Architecture
-
-```
-┌─────────────────────────────────────────────────────────────  ┐
-│                    VPC Service Controls Perimeter             │
-├─────────────────────────────────────────────────────────────  ┤
-│                                                               │
-│  ┌─────────────────────────────────────────────────────────┐  │
-│  │                Access Policy                            │  │
-│  │  ┌─────────────────────────────────────────────────────┐│  │
-│  │  │ • Organization: fintech.com                             ││  │
-│  │  │ • Policy Name: fintech-prod-access-policy             ││  │
-│  │  │ • Description: fintech Production Access Control      ││  │
-│  │  └─────────────────────────────────────────────────────┘│  │
-│  └─────────────────────────────────────────────────────────┘  │
-│                              │                                │
-│                              │                                │
-│  ┌───────────────────────────┼───────────────────────────────┐│
-│  │                           │                               ││
-│  │  ┌─────────────────────┐  │  ┌─────────────────────────┐  ││
-│  │  │   Access Level      │  │  │   Service Perimeter     │  ││
-│  │  │                     │  │  │                         │  ││
-│  │  │ • Name: fintech_devops│  │  │ • Type: REGULAR         │  ││
-│  │  │   _access           │  │  │ • Status: ACTIVE        │  ││
-│  │  │ • Trusted Groups:   │  │  │ • Projects:             │  ││
-│  │  │   - fintech-technology│  │  │   - Host Project        │  ││
-│  │  │     -devops@fintech.com │  │  │   - GKE Project         │  ││
-│  │  │ • Conditions:       │  │  │   - Data Project        │  ││
-│  │  │   - Identity-based  │  │  │ • Restricted Services:  │  ││
-│  │  │   - Location-based  │  │  │   - Storage APIs        │  ││
-│  │  │                     │  │  │   - Compute APIs        │  ││
-│  │  │                     │  │  │   - Database APIs       │  ││
-│  │  │                     │  │  │   - Analytics APIs      │  ││
-│  │  └─────────────────────┘  │  │   - Messaging APIs      │  ││
-│  │                           │  │                         │  ││
-│  └───────────────────────────┴──┴─────────────────────────┘  ││
-│                                                              ││
-│  ┌────────────────────────────────────────────────────────┐  ││
-│  │                Protected Projects                      │  ││
-│  │                                                        │  ││
-│  │  ┌─────────────────┐  ┌─────────────────┐              │  ││
-│  │  │  Host Project   │  │   GKE Project   │              │  ││
-│  │  │                 │  │                 │              │  ││
-│  │  │ • VPC Networks  │  │ • GKE Clusters  │              │  ││
-│  │  │ • Firewall Rules│  │ • Applications  │              │  ││
-│  │  │ • DNS Zones     │  │ • Load Balancers│              │  ││
-│  │  └─────────────────┘  └─────────────────┘              │  ││
-│  │                                                        │  ││
-│  │  ┌─────────────────────────────────────────────────────┐ │││
-│  │  │              Data Project                           │ │││
-│  │  │                                                     │ │││
-│  │  │ • Cloud SQL Instances                               │ │││
-│  │  │ • Memorystore Redis                                 │ │││
-│  │  │ • BigQuery Datasets                                 │ │││
-│  │  │ • Cloud Storage Buckets                             │ │││
-│  │  └─────────────────────────────────────────────────────┘ │││
-│  └─────────────────────────────────────────────────────────┘│ │
-└─────────────────────────────────────────────────────────────┘ │
-                                                                │
-┌─────────────────────────────────────────────────────────────┐ │
-│                    External Access                          │ │
-│                                                             │ │
-│ • Identity-Aware Proxy (IAP)                                │ │
-│ • Cloud Load Balancing                                      │ │
-│ • Cloud Armor                                               │ │
-│ • External APIs (controlled access)                         │ │
-└─────────────────────────────────────────────────────────────┘ │
-                                                                │
-┌─────────────────────────────────────────────────────────────┐ │
-│                    Ingress/Egress Policies                  │ │
-│                                                             │ │
-│ • Ingress: Allow from trusted sources only                  │ │
-│ • Egress: Restrict data exfiltration                        │ │
-│ • Identity: Require trusted group membership                │ │
-│ • Location: Enforce geographic restrictions                 │ │
-└─────────────────────────────────────────────────────────────┘ │
-```
-
 ## Components
 
 ### 1. Access Policy
@@ -183,9 +105,9 @@ module "vpc_service_controls" {
   perimeter_name = "fintech-prod-perimeter"
   access_level_name = "fintech_devops_access"
   
-  # Trusted Groups (optional - defaults to fintech-technology-devops@fintech.com)
+  # Trusted Groups (optional - defaults to fintech-devops@fintech.com)
   trusted_groups = [
-    "fintech-technology-devops@fintech.com",
+    "fintech-devops@fintech.com",
     "fintech-security@fintech.com"
   ]
 
@@ -379,7 +301,7 @@ The following APIs must be enabled in the organization:
 
 Trusted Google Groups must exist and be accessible:
 
-- `fintech-technology-devops@fintech.com` - Primary DevOps team
+- `fintech-devops@fintech.com` - Primary DevOps team
 - Additional groups as specified in configuration
 
 ## Troubleshooting
