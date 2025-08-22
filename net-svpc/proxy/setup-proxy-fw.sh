@@ -14,7 +14,7 @@ gcloud compute firewall-rules create allow-proxy-to-services \
     --network=data-vpc \
     --action=ALLOW \
     --rules=tcp:5432,tcp:6379 \
-    --destination-ranges=10.61.1.0/24,10.61.2.0/24,10.61.12.0/28 \
+    --destination-ranges=10.161.1.0/24,10.161.2.0/24,10.161.12.0/28 \
     --target-tags=database-proxy \
     --description="Allow proxy to reach private PostgreSQL and Redis"
 
