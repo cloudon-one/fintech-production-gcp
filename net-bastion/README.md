@@ -1,8 +1,8 @@
-# fintech Prod Bastion Host Manual
+# Fintech Prod Bastion Host Manual
 
 ## Overview
 
-The fintech Bastion Host is a secured jump host deployed in Google Cloud Platform that provides secure access to private resources in your infrastructure. This document provides comprehensive instructions for setting up, accessing, and maintaining the bastion host.
+The Fintech Bastion Host is a secured jump host deployed in Google Cloud Platform that provides secure access to private resources in your infrastructure. This document provides comprehensive instructions for setting up, accessing, and maintaining the bastion host.
 
 **Infrastructure Details:**
 
@@ -97,7 +97,7 @@ terraform apply
 
 ```bash
 terraform output
-gcloud compute instances list --filter="name:fintech-prod-bastion" --project=fintech-prod-host-project-8hhr
+gcloud compute instances list --filter="name:fintech-prod-bastion" --project=fintech-prod-host-project
 ```
 
 ## Access Methods
@@ -114,7 +114,7 @@ terraform output bastion_iap_command
 gcloud compute start-iap-tunnel fintech-bastion 22 \
   --local-host-port=localhost:2222 \
   --zone=us-central1-a \
-  --project=fintech-prod-host-project-8hhr
+  --project=fintech-prod-host-project
 ```
 
 #### Connect via IAP Tunnel
@@ -136,7 +136,7 @@ terraform output bastion_ssh_command
 # Or use the command directly
 gcloud compute ssh fintech-bastion \
   --zone=us-central1-a \
-  --project=fintech-prod-host-project-8hhr
+  --project=fintech-prod-host-project
 ```
 
 ### Method 3: Using SSH Config
@@ -251,7 +251,7 @@ The bastion host automatically creates firewall rules:
 
 ```bash
 gcloud projects add-iam-policy-binding fintech-prod-host-project \
-  --member="user:user@company.com" \
+  --member="user:user@fintech.com" \
   --role="roles/iap.tunnelResourceAccessor"
 ```
 
@@ -410,7 +410,7 @@ gcloud projects get-iam-policy fintech-prod-host-project \
   --filter="bindings.role=roles/iap.tunnelResourceAccessor"
 
 gcloud projects add-iam-policy-binding fintech-prod-host-project \
-  --member="user:your-email@company.com" \
+  --member="user:your-email@fintech.com" \
   --role="roles/iap.tunnelResourceAccessor"
 ```
 
