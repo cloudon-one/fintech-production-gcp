@@ -11,44 +11,6 @@ The `net-svpc` module creates and manages two primary VPC networks:
 
 Both VPCs are configured as Shared VPC host projects, allowing service projects to attach and use the network resources while maintaining centralized network management.
 
-## Architecture
-
-```
-┌────────────────────────────────────────────────────────────┐
-│                    Fintech Production Infrastructure       │
-├────────────────────────────────────────────────────────────┤
-│                                                            │
-│  ┌─────────────────┐    ┌─────────────────┐                │
-│  │   GKE VPC       │    │   Data VPC      │                │
-│  │                 │    │                 │                │
-│  │ ┌─────────────┐ │    │ ┌─────────────┐ │                │
-│  │ │ GKE Subnet  │ │    │ │ Data Subnet │ │                │
-│  │ │ 10.160.4.0/22│ │    │ │10.160.8.0/22 │ │                │
-│  │ └─────────────┘ │    │ └─────────────┘ │                │
-│  │                 │    │                 │                │
-│  │ ┌─────────────┐ │    │ ┌─────────────┐ │                │
-│  │ │Proxy Subnet │ │    │ │Proxy Subnet │ │                │
-│  │ │10.160.0.0/24 │ │    │ │10.160.12.0/24│ │                │
-│  │ └─────────────┘ │    │ └─────────────┘ │                │
-│  │                 │    │                 │                │
-│  │ ┌─────────────┐ │    │                 │                │
-│  │ │Control Plane│ │    │                 │                │
-│  │ │10.160.16.0/24│ │    │                 │                │
-│  │ └─────────────┘ │    │                 │                │
-│  └─────────────────┘    └─────────────────┘                │
-│           │                       │                        │
-│           └───────────────────────┼────────────────────────┘
-│                                   │
-│  ┌────────────────────────────────┼───────────────────────┐
-│  │                                │                       │
-│  │  ┌─────────────┐  ┌────────────┴─────────────┐         │
-│  │  │ GKE Project │  │      Data Project        │         │
-│  │  │ (Service)   │  │      (Service)           │         │
-│  │  └─────────────┘  └──────────────────────────┘         │
-│  │                                                        │
-│  └────────────────────────────────────────────────────────┘
-```
-
 ## Components
 
 ### 1. GKE VPC Network
@@ -145,7 +107,7 @@ module "shared_vpc" {
   # Labels
   labels = {
     environment = "production"
-    team        = "fintech-technology-devops"
+    team        = "fintech-devops"
     managed_by  = "terraform"
   }
 }
@@ -361,17 +323,17 @@ module "shared_vpc" {
 ### IP Address Allocation
 
 ```
-GKE VPC (10.60.0.0/16):
-├── GKE Subnet: 10.60.4.0/22 (1,024 IPs)
-├── Proxy Subnet: 10.60.0.0/24 (256 IPs)
-├── Control Plane: 10.60.16.0/24 (256 IPs)
-├── Pods: 10.60.128.0/17 (32,768 IPs)
-└── Services: 10.60.8.0/22 (1,024 IPs)
+GKE VPC (10.160.0.0/16):
+├── GKE Subnet: 10.160.4.0/22 (1,024 IPs)
+├── Proxy Subnet: 10.160.0.0/24 (256 IPs)
+├── Control Plane: 10.160.16.0/24 (256 IPs)
+├── Pods: 10.160.128.0/17 (32,768 IPs)
+└── Services: 10.160.8.0/22 (1,024 IPs)
 
-Data VPC (10.60.0.0/16):
-├── Data Subnet: 10.60.8.0/22 (1,024 IPs)
-├── Proxy Subnet: 10.60.12.0/24 (256 IPs)
-└── Cloud SQL: 10.60.32.0/24 (256 IPs)
+Data VPC (10.161.0.0/16):
+├── Data Subnet: 10.161.8.0/22 (1,024 IPs)
+├── Proxy Subnet: 10.161.12.0/24 (256 IPs)
+└── Cloud SQL: 10.161.32.0/24 (256 IPs)
 ```
 
 ### Firewall Rules
