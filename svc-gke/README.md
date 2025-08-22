@@ -1,4 +1,4 @@
-# fintech Production GKE Cluster
+# SOC2/PSD2 Complient Production GKE Cluster Config
 
 This service deploys a production-ready Google Kubernetes Engine (GKE) cluster with enterprise-grade security, monitoring, and operational features for the fintech platform.
 
