@@ -287,7 +287,7 @@ The `rbac/` directory implements comprehensive access control for the GKE cluste
 
 ```hcl
 # GKE service account with minimal required permissions
-service_account = "gke-service-account@fintech-prod-gke-project-3ypz.iam.gserviceaccount.com"
+service_account = "gke-service-account@fintech-prod-gke-project.iam.gserviceaccount.com"
 
 # OAuth scopes for the service account
 oauth_scopes = [
@@ -352,7 +352,7 @@ gcloud projects add-iam-policy-binding fintech-prod-gke-project \
   --role="roles/storage.objectViewer"
 
 # For Cloud SQL access
-gcloud projects add-iam-policy-binding fintech-prod-gke-project-3ypz \
+gcloud projects add-iam-policy-binding fintech-prod-gke-project \
   --member="serviceAccount:fintech-app-sa@fintech-prod-gke-project.iam.gserviceaccount.com" \
   --role="roles/cloudsql.client"
 ```
@@ -863,7 +863,7 @@ gcloud monitoring metrics list --filter="metric.type:kubernetes"
    # Refresh cluster credentials
    gcloud container clusters get-credentials fintech-prod-gke-cluster \
      --region=us-central1 \
-     --project=fintech-prod-gke-project-3ypz
+     --project=fintech-prod-gke-project
    ```
 
 ## 📞 Support
