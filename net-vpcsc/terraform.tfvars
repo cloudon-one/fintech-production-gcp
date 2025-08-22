@@ -8,15 +8,15 @@ devops_team_members = [
 ]
 
 backend_team_members = [
-  "group:fintech-technology-backend@fintech.com"
+  "group:fintech-backend@fintech.com"
 ]
 
 frontend_team_members = [
-  "group:fintech-technology-frontend@fintech.com"
+  "group:fintech-frontend@fintech.com"
 ]
 
 mobile_team_members = [
-  "group:fintech-technology-mobile@fintech.com"
+  "group:fintech-mobile@fintech.com"
 ]
 
 service_accounts = [
