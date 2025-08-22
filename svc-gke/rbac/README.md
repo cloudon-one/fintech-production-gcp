@@ -117,5 +117,5 @@ terraform apply
 ## Notes
 
 - The configuration assumes the existence of Google Workspace groups with the specified email addresses
-- The GKE cluster must be configured with the security group `gke-security-groups@fintech.zone`
+- The GKE cluster must be configured with the security group `gke-security-groups@fintech.com`
 - All resources are tagged with appropriate labels for cost tracking and management
