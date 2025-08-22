@@ -1,7 +1,7 @@
 #!/bin/bash
 
 PROJECT_ID="fintech-prod-host-project"
-ZONE="europe-central2-a"
+ZONE="us-central1-a"
 VM_NAME="database-proxy"
 PROXY_IP=$(gcloud compute instances describe $VM_NAME \
     --zone=$ZONE \
@@ -33,9 +33,9 @@ echo "To test from proxy VM, SSH and run:"
 echo "gcloud compute ssh $VM_NAME --zone=$ZONE --project=$PROJECT_ID"
 echo ""
 echo "# Then test local connections:"
-echo "nc -zv 10.61.12.4 6378  # Direct Redis"
-echo "nc -zv 10.61.1.2 5432   # Direct PostgreSQL primary" 
-echo "nc -zv 10.61.2.2 5432   # Direct PostgreSQL replica"
+echo "nc -zv 10.161.12.4 6378  # Direct Redis"
+echo "nc -zv 10.161.1.2 5432   # Direct PostgreSQL primary" 
+echo "nc -zv 10.161.2.2 5432   # Direct PostgreSQL replica"
 echo "nc -zv localhost 6379   # Proxy Redis"
 echo "nc -zv localhost 5432   # Proxy PostgreSQL primary"
 echo "nc -zv localhost 5433   # Proxy PostgreSQL replica"
