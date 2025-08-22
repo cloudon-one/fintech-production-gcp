@@ -26,9 +26,9 @@ sudo tail -f /var/log/postgres-replica-proxy.err.log
 
 ```bash
 # Test from proxy VM to backend services
-nc -zv 10.61.12.4 6378  # Redis
-nc -zv 10.61.1.2 5432   # PostgreSQL Primary
-nc -zv 10.61.2.2 5432   # PostgreSQL Replica
+nc -zv 10.161.12.4 6378  # Redis
+nc -zv 10.161.1.2 5432   # PostgreSQL Primary
+nc -zv 10.161.2.2 5432   # PostgreSQL Replica
 
 # Test proxy services locally
 nc -zv localhost 6379   # Redis proxy
@@ -46,7 +46,7 @@ sudo netstat -tlnp | grep -E "(6379|5432|5433)"
 kubectl run netshoot --image=nicolaka/netshoot --rm -it -- /bin/bash
 
 # Inside pod - test proxy connectivity
-PROXY_IP="10.61.0.x"  # Replace with actual IP
+PROXY_IP="10.161.0.x"  # Replace with actual IP
 nc -zv $PROXY_IP 6379  # Redis
 nc -zv $PROXY_IP 5432  # PostgreSQL Primary
 nc -zv $PROXY_IP 5433  # PostgreSQL Replica
@@ -84,7 +84,7 @@ gcloud compute firewall-rules list --filter="name~gke.*proxy"
 
 # Verify proxy VM IP is in data-vpc range
 gcloud compute instances describe database-proxy \
-    --zone=europe-central2-a \
+    --zone=us-central1-a \
     --format="get(networkInterfaces[0].networkIP)"
 
 # Test from GKE node (not pod)
@@ -96,19 +96,19 @@ kubectl get nodes -o wide
 
 ```bash
 # From proxy VM, test backend services
-ping 10.61.12.4  # Redis
-ping 10.61.1.2   # PostgreSQL Primary
-ping 10.61.2.2   # PostgreSQL Replica
+ping 10.161.12.4  # Redis
+ping 10.161.1.2   # PostgreSQL Primary
+ping 10.161.2.2   # PostgreSQL Replica
 
 # Check DNS resolution
-nslookup 10.61.12.4
-nslookup 10.61.1.2
-nslookup 10.61.2.2
+nslookup 10.161.12.4
+nslookup 10.161.1.2
+nslookup 10.161.2.2
 
 # Test with specific tools
-redis-cli -h 10.61.12.4 -p 6378 ping
-psql -h 10.61.1.2 -p 5432 -U username -d database -c "SELECT 1"
-psql -h 10.61.2.2 -p 5432 -U username -d database -c "SELECT 1"
+redis-cli -h 10.161.12.4 -p 6378 ping
+psql -h 10.161.1.2 -p 5432 -U username -d database -c "SELECT 1"
+psql -h 10.161.2.2 -p 5432 -U username -d database -c "SELECT 1"
 ```
 
 ### Issue 4: High Latency/Performance
@@ -134,7 +134,7 @@ curl http://PROXY_VM_IP/health
 # Expected response:
 {
   "status": "healthy",
-  "timestamp": "2025-06-26T10:30:00Z",
+  "timestamp": "2025-08-26T10:30:00Z",
   "services": {
     "redis": "port 6379",
     "postgres_primary": "port 5432",
