@@ -284,7 +284,6 @@ gke_subnet_iam_bindings = {
       # GKE service accounts will be added dynamically based on service projects
     ]
   }
-  # Note: gke-control-plane-subnet is excluded as per requirements
 }
 
 data_subnet_iam_bindings = {
@@ -337,35 +336,35 @@ dns_config = {
   }
 }
 
-#dns_records = {
-#  gke = {
-#    name     = "gke.fintech-prod.internal."
-#    zone_key = "private-zone"
-#    type     = "A"
-#    ttl      = 300
-#    rrdatas  = ["10.160.4.10"]
-#  }
-#  api = {
-#    name     = "api.fintech-prod.internal."
-#    zone_key = "private-zone"
-#    type     = "A"
-#    ttl      = 300
-#    rrdatas  = ["10.160.4.11"]
-#  }
-#  sql = {
-#    name     = "sql.fintech-prod.internal."
-#    zone_key = "private-zone"
-#    type     = "A"
-#    ttl      = 300
-#    rrdatas  = ["10.161.4.10"]
-#  }
-#  composer = {
-#    name     = "composer.fintech-prod.internal."
-#    zone_key = "private-zone"
-#    type     = "A"
-#    ttl      = 300
-#    rrdatas  = ["10.161.4.11"]
-#  }
-#}
+dns_records = {
+  gke = {
+    name     = "gke.fintech-prod.internal."
+    zone_key = "private-zone"
+    type     = "A"
+    ttl      = 300
+    rrdatas  = ["10.160.4.10"]
+  }
+  api = {
+    name     = "api.fintech-prod.internal."
+    zone_key = "private-zone"
+    type     = "A"
+    ttl      = 300
+    rrdatas  = ["10.160.4.11"]
+  }
+  sql = {
+    name     = "sql.fintech-prod.internal."
+    zone_key = "private-zone"
+    type     = "A"
+    ttl      = 300
+    rrdatas  = ["10.161.4.10"]
+  }
+  composer = {
+    name     = "composer.fintech-prod.internal."
+    zone_key = "private-zone"
+    type     = "A"
+    ttl      = 300
+    rrdatas  = ["10.161.4.11"]
+  }
+}
 
 
