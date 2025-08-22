@@ -1,7 +1,7 @@
 #!/bin/bash
 
 PROJECT_ID="fintech-prod-host-project"
-ZONE="europe-central2-a"
+ZONE="us-central1-a"
 SUBNET_NAME="data-subnet"
 VM_NAME="database-proxy"
 
@@ -9,7 +9,7 @@ gcloud compute instances create $VM_NAME \
     --project=$PROJECT_ID \
     --zone=$ZONE \
     --machine-type=e2-standard-2 \
-    --network-interface=subnet=projects/$PROJECT_ID/regions/europe-central2/subnetworks/$SUBNET_NAME,no-address \
+    --network-interface=subnet=projects/$PROJECT_ID/regions/us-central1/subnetworks/$SUBNET_NAME,no-address \
     --image-family=ubuntu-2204-lts \
     --image-project=ubuntu-os-cloud \
     --boot-disk-size=20GB \
