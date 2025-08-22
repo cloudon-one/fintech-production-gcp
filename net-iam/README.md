@@ -67,9 +67,9 @@ module "iam" {
   
   # Backend configuration for remote state
   net_svcp_backend_bucket = "fintech-prod-tfstate"
-  net_svcp_backend_prefix = "bitbucket.org/iceoco/fintech-prod-infrastructure/terraform/net-svcp"
+  net_svcp_backend_prefix = "net-svcp"
   svc_projects_backend_bucket = "fintech-prod-tfstate"
-  svc_projects_backend_prefix = "bitbucket.org/iceoco/fintech-prod-infrastructure/terraform/svc-projects"
+  svc_projects_backend_prefix = "svc-projects"
 }
 ```
 
@@ -139,9 +139,9 @@ module "iam" {
 |----------|-------------|------|---------|:--------:|
 | `region` | GCP region for resources | `string` | `"europe-central2"` | no |
 | `net_svcp_backend_bucket` | Backend bucket for net-svcp state | `string` | `"fintech-prod-tfstate"` | no |
-| `net_svcp_backend_prefix` | Backend prefix for net-svcp state | `string` | `"bitbucket.org/iceoco/fintech-prod-infrastructure/terraform/net-svcp"` | no |
+| `net_svcp_backend_prefix` | Backend prefix for net-svcp state | `string` | `"net-svcp"` | no |
 | `svc_projects_backend_bucket` | Backend bucket for svc-projects state | `string` | `"fintech-prod-tfstate"` | no |
-| `svc_projects_backend_prefix` | Backend prefix for svc-projects state | `string` | `"bitbucket.org/iceoco/fintech-prod-infrastructure/terraform/svc-projects"` | no |
+| `svc_projects_backend_prefix` | Backend prefix for svc-projects state | `string` | `"svc-projects"` | no |
 
 ### GKE IAM Configuration
 
@@ -180,7 +180,7 @@ module "iam" {
 |----------|-------------|------|---------|:--------:|
 | `enable_bastion_iam` | Enable Bastion IAM resources | `bool` | `false` | no |
 | `bastion_service_account_config` | Bastion service account configuration | `object` | See below | no |
-| `existing_bastion_service_account` | Existing bastion service account email | `string` | `"bastion-prod-host@fintech-prod-host-project-8hhr.iam.gserviceaccount.com"` | no |
+| `existing_bastion_service_account` | Existing bastion service account email | `string` | `"bastion-prod-host@fintech-prod-host-project.iam.gserviceaccount.com"` | no |
 
 **Default Bastion Service Account Roles:**
 
